@@ -1,0 +1,42 @@
+{
+  "name": "yuki-js",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && mocha ./dist/test",
+    "coverage": "tsc && nyc --reporter=html --reporter=text mocha ./dist/test"
+  },
+  "nyc": {
+    "exclude": [
+      "./dist/test"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nrkn/yuki-js.git"
+  },
+  "keywords": [],
+  "author": "Nik Coughlin <nrkn.com@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nrkn/yuki-js/issues"
+  },
+  "homepage": "https://github.com/nrkn/yuki-js#readme",
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.12",
+    "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "@types/escodegen": "0.0.6",
+    "@types/esprima": "^4.0.2",
+    "@types/estraverse": "0.0.6",
+    "bits-bytes": "^0.2.0",
+    "escodegen": "^1.11.1",
+    "esprima": "^4.0.1",
+    "estraverse": "^4.2.0"
+  }
+}
