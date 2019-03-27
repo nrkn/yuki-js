@@ -38,6 +38,31 @@ export const getSubroutineNames = ( program: Program ) => {
   return <LocalFunctionNames>{ subroutines, exports }
 }
 
+export const getLibFunctionNames = ( program: Program ) => {
+  const functionVisitor: Visitor = {
+    enter: ( node, parent ) => {
+      if ( node.type !== 'FunctionDeclaration' ) return
+
+      if ( !node.id )
+        throw LocError( 'Function must have an identifier', node )
+
+      const name = node.id.name
+
+      if ( functionNames.has( name ) )
+        throw LocError( `Duplicate function name ${ name }`, node )
+
+      if ( parent!.type === 'Program' )
+        functionNames.add( name )
+    }
+  }
+
+  const functionNames = new Set<string>()
+
+  traverse( program, functionVisitor )
+
+  return Array.from( functionNames )
+}
+
 const allowedFunctionParents = [
   'Program', 'ExportNamedDeclaration'
 ]

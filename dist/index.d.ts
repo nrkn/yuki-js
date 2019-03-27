@@ -1,5 +1,8 @@
 import { Program } from 'estree';
-export declare const compile: (yukiProgram: Program) => {
-    header: Program;
+import { CompileOptions } from './types';
+export declare const compile: (yukiProgram: Program, opts?: Partial<CompileOptions>) => {
     main: Program;
+    memoryUsed: number;
+    programSize: number;
 };
+export declare const defaultCompileOptions: CompileOptions;

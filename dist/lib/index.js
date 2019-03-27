@@ -1,6 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Memory = (lets, debug = false) => {
+const size = (arr) => arr.length;
+const CallStack = (maxSize, addressSize = 2) => {
+    let callStackSize = 0;
+    const $in = () => {
+        callStackSize += addressSize;
+        if (callStackSize > maxSize)
+            throw Error('Max call stack exceeded');
+    };
+    const $out = () => {
+        callStackSize -= addressSize;
+    };
+    return { $in, $out };
+};
+const Memory = (lets, debug = false) => {
     const $ = {};
     const numbers = new Map();
     lets.forEach(l => {
@@ -43,7 +56,7 @@ const ArrayProxy = (a, debug) => {
                 return false;
             const index = typeof key === 'number' ? key : parseInt(key, 10);
             if (isNaN(index) || index < 0 || index >= a.length)
-                return false;
+                throw Error(`Index out of bounds: ${index}`);
             target[index] = ensureNumber(value, a);
             return true;
         }
@@ -75,4 +88,4 @@ const unsignedToSigned = (value, bitLength) => {
     return value;
 };
 const maxValue = (bitLength) => Math.pow(2, bitLength);
-//# sourceMappingURL=memory.js.map
+//# sourceMappingURL=index.js.map

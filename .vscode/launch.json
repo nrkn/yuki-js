@@ -18,6 +18,12 @@
         "${workspaceFolder}/dist/test"
       ],
       "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Bresenham Example",
+      "program": "${workspaceFolder}/dist/examples/bresenham"
     }
   ]
 }

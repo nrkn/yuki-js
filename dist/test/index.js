@@ -8,8 +8,7 @@ const kitchenSinkJs = fs_1.readFileSync('./src/test/fixtures/kitchen-sink.yuki.j
 const kitchenSinkAst = esprima_1.parseModule(kitchenSinkJs);
 describe('yuki-js', () => {
     it('compiles', () => {
-        const { header, main } = __1.compile(kitchenSinkAst);
-        assert(header);
+        const { main } = __1.compile(kitchenSinkAst);
         assert(main);
     });
 });

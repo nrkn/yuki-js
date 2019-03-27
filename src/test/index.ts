@@ -11,9 +11,8 @@ const kitchenSinkAst = parseModule( kitchenSinkJs )
 
 describe( 'yuki-js', () => {
   it( 'compiles', () => {
-    const { header, main } = compile( kitchenSinkAst )
+    const { main } = compile( kitchenSinkAst )
 
-    assert( header )
     assert( main )
   })
 })

@@ -27,6 +27,24 @@ exports.getSubroutineNames = (program) => {
     const exports = Array.from(exportNames);
     return { subroutines, exports };
 };
+exports.getLibFunctionNames = (program) => {
+    const functionVisitor = {
+        enter: (node, parent) => {
+            if (node.type !== 'FunctionDeclaration')
+                return;
+            if (!node.id)
+                throw util_1.LocError('Function must have an identifier', node);
+            const name = node.id.name;
+            if (functionNames.has(name))
+                throw util_1.LocError(`Duplicate function name ${name}`, node);
+            if (parent.type === 'Program')
+                functionNames.add(name);
+        }
+    };
+    const functionNames = new Set();
+    estraverse_1.traverse(program, functionVisitor);
+    return Array.from(functionNames);
+};
 const allowedFunctionParents = [
     'Program', 'ExportNamedDeclaration'
 ];
