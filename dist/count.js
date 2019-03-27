@@ -14,7 +14,7 @@ exports.countMemory = (lets) => {
     });
     return bitLength;
 };
-exports.countProgramSize = (ast, instructionSize = 2) => {
+exports.countProgramSize = (ast, instructionSize) => {
     let count = 0;
     const visitor = {
         enter: node => {

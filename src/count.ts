@@ -17,7 +17,7 @@ export const countMemory = ( lets: YukiLet[] ) => {
   return bitLength
 }
 
-export const countProgramSize = ( ast: Program, instructionSize = 2 ) => {
+export const countProgramSize = ( ast: Program, instructionSize: number ) => {
   let count = 0
 
   const visitor: Visitor = {

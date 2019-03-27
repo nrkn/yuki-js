@@ -1,11 +1,14 @@
-import { Literal, Identifier, Program, AssignmentExpression, MemberExpression, CallExpression, BaseNode, FunctionDeclaration, ReturnStatement, ExportNamedDeclaration } from 'estree'
-import { LocError } from '../util'
-import { YukiDeclarationHeader, YukiValue } from '../declarations/header/types'
-import { Visitor, traverse } from 'estraverse'
-import { LocalFunctionNames, FunctionNames } from './types';
-import { getAllNames } from './util';
+import {
+  Literal, Identifier, Program, AssignmentExpression, MemberExpression,
+  CallExpression, BaseNode, FunctionDeclaration, ReturnStatement,
+  ExportNamedDeclaration
+} from 'estree'
 
-// first pass - whitelist validation
+import { LocError } from '../util'
+import { YukiValue } from '../declarations/header/types'
+import { Visitor, traverse } from 'estraverse'
+import { FunctionNames } from './types'
+import { getAllNames } from './util'
 
 const whitelist = [
   'Program',
@@ -54,7 +57,7 @@ export const ValidateMainProgram = (
   return validateMainProgram
 }
 
-const ValidateNode = (
+export const ValidateNode = (
   headerMap: Map<string, YukiValue>,
   functionNames: FunctionNames
 ) => {
@@ -79,8 +82,10 @@ const ValidateNode = (
   const validateNode = ( node: BaseNode ) => {
     const errors: Error[] = []
 
-    if( node.type in validators ){
+    if ( node.type in validators ) {
       errors.push( ...validators[ node.type ]( node ) )
+    } else if ( !whitelist.includes( node.type ) ) {
+      errors.push( LocError( `Unexpected type ${ node.type }`, node ) )
     }
 
     return errors
@@ -89,7 +94,56 @@ const ValidateNode = (
   return validateNode
 }
 
-const ValidateAssignmentExpression = (
+
+export const ValidateIdentifier = (
+  headerMap: Map<string, YukiValue>, functionNames: string[]
+) =>
+  ( node: Identifier ) => {
+    const errors: Error[] = []
+
+    if ( headerMap.has( node.name ) ) return errors
+    if ( functionNames.includes( node.name ) ) return errors
+
+    errors.push( LocError( `Unexpected Identifier ${ node.name }`, node ) )
+
+    return errors
+  }
+
+export const ValidateMemberExpression = ( headerMap: Map<string, YukiValue> ) =>
+  ( node: MemberExpression ) => {
+    const errors: Error[] = []
+
+    if ( node.object.type !== 'Identifier' ) {
+      errors.push(
+        LocError( `Unexpected type ${ node.object.type }`, node )
+      )
+
+      return errors
+    }
+
+    const target = headerMap.get( node.object.name )
+
+    if ( !target ) {
+      errors.push(
+        LocError( `Unexpected name ${ node.object.name }`, node )
+      )
+
+      return errors
+    }
+
+    if ( target.type !== 'array' ) {
+      errors.push(
+        LocError( `Unexpected number ${ node.object.name }`, node )
+      )
+
+      return errors
+    }
+
+    return errors
+  }
+
+
+export const ValidateAssignmentExpression = (
   headerMap: Map<string, YukiValue>,
   validateIdentifier: ( node: Identifier ) => Error[],
   validateMemberExpression: ( node: MemberExpression ) => Error[]
@@ -98,10 +152,10 @@ const ValidateAssignmentExpression = (
     const errors: Error[] = []
     const { left } = node
 
-    if( left.type === 'Identifier' ){
+    if ( left.type === 'Identifier' ) {
       const baseErrors = validateIdentifier( left )
 
-      if( baseErrors.length ) return baseErrors
+      if ( baseErrors.length ) return baseErrors
 
       const target = headerMap.get( left.name )
 
@@ -113,13 +167,13 @@ const ValidateAssignmentExpression = (
         return errors
       }
 
-      if( target.type === 'array' ){
+      if ( target.type === 'array' ) {
         errors.push( LocError( 'Unexpected assignment to array', target ) )
 
         return errors
       }
 
-      if( target.valueType === 'const' ){
+      if ( target.valueType === 'const' ) {
         errors.push( LocError( 'Unexpected assignment to const', target ) )
 
         return errors
@@ -128,23 +182,13 @@ const ValidateAssignmentExpression = (
       return errors
     }
 
-    if( left.type === 'MemberExpression' ){
+    if ( left.type === 'MemberExpression' ) {
       const baseErrors = validateMemberExpression( left )
 
       if ( baseErrors.length ) return baseErrors
 
       const identifier = <Identifier>left.object
-      const target = headerMap.get( identifier.name )
-
-      if( !target ){
-        errors.push(
-          LocError(
-            `Unexpected assignment to ${ identifier.name }`, identifier
-          )
-        )
-
-        return errors
-      }
+      const target = headerMap.get( identifier.name )!
 
       if ( target.valueType === 'const' ) {
         errors.push( LocError( 'Unexpected assignment to const', target ) )
@@ -163,60 +207,13 @@ const ValidateAssignmentExpression = (
   return validateAssignmentExpression
 }
 
-const ValidateIdentifier = (
-  headerMap: Map<string, YukiValue>, functionNames: string[]
-) =>
-  ( node: Identifier ) => {
-    const errors: Error[] = []
-
-    if ( headerMap.has( node.name ) ) return errors
-    if ( functionNames.includes( node.name ) ) return errors
-
-    errors.push( LocError( `Unexpected Identifier ${ node.name }`, node ) )
-
-    return errors
-  }
-
-const ValidateMemberExpression = ( headerMap: Map<string, YukiValue> ) =>
-  ( node: MemberExpression ) => {
-    const errors: Error[] = []
-
-    if ( node.object.type !== 'Identifier' ) {
-      errors.push(
-        LocError( `Unexpected Identifier ${ node.object }`, node )
-      )
-
-      return errors
-    }
-
-    const target = headerMap.get( node.object.name )
-
-    if ( !target ) {
-      errors.push(
-        LocError( `Unexpected Identifier ${ node.object.name }`, node )
-      )
-
-      return errors
-    }
-
-    if( target.type !== 'array' ){
-      errors.push(
-        LocError( `Expected array target ${ node.object.name }`, node )
-      )
-
-      return errors
-    }
-
-    return errors
-  }
-
-const ValidateCallExpression = (
+export const ValidateCallExpression = (
   functionNames: FunctionNames
 ) =>
   ( node: CallExpression ) => {
     const errors: Error[] = []
 
-    if( node.callee.type !== 'Identifier' ){
+    if ( node.callee.type !== 'Identifier' ) {
       errors.push( LocError( 'Expected Identifier', node.callee ) )
 
       return errors
@@ -227,8 +224,8 @@ const ValidateCallExpression = (
     if (
       functionNames.subroutines.includes( name ) ||
       functionNames.exports.includes( name )
-    ){
-      if( node.arguments.length ){
+    ) {
+      if ( node.arguments.length ) {
         errors.push( LocError( 'Unexpected arguments', node ) )
 
         return errors
@@ -237,23 +234,17 @@ const ValidateCallExpression = (
       return errors
     }
 
-    if( functionNames.external.includes( name ) ) return errors
+    if ( functionNames.external.includes( name ) ) return errors
 
     errors.push( LocError( `Unexpected Identifier ${ name }`, node.callee ) )
 
     return errors
   }
 
-const validateFunctionDeclaration = ( node: FunctionDeclaration ) => {
+export const validateFunctionDeclaration = ( node: FunctionDeclaration ) => {
   const errors: Error[] = []
 
-  if( !node.id ){
-    errors.push( LocError( 'Expected Identifier', node ) )
-
-    return errors
-  }
-
-  if( node.params.length ){
+  if ( node.params.length ) {
     errors.push( LocError( 'Unexpected params', node ) )
 
     return errors
@@ -262,17 +253,13 @@ const validateFunctionDeclaration = ( node: FunctionDeclaration ) => {
   return errors
 }
 
-const validateExportNamedDeclaration = ( node: ExportNamedDeclaration ) => {
+export const validateExportNamedDeclaration = ( node: ExportNamedDeclaration ) => {
   const errors: Error[] = []
 
-  if( !node.declaration ){
-    errors.push( LocError( 'Expected declaration', node ) )
-
-    return errors
-  }
-
-  if( node.declaration.type !== 'FunctionDeclaration' ){
-    errors.push( LocError( 'Unexpected Declaration', node.declaration ) )
+  if ( node.declaration!.type !== 'FunctionDeclaration' ) {
+    errors.push( LocError(
+        `Unexpected type ${ node.declaration!.type }`, node.declaration!
+    ) )
 
     return errors
   }
@@ -280,23 +267,25 @@ const validateExportNamedDeclaration = ( node: ExportNamedDeclaration ) => {
   return errors
 }
 
-const validateReturnStatement = ( node: ReturnStatement ) => {
+export const validateReturnStatement = ( node: ReturnStatement ) => {
   const errors: Error[] = []
 
-  if( node.argument ){
+  if ( node.argument ) {
     errors.push( LocError( 'Unexpected argument', node ) )
   }
 
   return errors
 }
 
-const validateLiteral = ( node: Literal ) => {
+export const validateLiteral = ( node: Literal ) => {
   const errors: Error[] = []
 
-  if ( typeof node.value === 'number' || typeof node.value === 'boolean' )
+  const literalType = typeof node.value
+
+  if ( literalType === 'number' || literalType === 'boolean' )
     return errors
 
-  errors.push( LocError( `Unexpected Literal ${ node.value }`, node ) )
+  errors.push( LocError( `Unexpected type ${ literalType }`, node ) )
 
   return errors
 }

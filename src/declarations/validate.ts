@@ -35,8 +35,10 @@ const validateVariableDeclaration =
 
     const { id, init } = declarator
 
-    if( typeof init === 'undefined' ){
+    if( init === null ){
       errors.push( LocError( 'Expected init', declarator ) )
+
+      return errors
     }
 
     if ( id.type !== 'Identifier' ) {
@@ -51,18 +53,12 @@ const validateVariableDeclaration =
       return errors
     }
 
-    if( declaration.kind === 'let' ){
-      errors.push( ...validateLet( declarator, errors ) )
-
-      return errors
-    }
-
-    errors.push( LocError( 'Expected const or let', declaration ) )
+    errors.push( ...validateLet( declarator, errors ) )
 
     return errors
   }
 
-const validateConst =
+export const validateConst =
   ( declarator: VariableDeclarator, errors: Error[] = [] ) => {
     const init = declarator.init!
 
@@ -108,6 +104,8 @@ const validateConst =
             `Unexpected ${ typeof node.value } in ArrayExpression[${ i }]`,
             node
           ) )
+
+          return
         }
 
         errors.push(
@@ -123,7 +121,7 @@ const validateConst =
     return errors
   }
 
-const validateLet =
+export const validateLet =
   ( declarator: VariableDeclarator, errors: Error[] = [] ) => {
     const init = declarator.init!
 
@@ -142,6 +140,8 @@ const validateLet =
         if ( numberTypes.includes( init.callee.name ) ){
           if( init.arguments.length !== 1 ){
             errors.push( LocError( `Expected single argument`, declarator ) )
+
+            return errors
           }
 
           const argument = init.arguments[ 0 ]
@@ -150,7 +150,7 @@ const validateLet =
             if( typeof argument.value === 'number' ) return errors
 
             errors.push( LocError(
-              `Unexpected argument ${ argument.value }`, argument
+              `Unexpected argument ${ typeof argument.value }`, argument
             ) )
 
             return errors

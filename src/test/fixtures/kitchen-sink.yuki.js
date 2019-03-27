@@ -1,12 +1,15 @@
 // const flag
 const FLAG_1 = true
+const FLAG_2 = false
 // const number
 const VAL_1 = 10
 // const array
 const ARR_1 = [ 1, 2, 3 ]
+const FLAGS_1 = [ true, false, true ]
 
 // mutable flag
-let flag2 = Bool
+let flag3 = Bool
+let flag4 = Bool
 // mutable numbers
 let length = Uint8
 let i = Uint8
@@ -27,6 +30,8 @@ flags[ 0 ] = true
 a = ARR_1[ 0 ]
 b = ARR_1[ 1 ]
 c = ARR_1[ 2 ]
+flag4 = FLAGS_1[ 1 ]
+flag3 = FLAG_2 && flag4
 
 // size
 length = size( arr2 )
@@ -118,10 +123,10 @@ do {
 } while ( i >= 0 )
 
 // if
-if ( flag2 ) {
-  flag2 = !flag2
+if ( flag3 ) {
+  flag3 = !flag3
 } else if ( FLAG_1 ) {
-  flag2 = FLAG_1
+  flag3 = FLAG_1
 }
 
 // function, subroutine only
@@ -131,7 +136,7 @@ function add() {
 
 // allow early return
 function addIfFlag() {
-  if ( flag2 ) return
+  if ( flag3 ) return
 
   add()
 }

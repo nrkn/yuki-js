@@ -24,25 +24,22 @@ const validateVariableDeclaration = (declaration, errors = []) => {
     }
     const declarator = declaration.declarations[0];
     const { id, init } = declarator;
-    if (typeof init === 'undefined') {
+    if (init === null) {
         errors.push(util_1.LocError('Expected init', declarator));
+        return errors;
     }
     if (id.type !== 'Identifier') {
         errors.push(util_1.LocError('Expected Identifier', declarator));
         return errors;
     }
     if (declaration.kind === 'const') {
-        errors.push(...validateConst(declarator, errors));
+        errors.push(...exports.validateConst(declarator, errors));
         return errors;
     }
-    if (declaration.kind === 'let') {
-        errors.push(...validateLet(declarator, errors));
-        return errors;
-    }
-    errors.push(util_1.LocError('Expected const or let', declaration));
+    errors.push(...exports.validateLet(declarator, errors));
     return errors;
 };
-const validateConst = (declarator, errors = []) => {
+exports.validateConst = (declarator, errors = []) => {
     const init = declarator.init;
     if (init.type === 'Literal') {
         if (typeof init.value === 'boolean')
@@ -72,6 +69,7 @@ const validateConst = (declarator, errors = []) => {
                 if (typeof node.value === 'number')
                     return;
                 errors.push(util_1.LocError(`Unexpected ${typeof node.value} in ArrayExpression[${i}]`, node));
+                return;
             }
             errors.push(util_1.LocError(`Expected ArrayExpression[${i}] to be Literal`, node));
         });
@@ -80,7 +78,7 @@ const validateConst = (declarator, errors = []) => {
     errors.push(util_1.LocError(`Unexpected type ${init.type}`, declarator));
     return errors;
 };
-const validateLet = (declarator, errors = []) => {
+exports.validateLet = (declarator, errors = []) => {
     const init = declarator.init;
     if (init.type === 'Identifier') {
         if (number_types_1.numberTypes.includes(init.name))
@@ -93,12 +91,13 @@ const validateLet = (declarator, errors = []) => {
             if (number_types_1.numberTypes.includes(init.callee.name)) {
                 if (init.arguments.length !== 1) {
                     errors.push(util_1.LocError(`Expected single argument`, declarator));
+                    return errors;
                 }
                 const argument = init.arguments[0];
                 if (argument.type === 'Literal') {
                     if (typeof argument.value === 'number')
                         return errors;
-                    errors.push(util_1.LocError(`Unexpected argument ${argument.value}`, argument));
+                    errors.push(util_1.LocError(`Unexpected argument ${typeof argument.value}`, argument));
                     return errors;
                 }
                 errors.push(util_1.LocError(`Unexpected argument type ${argument.type}`, argument));
