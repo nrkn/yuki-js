@@ -181,20 +181,21 @@ Supported JavaScript features were heavily restricted for ease of implementation
 
 I plan to extend the capabilities in future - some possible options:
 
-- strings
-  - just arrays of bytes under the hood
-  - no `+` concatentation etc
-- floats
-- simple (eg JSON-style) objects
-  - will just be syntactical sugar
 - variables declared anywhere
   - assert memory constraints at runtime instead of compile time to support this
   - this also means you will be able to use the `delete` operator to free memory
+- strings
+  - just arrays of bytes under the hood
+  - therefore no `+` concatentation etc
+- floats
+- simple (eg JSON-style) objects
+  - will just be syntactical sugar
 - proper functions, not just subroutines
   - take parameters
   - return any allowed type
   - have scope
   - a new type allowing `let` declaration to support first class functions
+ - source maps
 
 ## license
 
