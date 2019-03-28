@@ -30,6 +30,7 @@ flags[ 0 ] = true
 a = ARR_1[ 0 ]
 b = ARR_1[ 1 ]
 c = ARR_1[ 2 ]
+d = -4
 flag4 = FLAGS_1[ 1 ]
 flag3 = FLAG_2 && flag4
 

@@ -33,7 +33,7 @@ exports.compile = (yukiProgram, opts = {}) => {
     if (errors.length) {
         throw errors[0];
     }
-    const addressSize = bits_bytes_1.bitLengthToBytes(bits_bytes_1.valueToBitLength(memorySize));
+    const addressSize = bits_bytes_1.bitLengthToBytes(bits_bytes_1.valueToBitLength(maxProgramSize));
     const memoryUsed = bits_bytes_1.bitLengthToBytes(count_1.countMemory(declarationHeader.lets));
     if (memoryUsed > memorySize)
         throw Error(`Memory allocation exceeded: ${memoryUsed}/${memorySize}`);

@@ -58,7 +58,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
     throw errors[ 0 ]
   }
 
-  const addressSize = bitLengthToBytes( valueToBitLength( memorySize ) )
+  const addressSize = bitLengthToBytes( valueToBitLength( maxProgramSize ) )
   const memoryUsed = bitLengthToBytes( countMemory( declarationHeader.lets ) )
 
   if( memoryUsed > memorySize )

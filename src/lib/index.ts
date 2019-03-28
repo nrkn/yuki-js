@@ -87,14 +87,24 @@ const ArrayProxy = ( a: YukiArray, debug: boolean ) => {
   return new Proxy( arr, handler )
 }
 
-const ensureNumber = ( value: number, l: YukiLet ) =>
-  l.signed ?
-    unsignedToSigned( value, l.bitLength ) :
-    signedToUnsigned( value, l.bitLength )
+const ensureNumber = ( value: number, l: YukiLet ) => {
+  if(
+    typeof value !== 'number' ||
+    isNaN( value ) ||
+    !isFinite( value )
+  ){
+    throw Error( 'Expected a number' )
+  }
+
+  // coerce to 32 bit integer
+  value = ~~value
+
+  if ( l.signed ) return unsignedToSigned( value, l.bitLength )
+
+  return signedToUnsigned( value, l.bitLength )
+}
 
 const signedToUnsigned = ( value: number, bitLength: number ) => {
-  value = Math.floor( value )
-
   const maxUint = maxValue( bitLength )
 
   while ( value >= maxUint ) {
@@ -109,8 +119,6 @@ const signedToUnsigned = ( value: number, bitLength: number ) => {
 }
 
 const unsignedToSigned = ( value: number, bitLength: number ) => {
-  value = Math.floor( value )
-
   const maxUint = maxValue( bitLength )
   const maxInt = Math.floor( maxUint / 2 - 1 )
 

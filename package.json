@@ -1,7 +1,7 @@
 {
   "name": "yuki-js",
   "version": "0.0.1",
-  "description": "",
+  "description": "A tiny subset of JavaScript with configurable restraints",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
