@@ -66,6 +66,7 @@ const ArrayProxy = (a, debug) => {
 };
 const ensureNumber = (value, l) => l.signed ? unsignedToSigned(value, l.bitLength) : signedToUnsigned(value, l.bitLength);
 const signedToUnsigned = (value, bitLength) => {
+    value = Math.floor(value);
     const maxUint = maxValue(bitLength);
     while (value >= maxUint) {
         value -= maxUint;
@@ -76,6 +77,7 @@ const signedToUnsigned = (value, bitLength) => {
     return value;
 };
 const unsignedToSigned = (value, bitLength) => {
+    value = Math.floor(value);
     const maxUint = maxValue(bitLength);
     const maxInt = Math.floor(maxUint / 2 - 1);
     while (value >= maxUint) {
@@ -87,15 +89,9 @@ const unsignedToSigned = (value, bitLength) => {
     return value;
 };
 const maxValue = bitLength => Math.pow(2, bitLength);
-const {$in, $out} = CallStack(801, 2);
-function log(arg) {
-    const newArray = [];
-    for (let i = 0; i < 100; i++) {
-        if (arg[i] === 0)
-            break;
-        newArray[i] = arg[i];
-    }
-    console.log(newArray);
+const {$in, $out} = CallStack(799, 2);
+function log(value) {
+    console.log(value);
 }
 const $ = Memory([
     {
@@ -184,6 +180,13 @@ const $ = Memory([
         'signed': false
     },
     {
+        'name': 'i',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 16,
+        'signed': true
+    },
+    {
         'name': 'absValue',
         'valueType': 'let',
         'type': 'number',
@@ -227,4 +230,7 @@ while ($.x0 !== $.x1 || $.y0 !== $.y1) {
     $.line[$.lineIndex + 1] = $.y0;
     $.lineIndex += 2;
 }
-log($.line);
+log($.lineIndex);
+for ($.i = 0; $.i < $.lineIndex; $.i++) {
+    log($.line[$.i]);
+}

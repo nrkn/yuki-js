@@ -18,22 +18,20 @@ exports.compile = (yukiProgram, opts = {}) => {
     const { yukiDeclarations, yukiMain } = split_source_1.splitSource(yukiProgram);
     if (!predicates_1.isYukiDeclarations(yukiDeclarations)) {
         const errors = validate_1.validateDeclarationsProgram(yukiDeclarations);
-        errors.forEach(console.error);
-        throw Error('Invalid Declarations');
+        throw errors[0];
     }
     const declarationHeader = header_1.DeclarationHeader(yukiDeclarations);
     const headerMap = util_1.HeaderMap(declarationHeader);
     const localSubroutineNames = util_2.getSubroutineNames(yukiMain);
     const missingExports = requiredExports.filter(name => !localSubroutineNames.exports.includes(name));
     if (missingExports.length)
-        throw Error(`Missing required exports: ${missingExports.join(', ')} `);
+        throw Error(`Missing required exports: ${missingExports.join(', ')}`);
     const libFunctionNames = util_2.getLibFunctionNames(lib);
     const functionNames = Object.assign({}, localSubroutineNames, { external: ['size', ...libFunctionNames] });
     const validateMainProgram = validate_2.ValidateMainProgram(headerMap, functionNames);
     const errors = validateMainProgram(yukiMain);
     if (errors.length) {
-        errors.forEach(console.error);
-        throw Error('Invalid Program');
+        throw errors[0];
     }
     const addressSize = bits_bytes_1.bitLengthToBytes(bits_bytes_1.valueToBitLength(memorySize));
     const memoryUsed = bits_bytes_1.bitLengthToBytes(count_1.countMemory(declarationHeader.lets));
@@ -45,7 +43,7 @@ exports.compile = (yukiProgram, opts = {}) => {
     const main = replace_1.replaceMainProgram(yukiMain, declarationHeader.lets);
     const programSize = count_1.countProgramSize(main, instructionSize);
     if (programSize > maxProgramSize)
-        throw Error(`Program size exceeded: ${memoryUsed}/${memorySize}`);
+        throw Error(`Program size exceeded: ${programSize}/${maxProgramSize}`);
     main.body = [
         ...libAst,
         ...lib.body,

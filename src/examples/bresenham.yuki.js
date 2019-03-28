@@ -12,6 +12,7 @@ let err2 = Int16
 
 let line = Int16( 100 )
 let lineIndex = Uint8
+let i = Int16
 
 let absValue = Int16
 
@@ -60,4 +61,8 @@ while ( x0 !== x1 || y0 !== y1 ) {
   lineIndex += 2
 }
 
-log( line )
+log( lineIndex )
+
+for( i = 0; i < lineIndex; i++ ){
+  log( line[ i ] )
+}

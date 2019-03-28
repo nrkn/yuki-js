@@ -12,8 +12,6 @@ export const replaceMainProgram = ( program: Program, lets: YukiLet[] ) => {
   const visitor: Visitor = {
     enter: ( node, parent ) => {
       if ( node.type === 'Identifier' && map.has( node.name ) ) {
-        if ( node.name === '$' ) return node
-
         if (
           parent &&
           parent.type === 'MemberExpression' &&

@@ -1,3 +1,5 @@
+import { YukiLet, YukiArray, YukiNumber } from '../declarations/header/types'
+
 const size = ( arr: any[] ) => arr.length
 
 const CallStack = ( maxSize: number, addressSize = 2 ) => {
@@ -16,8 +18,6 @@ const CallStack = ( maxSize: number, addressSize = 2 ) => {
 
   return { $in, $out }
 }
-
-import { YukiLet, YukiArray, YukiNumber } from '../declarations/header/types'
 
 interface MemoryObject {
   [ key: string ]: number | number[]
@@ -93,6 +93,8 @@ const ensureNumber = ( value: number, l: YukiLet ) =>
     signedToUnsigned( value, l.bitLength )
 
 const signedToUnsigned = ( value: number, bitLength: number ) => {
+  value = Math.floor( value )
+
   const maxUint = maxValue( bitLength )
 
   while ( value >= maxUint ) {
@@ -107,6 +109,8 @@ const signedToUnsigned = ( value: number, bitLength: number ) => {
 }
 
 const unsignedToSigned = ( value: number, bitLength: number ) => {
+  value = Math.floor( value )
+
   const maxUint = maxValue( bitLength )
   const maxInt = Math.floor( maxUint / 2 - 1 )
 

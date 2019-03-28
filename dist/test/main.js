@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const assert = require("assert");
 const esprima_1 = require("esprima");
 const validate_1 = require("../main/validate");
+const util_1 = require("../main/util");
 describe('yuki-js', () => {
     describe('main', () => {
         describe('validate', () => {
@@ -165,6 +166,35 @@ describe('yuki-js', () => {
                     const literal = expression.expression;
                     const errors = validate_1.validateLiteral(literal);
                     assert(errors[0].message.startsWith('Unexpected type string'));
+                });
+            });
+        });
+        describe('util', () => {
+            describe('getSubroutineNames', () => {
+                it('Functions cannot be nested', () => {
+                    const ast = esprima_1.parseScript('{function b(){}}');
+                    assert.throws(() => util_1.getSubroutineNames(ast), {
+                        message: 'Functions cannot be nested in BlockStatement'
+                    });
+                });
+                it('Duplicate function name', () => {
+                    const ast = esprima_1.parseScript('function b(){}function b(){}');
+                    assert.throws(() => util_1.getSubroutineNames(ast), {
+                        message: 'Duplicate function name b'
+                    });
+                });
+            });
+            describe('getLibFunctionNames', () => {
+                it('Duplicate function name', () => {
+                    const ast = esprima_1.parseScript('function b(){}function b(){}');
+                    assert.throws(() => util_1.getLibFunctionNames(ast), {
+                        message: 'Duplicate function name b'
+                    });
+                });
+                it('Only gets top level functions', () => {
+                    const ast = esprima_1.parseScript('function b(){ function a(){} }');
+                    const names = util_1.getLibFunctionNames(ast);
+                    assert.deepEqual(names, ['b']);
                 });
             });
         });

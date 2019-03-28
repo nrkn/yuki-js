@@ -11,10 +11,7 @@ export const getSubroutineNames = ( program: Program ) => {
       if ( parent && !allowedFunctionParents.includes( parent.type ) )
         throw LocError( `Functions cannot be nested in ${ parent.type }`, node )
 
-      if ( !node.id )
-        throw LocError( 'Function must have an identifier', node )
-
-      const name = node.id.name
+      const name = node.id!.name
 
       if ( subroutineNames.has( name ) || exportNames.has( name ) )
         throw LocError( `Duplicate function name ${ name }`, node )
@@ -43,10 +40,7 @@ export const getLibFunctionNames = ( program: Program ) => {
     enter: ( node, parent ) => {
       if ( node.type !== 'FunctionDeclaration' ) return
 
-      if ( !node.id )
-        throw LocError( 'Function must have an identifier', node )
-
-      const name = node.id.name
+      const name = node.id!.name
 
       if ( functionNames.has( name ) )
         throw LocError( `Duplicate function name ${ name }`, node )

@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs'
+import { readFileSync } from 'fs'
 import { parseModule, parseScript } from 'esprima'
 import { compile } from '..'
 import { CompileOptions } from '../types'
@@ -11,15 +11,14 @@ const bresenhamYukiLib = readFileSync(
   './src/examples/bresenham.lib.js', 'utf8'
 )
 
-const program = parseModule( bresenhamYukiSource, { loc: true })
+export const bresenhamYuki = parseModule( bresenhamYukiSource, { loc: true })
+
 const lib = parseScript( bresenhamYukiLib )
 
 const options: Partial<CompileOptions> = {
   lib
 }
 
-const { main } = compile( program, options )
+const { main } = compile( bresenhamYuki, options )
 
-const outputSource = generate( main )
-
-writeFileSync( './dist/examples/bresenham.out.js', outputSource, 'utf8' )
+export const bresenhamOut = generate( main )

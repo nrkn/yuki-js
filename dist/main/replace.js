@@ -8,8 +8,6 @@ exports.replaceMainProgram = (program, lets) => {
     const visitor = {
         enter: (node, parent) => {
             if (node.type === 'Identifier' && map.has(node.name)) {
-                if (node.name === '$')
-                    return node;
                 if (parent &&
                     parent.type === 'MemberExpression' &&
                     parent.object.type === 'Identifier' &&

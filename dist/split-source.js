@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const util_1 = require("./util");
 exports.splitSource = (program) => {
     const yukiDeclarations = {
         type: 'Program',
@@ -19,7 +20,7 @@ exports.splitSource = (program) => {
             return;
         }
         if (node.type === 'VariableDeclaration')
-            throw Error('Unexpected VariableDeclaration');
+            throw util_1.LocError('Unexpected VariableDeclaration', node);
         yukiMain.body.push(node);
     });
     return { yukiDeclarations, yukiMain };

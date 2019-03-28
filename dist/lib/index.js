@@ -67,6 +67,7 @@ const ensureNumber = (value, l) => l.signed ?
     unsignedToSigned(value, l.bitLength) :
     signedToUnsigned(value, l.bitLength);
 const signedToUnsigned = (value, bitLength) => {
+    value = Math.floor(value);
     const maxUint = maxValue(bitLength);
     while (value >= maxUint) {
         value -= maxUint;
@@ -77,6 +78,7 @@ const signedToUnsigned = (value, bitLength) => {
     return value;
 };
 const unsignedToSigned = (value, bitLength) => {
+    value = Math.floor(value);
     const maxUint = maxValue(bitLength);
     const maxInt = Math.floor(maxUint / 2 - 1);
     while (value >= maxUint) {

@@ -28,9 +28,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
   if ( !isYukiDeclarations( yukiDeclarations ) ){
     const errors = validateDeclarationsProgram( yukiDeclarations )
 
-    errors.forEach( console.error )
-
-    throw Error( 'Invalid Declarations' )
+    throw errors[ 0 ]
   }
 
   const declarationHeader = DeclarationHeader( yukiDeclarations )
@@ -43,7 +41,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
   )
 
   if( missingExports.length )
-    throw Error( `Missing required exports: ${ missingExports.join( ', ' ) } `)
+    throw Error( `Missing required exports: ${ missingExports.join( ', ' ) }` )
 
   const libFunctionNames = getLibFunctionNames( lib )
 
@@ -57,9 +55,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
   const errors = validateMainProgram( yukiMain )
 
   if( errors.length ){
-    errors.forEach( console.error )
-
-    throw Error( 'Invalid Program' )
+    throw errors[ 0 ]
   }
 
   const addressSize = bitLengthToBytes( valueToBitLength( memorySize ) )
@@ -78,7 +74,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
   const programSize = countProgramSize( main, instructionSize )
 
   if( programSize > maxProgramSize )
-    throw Error( `Program size exceeded: ${ memoryUsed }/${ memorySize }` )
+    throw Error( `Program size exceeded: ${ programSize }/${ maxProgramSize }` )
 
   main.body = [
     ...libAst,

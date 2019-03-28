@@ -1,12 +1,24 @@
 import * as assert from 'assert'
 import { parseScript, parseModule } from 'esprima'
 
-import { YukiValue, YukiArray, YukiNumber, YukiConstNumber, YukiConstArray } from '../declarations/header/types'
-import { FunctionNames } from '../main/types'
-import { ValidateNode, ValidateIdentifier, ValidateMemberExpression, ValidateAssignmentExpression, ValidateCallExpression, validateFunctionDeclaration, validateExportNamedDeclaration, validateReturnStatement, validateLiteral } from '../main/validate'
-import { Identifier, ExpressionStatement, MemberExpression, AssignmentExpression, CallExpression, FunctionDeclaration, ExportNamedDeclaration, ReturnStatement, Literal } from 'estree';
-import { traverse } from 'estraverse';
+import {
+  Identifier, ExpressionStatement, MemberExpression, AssignmentExpression,
+  CallExpression, FunctionDeclaration, ExportNamedDeclaration, ReturnStatement,
+  Literal
+} from 'estree'
 
+import {
+  YukiValue, YukiArray, YukiNumber, YukiConstNumber, YukiConstArray
+} from '../declarations/header/types'
+
+import { FunctionNames } from '../main/types'
+import {
+  ValidateNode, ValidateIdentifier, ValidateMemberExpression,
+  ValidateAssignmentExpression, ValidateCallExpression,
+  validateFunctionDeclaration, validateExportNamedDeclaration,
+  validateReturnStatement, validateLiteral
+} from '../main/validate'
+import { getSubroutineNames, getLibFunctionNames } from '../main/util';
 
 describe( 'yuki-js', () => {
   describe( 'main', () => {
@@ -244,6 +256,53 @@ describe( 'yuki-js', () => {
           assert(
             errors[ 0 ].message.startsWith( 'Unexpected type string' )
           )
+        } )
+      } )
+    } )
+
+    describe( 'util', () => {
+      describe( 'getSubroutineNames', () => {
+        it( 'Functions cannot be nested', () => {
+          const ast = parseScript( '{function b(){}}' )
+
+          assert.throws(
+            () => getSubroutineNames( ast ),
+            {
+              message: 'Functions cannot be nested in BlockStatement'
+            }
+          )
+        } )
+
+        it( 'Duplicate function name', () => {
+          const ast = parseScript( 'function b(){}function b(){}' )
+
+          assert.throws(
+            () => getSubroutineNames( ast ),
+            {
+              message: 'Duplicate function name b'
+            }
+          )
+        } )
+      } )
+
+      describe( 'getLibFunctionNames', () => {
+        it( 'Duplicate function name', () => {
+          const ast = parseScript( 'function b(){}function b(){}' )
+
+          assert.throws(
+            () => getLibFunctionNames( ast ),
+            {
+              message: 'Duplicate function name b'
+            }
+          )
+        } )
+
+        it( 'Only gets top level functions', () => {
+          const ast = parseScript( 'function b(){ function a(){} }' )
+
+          const names = getLibFunctionNames( ast )
+
+          assert.deepEqual( names, [ 'b' ] )
         })
       })
     } )
