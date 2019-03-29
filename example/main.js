@@ -105,14 +105,14 @@ const $ = $Memory([
         'name': 'x',
         'valueType': 'let',
         'type': 'number',
-        'bitLength': 8,
+        'bitLength': 7,
         'signed': false
     },
     {
         'name': 'y',
         'valueType': 'let',
         'type': 'number',
-        'bitLength': 8,
+        'bitLength': 7,
         'signed': false
     },
     {
@@ -201,14 +201,18 @@ $.pX = 64;
 $.pY = 64;
 function tick() {
     $in();
-    for ($.y = 0; $.y < 128; $.y++) {
-        for ($.x = 0; $.x < 128; $.x++) {
+    for ($.y = 0;; $.y++) {
+        for ($.x = 0;; $.x++) {
             if ($.x === 0 || $.y === 0 || $.x === 127 || $.y === 127 || $.x === $.pX && $.y === $.pY) {
                 setPixel($.x, $.y, 1);
             } else {
                 setPixel($.x, $.y, 0);
             }
+            if ($.x === 127)
+                break;
         }
+        if ($.y === 127)
+            break;
     }
     if (up() && $.pY > 1)
         $.pY--;

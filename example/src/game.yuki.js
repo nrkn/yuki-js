@@ -1,5 +1,5 @@
-let x = Uint8
-let y = Uint8
+let x = Uint7
+let y = Uint7
 
 let pX = Uint7
 let pY = Uint7
@@ -8,8 +8,9 @@ pX = 64
 pY = 64
 
 function tick() {
-  for ( y = 0; y < 128; y++ ) {
-    for ( x = 0; x < 128; x++ ) {
+
+  for( y = 0;; y++ ){
+    for( x = 0;; x++ ){
       if (
         x === 0 || y === 0 || x === 127 || y === 127 ||
         ( x === pX && y === pY )
@@ -18,7 +19,11 @@ function tick() {
       } else {
         setPixel( x, y, 0 )
       }
+
+      if( x === 127 ) break
     }
+
+    if( y === 127 ) break
   }
 
   if ( up() && pY > 1 ) pY--
