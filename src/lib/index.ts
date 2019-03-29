@@ -1,6 +1,6 @@
 import { YukiLet, YukiArray, YukiNumber } from '../declarations/header/types'
 
-export const size = ( arr: any[] ) => arr.length
+export const size = ( arr: number[] ) => arr.length
 
 export const $CallStack = ( maxSize: number, addressSize = 2 ) => {
   let callStackSize = 0
