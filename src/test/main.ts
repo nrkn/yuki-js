@@ -15,7 +15,7 @@ import { FunctionNames } from '../main/types'
 import {
   ValidateNode, ValidateIdentifier, ValidateMemberExpression,
   ValidateAssignmentExpression, ValidateCallExpression,
-  validateFunctionDeclaration, validateExportNamedDeclaration,
+  ValidateFunctionDeclaration, validateExportNamedDeclaration,
   validateReturnStatement, validateLiteral
 } from '../main/validate'
 import { getSubroutineNames, getLibFunctionNames } from '../main/util';
@@ -200,6 +200,10 @@ describe( 'yuki-js', () => {
       } )
 
       describe( 'validateFunctionDeclaration', () => {
+        const validateFunctionDeclaration = ValidateFunctionDeclaration(
+          [ 'size' ]
+        )
+
         it( 'Unexpected params', () => {
           const ast = parseScript( 'function a( b ){}' )
 
@@ -209,6 +213,34 @@ describe( 'yuki-js', () => {
 
           assert(
             errors[ 0 ].message.startsWith( 'Unexpected params' )
+          )
+        } )
+
+        it( 'Function names cannot start with $', () => {
+          const ast = parseScript( 'function $(){}' )
+
+          const declaration = <FunctionDeclaration>ast.body[ 0 ]
+
+          const errors = validateFunctionDeclaration( declaration )
+
+          assert(
+            errors[ 0 ].message.startsWith(
+              'Function names cannot start with $'
+            )
+          )
+        } )
+
+        it( 'Cannot redefine external function size', () => {
+          const ast = parseScript( 'function size(){}' )
+
+          const declaration = <FunctionDeclaration>ast.body[ 0 ]
+
+          const errors = validateFunctionDeclaration( declaration )
+
+          assert(
+            errors[ 0 ].message.startsWith(
+              'Cannot redefine external function size'
+            )
           )
         } )
       } )

@@ -2,7 +2,7 @@ import { YukiLet, YukiArray, YukiNumber } from '../declarations/header/types'
 
 export const size = ( arr: any[] ) => arr.length
 
-export const CallStack = ( maxSize: number, addressSize = 2 ) => {
+export const $CallStack = ( maxSize: number, addressSize = 2 ) => {
   let callStackSize = 0
 
   const $in = () => {
@@ -23,14 +23,14 @@ export interface MemoryObject {
   [ key: string ]: number | number[]
 }
 
-export const Memory = ( lets: YukiLet[], debug = false ) => {
+export const $Memory = ( lets: YukiLet[] ) => {
   const $: MemoryObject = {}
 
   const numbers = new Map<string, YukiNumber>()
 
   lets.forEach( l => {
     if ( l.type === 'array' ) {
-      $[ l.name ] = ArrayProxy( l, debug )
+      $[ l.name ] = $ArrayProxy( l )
     } else {
       numbers.set( l.name, l )
       $[ l.name ] = 0
@@ -38,13 +38,33 @@ export const Memory = ( lets: YukiLet[], debug = false ) => {
   } )
 
   const handler: ProxyHandler<MemoryObject> = {
+    get: ( target, key: string ) => {
+      if( key === '$' ){
+        const raw: MemoryObject = {}
+
+        lets.forEach( l => {
+          if( l.type === 'number' ){
+            raw[ l.name ] = target[ l.name ]
+          } else {
+            raw[ l.name ] = Array<number>( l.length )
+            for( let i = 0; i < l.length; i++ ){
+              raw[ l.name ][ i ] = target[ l.name ][ i ]
+            }
+          }
+        })
+
+        return raw
+      }
+
+      return target[ key ]
+    },
     set: ( target, key: string, value ) => {
       const yukiNumber = numbers.get( key )
 
       if ( !yukiNumber )
         throw Error( `Unexpected identifier ${ key }` )
 
-      target[ key ] = ensureNumber( value, yukiNumber )
+      target[ key ] = $ensureNumber( value, yukiNumber )
 
       return true
     }
@@ -53,7 +73,7 @@ export const Memory = ( lets: YukiLet[], debug = false ) => {
   return new Proxy( $, handler )
 }
 
-export const ArrayProxy = ( a: YukiArray, debug: boolean ) => {
+export const $ArrayProxy = ( a: YukiArray ) => {
   const arr: number[] = Array( a.length ).fill( 0 )
 
   const handler: ProxyHandler<number[]> = {
@@ -61,8 +81,6 @@ export const ArrayProxy = ( a: YukiArray, debug: boolean ) => {
       if ( typeof key === 'symbol' ) return target[ key ]
 
       const index = parseInt( key, 10 )
-
-      if ( isNaN( index ) && debug ) return target[ key ]
 
       if ( isNaN( index ) || index < 0 || index >= a.length )
         throw Error( `Unexpected index ${ key }` )
@@ -77,7 +95,7 @@ export const ArrayProxy = ( a: YukiArray, debug: boolean ) => {
       if ( isNaN( index ) || index < 0 || index >= a.length )
         throw Error( `Index out of bounds: ${ index }` )
 
-      target[ index ] = ensureNumber( value, a )
+      target[ index ] = $ensureNumber( value, a )
 
       return true
     }
@@ -86,7 +104,7 @@ export const ArrayProxy = ( a: YukiArray, debug: boolean ) => {
   return new Proxy( arr, handler )
 }
 
-export const ensureNumber = ( value: number, l: YukiLet ) => {
+export const $ensureNumber = ( value: number, l: YukiLet ) => {
   if(
     typeof value !== 'number' ||
     isNaN( value ) ||
@@ -98,13 +116,13 @@ export const ensureNumber = ( value: number, l: YukiLet ) => {
   // coerce to 32 bit integer
   value = ~~value
 
-  if ( l.signed ) return unsignedToSigned( value, l.bitLength )
+  if ( l.signed ) return $toSigned( value, l.bitLength )
 
-  return signedToUnsigned( value, l.bitLength )
+  return $toUnsigned( value, l.bitLength )
 }
 
-export const signedToUnsigned = ( value: number, bitLength: number ) => {
-  const maxUint = maxValue( bitLength )
+export const $toUnsigned = ( value: number, bitLength: number ) => {
+  const maxUint = $maxValue( bitLength )
 
   while ( value >= maxUint ) {
     value -= maxUint
@@ -117,14 +135,10 @@ export const signedToUnsigned = ( value: number, bitLength: number ) => {
   return value
 }
 
-export const unsignedToSigned = ( value: number, bitLength: number ) => {
-  const maxUint = maxValue( bitLength )
+export const $toSigned = ( value: number, bitLength: number ) => {
+  const maxUint = $maxValue( bitLength )
   const maxInt = Math.floor( maxUint / 2 - 1 )
   const minInt = Math.floor( maxUint / 2 ) * -1
-
-  while ( value >= maxUint ) {
-    value -= maxUint
-  }
 
   while ( value < minInt ) {
     value += maxUint
@@ -137,5 +151,5 @@ export const unsignedToSigned = ( value: number, bitLength: number ) => {
   return value
 }
 
-export const maxValue = ( bitLength: number ) =>
+export const $maxValue = ( bitLength: number ) =>
   Math.pow( 2, bitLength )

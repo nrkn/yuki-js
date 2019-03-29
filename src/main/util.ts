@@ -45,7 +45,7 @@ export const getLibFunctionNames = ( program: Program ) => {
       if ( functionNames.has( name ) )
         throw LocError( `Duplicate function name ${ name }`, node )
 
-      if ( parent!.type === 'Program' )
+      if ( parent!.type === 'Program' && !name.startsWith( '$' ) )
         functionNames.add( name )
     }
   }

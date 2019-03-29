@@ -33,7 +33,7 @@ exports.getLibFunctionNames = (program) => {
             const name = node.id.name;
             if (functionNames.has(name))
                 throw util_1.LocError(`Duplicate function name ${name}`, node);
-            if (parent.type === 'Program')
+            if (parent.type === 'Program' && !name.startsWith('$'))
                 functionNames.add(name);
         }
     };

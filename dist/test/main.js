@@ -135,11 +135,24 @@ describe('yuki-js', () => {
                 validate('Unexpected Identifier qux', 'qux()');
             });
             describe('validateFunctionDeclaration', () => {
+                const validateFunctionDeclaration = validate_1.ValidateFunctionDeclaration(['size']);
                 it('Unexpected params', () => {
                     const ast = esprima_1.parseScript('function a( b ){}');
                     const declaration = ast.body[0];
-                    const errors = validate_1.validateFunctionDeclaration(declaration);
+                    const errors = validateFunctionDeclaration(declaration);
                     assert(errors[0].message.startsWith('Unexpected params'));
+                });
+                it('Function names cannot start with $', () => {
+                    const ast = esprima_1.parseScript('function $(){}');
+                    const declaration = ast.body[0];
+                    const errors = validateFunctionDeclaration(declaration);
+                    assert(errors[0].message.startsWith('Function names cannot start with $'));
+                });
+                it('Cannot redefine external function size', () => {
+                    const ast = esprima_1.parseScript('function size(){}');
+                    const declaration = ast.body[0];
+                    const errors = validateFunctionDeclaration(declaration);
+                    assert(errors[0].message.startsWith('Cannot redefine external function size'));
                 });
             });
             describe('validateExportNamedDeclaration', () => {

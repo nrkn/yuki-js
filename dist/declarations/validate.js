@@ -32,6 +32,10 @@ const validateVariableDeclaration = (declaration, errors = []) => {
         errors.push(util_1.LocError('Expected Identifier', declarator));
         return errors;
     }
+    if (id.name.startsWith('$')) {
+        errors.push(util_1.LocError('Identifier names cannot start with $', declarator));
+        return errors;
+    }
     if (declaration.kind === 'const') {
         errors.push(...exports.validateConst(declarator, errors));
         return errors;

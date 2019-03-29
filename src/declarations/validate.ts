@@ -47,6 +47,14 @@ const validateVariableDeclaration =
       return errors
     }
 
+    if( id.name.startsWith( '$' ) ){
+      errors.push(
+        LocError( 'Identifier names cannot start with $', declarator )
+      )
+
+      return errors
+    }
+
     if( declaration.kind === 'const' ){
       errors.push( ...validateConst( declarator, errors ) )
 

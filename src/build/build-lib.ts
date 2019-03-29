@@ -4,7 +4,7 @@ import { Program, VariableDeclaration, VariableDeclarator } from 'estree'
 
 export const buildLib = ( libAst: Program, maxSize: number, addressSize: number ) => {
   const callStackAst = parseScript(`
-    const { $in, $out } = CallStack( ${ maxSize }, ${ addressSize } )
+    const { $in, $out } = $CallStack( ${ maxSize }, ${ addressSize } )
   `)
 
   replace( libAst, {

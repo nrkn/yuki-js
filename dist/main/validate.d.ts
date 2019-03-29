@@ -7,7 +7,7 @@ export declare const ValidateIdentifier: (headerMap: Map<string, YukiValue>, fun
 export declare const ValidateMemberExpression: (headerMap: Map<string, YukiValue>) => (node: MemberExpression) => Error[];
 export declare const ValidateAssignmentExpression: (headerMap: Map<string, YukiValue>, validateIdentifier: (node: Identifier) => Error[], validateMemberExpression: (node: MemberExpression) => Error[]) => (node: AssignmentExpression) => Error[];
 export declare const ValidateCallExpression: (functionNames: FunctionNames) => (node: CallExpression) => Error[];
-export declare const validateFunctionDeclaration: (node: FunctionDeclaration) => Error[];
+export declare const ValidateFunctionDeclaration: (externals: string[]) => (node: FunctionDeclaration) => Error[];
 export declare const validateExportNamedDeclaration: (node: ExportNamedDeclaration) => Error[];
 export declare const validateReturnStatement: (node: ReturnStatement) => Error[];
 export declare const validateLiteral: (node: Literal) => Error[];

@@ -4,7 +4,7 @@ const esprima_1 = require("esprima");
 const estraverse_1 = require("estraverse");
 exports.buildLib = (libAst, maxSize, addressSize) => {
     const callStackAst = esprima_1.parseScript(`
-    const { $in, $out } = CallStack( ${maxSize}, ${addressSize} )
+    const { $in, $out } = $CallStack( ${maxSize}, ${addressSize} )
   `);
     estraverse_1.replace(libAst, {
         enter: (node, parent) => {

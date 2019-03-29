@@ -50,7 +50,7 @@ exports.ValidateNode = (headerMap, functionNames) => {
         MemberExpression: validateMemberExpression,
         AssignmentExpression: exports.ValidateAssignmentExpression(headerMap, validateIdentifer, validateMemberExpression),
         CallExpression: exports.ValidateCallExpression(functionNames),
-        FunctionDeclaration: exports.validateFunctionDeclaration,
+        FunctionDeclaration: exports.ValidateFunctionDeclaration(functionNames.external),
         ExportNamedDeclaration: exports.validateExportNamedDeclaration,
         ReturnStatement: exports.validateReturnStatement,
         Literal: exports.validateLiteral
@@ -153,8 +153,16 @@ exports.ValidateCallExpression = (functionNames) => (node) => {
     errors.push(util_1.LocError(`Unexpected Identifier ${name}`, node.callee));
     return errors;
 };
-exports.validateFunctionDeclaration = (node) => {
+exports.ValidateFunctionDeclaration = (externals) => (node) => {
     const errors = [];
+    if (node.id.name.startsWith('$')) {
+        errors.push(util_1.LocError('Function names cannot start with $', node));
+        return errors;
+    }
+    if (externals.includes(node.id.name)) {
+        errors.push(util_1.LocError(`Cannot redefine external function ${node.id.name}`, node));
+        return errors;
+    }
     if (node.params.length) {
         errors.push(util_1.LocError('Unexpected params', node));
         return errors;
