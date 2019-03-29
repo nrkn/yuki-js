@@ -13,6 +13,7 @@ import { CompileOptions } from './types'
 import { buildLib } from './build/build-lib'
 import { countMemory, countProgramSize } from './count'
 import { valueToBitLength, bitLengthToBytes } from 'bits-bytes'
+import { libScriptAst } from './build/load-lib-script'
 
 export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {} ) => {
   const options: CompileOptions = Object.assign(
@@ -66,7 +67,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
 
   const callstackMax = memorySize - memoryUsed
 
-  const libAst = buildLib( callstackMax, addressSize )
+  const libAst = buildLib( libScriptAst(), callstackMax, addressSize )
 
   const header = declarationsToAst( declarationHeader )
   const main = replaceMainProgram( yukiMain, declarationHeader.lets )
