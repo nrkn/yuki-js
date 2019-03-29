@@ -73,7 +73,7 @@ export const ValidateNode = (
       headerMap, validateIdentifer, validateMemberExpression
     ),
     CallExpression: ValidateCallExpression( functionNames ),
-    FunctionDeclaration: validateFunctionDeclaration,
+    FunctionDeclaration: ValidateFunctionDeclaration( functionNames.external ),
     ExportNamedDeclaration: validateExportNamedDeclaration,
     ReturnStatement: validateReturnStatement,
     Literal: validateLiteral
@@ -241,23 +241,32 @@ export const ValidateCallExpression = (
     return errors
   }
 
-export const validateFunctionDeclaration = ( node: FunctionDeclaration ) => {
-  const errors: Error[] = []
+export const ValidateFunctionDeclaration = ( externals: string[] ) =>
+  ( node: FunctionDeclaration ) => {
+    const errors: Error[] = []
 
-  if( node.id!.name.startsWith( '$' ) ){
-    errors.push( LocError( 'Function names cannot start with $', node ) )
+    if( node.id!.name.startsWith( '$' ) ){
+      errors.push( LocError( 'Function names cannot start with $', node ) )
+
+      return errors
+    }
+
+    if( externals.includes( node.id!.name ) ){
+      errors.push( LocError(
+        `Cannot redefine external function ${ node.id!.name }`, node
+      ) )
+
+      return errors
+    }
+
+    if ( node.params.length ) {
+      errors.push( LocError( 'Unexpected params', node ) )
+
+      return errors
+    }
 
     return errors
   }
-
-  if ( node.params.length ) {
-    errors.push( LocError( 'Unexpected params', node ) )
-
-    return errors
-  }
-
-  return errors
-}
 
 export const validateExportNamedDeclaration = ( node: ExportNamedDeclaration ) => {
   const errors: Error[] = []
