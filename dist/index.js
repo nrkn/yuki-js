@@ -9,10 +9,10 @@ const util_2 = require("./main/util");
 const validate_2 = require("./main/validate");
 const to_ast_1 = require("./declarations/header/to-ast");
 const replace_1 = require("./main/replace");
-const build_lib_1 = require("./build/build-lib");
+const build_lib_1 = require("./build-lib");
 const count_1 = require("./count");
 const bits_bytes_1 = require("bits-bytes");
-const load_lib_script_1 = require("./build/load-lib-script");
+const libScript = require("./lib-ast/lib.ast.json");
 exports.compile = (yukiProgram, opts = {}) => {
     const options = Object.assign({}, exports.defaultCompileOptions, opts);
     const { memorySize, maxProgramSize, instructionSize, lib, requiredExports } = options;
@@ -38,8 +38,9 @@ exports.compile = (yukiProgram, opts = {}) => {
     const memoryUsed = bits_bytes_1.bitLengthToBytes(count_1.countMemory(declarationHeader.lets));
     if (memoryUsed > memorySize)
         throw Error(`Memory allocation exceeded: ${memoryUsed}/${memorySize}`);
+    const libScriptAst = JSON.parse(JSON.stringify(libScript));
     const callstackMax = memorySize - memoryUsed;
-    const libAst = build_lib_1.buildLib(load_lib_script_1.libScriptAst(), callstackMax, addressSize);
+    const libAst = build_lib_1.buildLib(libScriptAst, callstackMax, addressSize);
     const header = to_ast_1.declarationsToAst(declarationHeader);
     const main = replace_1.replaceMainProgram(yukiMain, declarationHeader.lets);
     const programSize = count_1.countProgramSize(main, instructionSize);

@@ -1,13 +1,13 @@
 {
   "name": "yuki-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A tiny subset of JavaScript with configurable constraints",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "tsc && mocha ./dist/test",
-    "coverage": "tsc && nyc --reporter=html --reporter=text mocha ./dist/test"
+    "build": "tsc && node ./dist/build/build-lib-script",
+    "test": "npm run build && mocha ./dist/test",
+    "coverage": "npm run build && nyc --reporter=html --reporter=text mocha ./dist/test"
   },
   "nyc": {
     "exclude": [

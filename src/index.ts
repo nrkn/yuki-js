@@ -10,10 +10,10 @@ import { ValidateMainProgram } from './main/validate'
 import { declarationsToAst } from './declarations/header/to-ast'
 import { replaceMainProgram } from './main/replace'
 import { CompileOptions } from './types'
-import { buildLib } from './build/build-lib'
+import { buildLib } from './build-lib'
 import { countMemory, countProgramSize } from './count'
 import { valueToBitLength, bitLengthToBytes } from 'bits-bytes'
-import { libScriptAst } from './build/load-lib-script'
+import * as libScript from './lib-ast/lib.ast.json'
 
 export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {} ) => {
   const options: CompileOptions = Object.assign(
@@ -65,9 +65,11 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
   if( memoryUsed > memorySize )
     throw Error( `Memory allocation exceeded: ${ memoryUsed}/${ memorySize }` )
 
+  const libScriptAst: Program = JSON.parse( JSON.stringify( libScript ) )
+
   const callstackMax = memorySize - memoryUsed
 
-  const libAst = buildLib( libScriptAst(), callstackMax, addressSize )
+  const libAst = buildLib( libScriptAst, callstackMax, addressSize )
 
   const header = declarationsToAst( declarationHeader )
   const main = replaceMainProgram( yukiMain, declarationHeader.lets )

@@ -1,5 +1,5 @@
 import { YukiLet, YukiArray } from '../declarations/header/types';
-export declare const size: (arr: any[]) => number;
+export declare const size: (arr: number[]) => number;
 export declare const $CallStack: (maxSize: number, addressSize?: number) => {
     $in: () => void;
     $out: () => void;
