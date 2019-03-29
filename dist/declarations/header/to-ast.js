@@ -101,7 +101,7 @@ const yukiLetsToAst = (lets) => {
                     type: 'CallExpression',
                     callee: {
                         type: 'Identifier',
-                        name: 'Memory'
+                        name: '$Memory'
                     },
                     arguments: [jsonArray]
                 }

@@ -11,7 +11,7 @@ describe('yuki-js', () => {
         describe('CallStack', () => {
             it('Max call stack exceeded', () => {
                 const maxSize = 10;
-                const { $in } = lib_1.CallStack(maxSize, 1);
+                const { $in } = lib_1.$CallStack(maxSize, 1);
                 assert.throws(() => {
                     for (let i = 0; i < maxSize + 1; i++) {
                         $in();
@@ -22,7 +22,7 @@ describe('yuki-js', () => {
             });
             it('Exits correctly', () => {
                 const maxSize = 10;
-                const { $in, $out } = lib_1.CallStack(maxSize);
+                const { $in, $out } = lib_1.$CallStack(maxSize);
                 assert.doesNotThrow(() => {
                     for (let i = 0; i < maxSize + 1; i++) {
                         $in();
@@ -64,8 +64,7 @@ describe('yuki-js', () => {
                     signed: false
                 }
             ];
-            const memory = lib_1.Memory(lets);
-            const debugMemory = lib_1.Memory(lets, true);
+            const memory = lib_1.$Memory(lets);
             it('sets number', () => {
                 memory.int8 = 10;
                 assert.strictEqual(memory.int8, 10);
@@ -112,11 +111,6 @@ describe('yuki-js', () => {
                     message: 'Unexpected index 3'
                 });
             });
-            it('No unexpected index for debug', () => {
-                assert.doesNotThrow(() => {
-                    debugMemory.arrInt8['length'];
-                });
-            });
             it('Cannot set symbol on array', () => {
                 assert.throws(() => {
                     memory.arrInt8[Symbol.iterator] = [][Symbol.iterator];
@@ -139,6 +133,21 @@ describe('yuki-js', () => {
                     message: 'Index out of bounds: 3'
                 });
             });
+            it('raw', () => {
+                memory.int8 = -10;
+                memory.uint8 = 10;
+                for (let i = 0; i < 3; i++) {
+                    memory.arrInt8[i] = -i;
+                    memory.arrUint8[i] = i;
+                }
+                const raw = memory.$;
+                assert.deepEqual(raw, {
+                    int8: -10,
+                    uint8: 10,
+                    arrInt8: [0, -1, -2],
+                    arrUint8: [0, 1, 2]
+                });
+            });
         });
         describe('ensureNumber', () => {
             const signed = {
@@ -157,30 +166,30 @@ describe('yuki-js', () => {
             };
             it('Only accepts finite numbers', () => {
                 assert.throws(() => {
-                    lib_1.ensureNumber('a', signed);
+                    lib_1.$ensureNumber('a', signed);
                 }, { message: 'Expected a number' });
                 assert.throws(() => {
-                    lib_1.ensureNumber(NaN, signed);
+                    lib_1.$ensureNumber(NaN, signed);
                 }, { message: 'Expected a number' });
                 assert.throws(() => {
-                    lib_1.ensureNumber(Infinity, signed);
+                    lib_1.$ensureNumber(Infinity, signed);
                 }, { message: 'Expected a number' });
             });
             it('wraps unsigned numbers', () => {
-                assert.strictEqual(lib_1.ensureNumber(256, unsigned), 0);
-                assert.strictEqual(lib_1.ensureNumber(345, unsigned), 89);
+                assert.strictEqual(lib_1.$ensureNumber(256, unsigned), 0);
+                assert.strictEqual(lib_1.$ensureNumber(345, unsigned), 89);
             });
             it('wraps signed numbers', () => {
-                assert.strictEqual(lib_1.ensureNumber(-129, signed), 127);
-                assert.strictEqual(lib_1.ensureNumber(-345, signed), -89);
+                assert.strictEqual(lib_1.$ensureNumber(-129, signed), 127);
+                assert.strictEqual(lib_1.$ensureNumber(-345, signed), -89);
             });
             it('coerces unsigned to signed', () => {
-                assert.strictEqual(lib_1.ensureNumber(135, signed), -121);
-                assert.strictEqual(lib_1.ensureNumber(345, signed), 89);
+                assert.strictEqual(lib_1.$ensureNumber(135, signed), -121);
+                assert.strictEqual(lib_1.$ensureNumber(345, signed), 89);
             });
             it('coerces signed to unsigned', () => {
-                assert.strictEqual(lib_1.ensureNumber(-256, unsigned), 0);
-                assert.strictEqual(lib_1.ensureNumber(-345, unsigned), 167);
+                assert.strictEqual(lib_1.$ensureNumber(-256, unsigned), 0);
+                assert.strictEqual(lib_1.$ensureNumber(-345, unsigned), 167);
             });
         });
     });

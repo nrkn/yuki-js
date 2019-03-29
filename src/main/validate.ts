@@ -244,6 +244,12 @@ export const ValidateCallExpression = (
 export const validateFunctionDeclaration = ( node: FunctionDeclaration ) => {
   const errors: Error[] = []
 
+  if( node.id!.name.startsWith( '$' ) ){
+    errors.push( LocError( 'Function names cannot start with $', node ) )
+
+    return errors
+  }
+
   if ( node.params.length ) {
     errors.push( LocError( 'Unexpected params', node ) )
 

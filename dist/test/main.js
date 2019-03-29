@@ -141,6 +141,12 @@ describe('yuki-js', () => {
                     const errors = validate_1.validateFunctionDeclaration(declaration);
                     assert(errors[0].message.startsWith('Unexpected params'));
                 });
+                it('Function names cannot start with $', () => {
+                    const ast = esprima_1.parseScript('function $(){}');
+                    const declaration = ast.body[0];
+                    const errors = validate_1.validateFunctionDeclaration(declaration);
+                    assert(errors[0].message.startsWith('Function names cannot start with $'));
+                });
             });
             describe('validateExportNamedDeclaration', () => {
                 it('Unexpected type VariableDeclaration', () => {

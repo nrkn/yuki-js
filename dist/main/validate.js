@@ -155,6 +155,10 @@ exports.ValidateCallExpression = (functionNames) => (node) => {
 };
 exports.validateFunctionDeclaration = (node) => {
     const errors = [];
+    if (node.id.name.startsWith('$')) {
+        errors.push(util_1.LocError('Function names cannot start with $', node));
+        return errors;
+    }
     if (node.params.length) {
         errors.push(util_1.LocError('Unexpected params', node));
         return errors;

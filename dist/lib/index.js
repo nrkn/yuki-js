@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.size = (arr) => arr.length;
-exports.CallStack = (maxSize, addressSize = 2) => {
+exports.$CallStack = (maxSize, addressSize = 2) => {
     let callStackSize = 0;
     const $in = () => {
         callStackSize += addressSize;
@@ -13,12 +13,12 @@ exports.CallStack = (maxSize, addressSize = 2) => {
     };
     return { $in, $out };
 };
-exports.Memory = (lets, debug = false) => {
+exports.$Memory = (lets) => {
     const $ = {};
     const numbers = new Map();
     lets.forEach(l => {
         if (l.type === 'array') {
-            $[l.name] = exports.ArrayProxy(l, debug);
+            $[l.name] = exports.$ArrayProxy(l);
         }
         else {
             numbers.set(l.name, l);
@@ -26,25 +26,41 @@ exports.Memory = (lets, debug = false) => {
         }
     });
     const handler = {
+        get: (target, key) => {
+            if (key === '$') {
+                const raw = {};
+                lets.forEach(l => {
+                    if (l.type === 'number') {
+                        raw[l.name] = target[l.name];
+                    }
+                    else {
+                        raw[l.name] = Array(l.length);
+                        for (let i = 0; i < l.length; i++) {
+                            raw[l.name][i] = target[l.name][i];
+                        }
+                    }
+                });
+                return raw;
+            }
+            return target[key];
+        },
         set: (target, key, value) => {
             const yukiNumber = numbers.get(key);
             if (!yukiNumber)
                 throw Error(`Unexpected identifier ${key}`);
-            target[key] = exports.ensureNumber(value, yukiNumber);
+            target[key] = exports.$ensureNumber(value, yukiNumber);
             return true;
         }
     };
     return new Proxy($, handler);
 };
-exports.ArrayProxy = (a, debug) => {
+exports.$ArrayProxy = (a) => {
     const arr = Array(a.length).fill(0);
     const handler = {
         get: (target, key) => {
             if (typeof key === 'symbol')
                 return target[key];
             const index = parseInt(key, 10);
-            if (isNaN(index) && debug)
-                return target[key];
             if (isNaN(index) || index < 0 || index >= a.length)
                 throw Error(`Unexpected index ${key}`);
             return target[index];
@@ -55,13 +71,13 @@ exports.ArrayProxy = (a, debug) => {
             const index = parseInt(key, 10);
             if (isNaN(index) || index < 0 || index >= a.length)
                 throw Error(`Index out of bounds: ${index}`);
-            target[index] = exports.ensureNumber(value, a);
+            target[index] = exports.$ensureNumber(value, a);
             return true;
         }
     };
     return new Proxy(arr, handler);
 };
-exports.ensureNumber = (value, l) => {
+exports.$ensureNumber = (value, l) => {
     if (typeof value !== 'number' ||
         isNaN(value) ||
         !isFinite(value)) {
@@ -70,11 +86,11 @@ exports.ensureNumber = (value, l) => {
     // coerce to 32 bit integer
     value = ~~value;
     if (l.signed)
-        return exports.unsignedToSigned(value, l.bitLength);
-    return exports.signedToUnsigned(value, l.bitLength);
+        return exports.$toSigned(value, l.bitLength);
+    return exports.$toUnsigned(value, l.bitLength);
 };
-exports.signedToUnsigned = (value, bitLength) => {
-    const maxUint = exports.maxValue(bitLength);
+exports.$toUnsigned = (value, bitLength) => {
+    const maxUint = exports.$maxValue(bitLength);
     while (value >= maxUint) {
         value -= maxUint;
     }
@@ -83,13 +99,10 @@ exports.signedToUnsigned = (value, bitLength) => {
     }
     return value;
 };
-exports.unsignedToSigned = (value, bitLength) => {
-    const maxUint = exports.maxValue(bitLength);
+exports.$toSigned = (value, bitLength) => {
+    const maxUint = exports.$maxValue(bitLength);
     const maxInt = Math.floor(maxUint / 2 - 1);
     const minInt = Math.floor(maxUint / 2) * -1;
-    while (value >= maxUint) {
-        value -= maxUint;
-    }
     while (value < minInt) {
         value += maxUint;
     }
@@ -98,5 +111,5 @@ exports.unsignedToSigned = (value, bitLength) => {
     }
     return value;
 };
-exports.maxValue = (bitLength) => Math.pow(2, bitLength);
+exports.$maxValue = (bitLength) => Math.pow(2, bitLength);
 //# sourceMappingURL=index.js.map

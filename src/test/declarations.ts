@@ -27,6 +27,7 @@ describe( 'yuki-js', () => {
       validate( 'Expected a single declaration', 'let a, b = Int8' )
       validate( 'Expected init', 'let a' )
       validate( 'Expected Identifier', 'let [ a, b ] = Uint8(10)' )
+      validate( 'Identifier names cannot start with $', 'let $ = Uint8' )
 
       describe( 'const', () => {
         const validate = ( errorMessage: string, source: string ) => {

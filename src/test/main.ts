@@ -211,6 +211,20 @@ describe( 'yuki-js', () => {
             errors[ 0 ].message.startsWith( 'Unexpected params' )
           )
         } )
+
+        it( 'Function names cannot start with $', () => {
+          const ast = parseScript( 'function $(){}' )
+
+          const declaration = <FunctionDeclaration>ast.body[ 0 ]
+
+          const errors = validateFunctionDeclaration( declaration )
+
+          assert(
+            errors[ 0 ].message.startsWith(
+              'Function names cannot start with $'
+            )
+          )
+        } )
       } )
 
       describe( 'validateExportNamedDeclaration', () => {
