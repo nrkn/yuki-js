@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const size = (arr) => arr.length;
-const CallStack = (maxSize, addressSize = 2) => {
+exports.size = (arr) => arr.length;
+exports.CallStack = (maxSize, addressSize = 2) => {
     let callStackSize = 0;
     const $in = () => {
         callStackSize += addressSize;
@@ -13,12 +13,12 @@ const CallStack = (maxSize, addressSize = 2) => {
     };
     return { $in, $out };
 };
-const Memory = (lets, debug = false) => {
+exports.Memory = (lets, debug = false) => {
     const $ = {};
     const numbers = new Map();
     lets.forEach(l => {
         if (l.type === 'array') {
-            $[l.name] = ArrayProxy(l, debug);
+            $[l.name] = exports.ArrayProxy(l, debug);
         }
         else {
             numbers.set(l.name, l);
@@ -27,24 +27,22 @@ const Memory = (lets, debug = false) => {
     });
     const handler = {
         set: (target, key, value) => {
-            if (typeof key !== 'string')
-                return false;
             const yukiNumber = numbers.get(key);
             if (!yukiNumber)
-                return false;
-            target[key] = ensureNumber(value, yukiNumber);
+                throw Error(`Unexpected identifier ${key}`);
+            target[key] = exports.ensureNumber(value, yukiNumber);
             return true;
         }
     };
     return new Proxy($, handler);
 };
-const ArrayProxy = (a, debug) => {
+exports.ArrayProxy = (a, debug) => {
     const arr = Array(a.length).fill(0);
     const handler = {
         get: (target, key) => {
             if (typeof key === 'symbol')
                 return target[key];
-            const index = typeof key === 'number' ? key : parseInt(key, 10);
+            const index = parseInt(key, 10);
             if (isNaN(index) && debug)
                 return target[key];
             if (isNaN(index) || index < 0 || index >= a.length)
@@ -54,16 +52,16 @@ const ArrayProxy = (a, debug) => {
         set: (target, key, value) => {
             if (typeof key === 'symbol')
                 return false;
-            const index = typeof key === 'number' ? key : parseInt(key, 10);
+            const index = parseInt(key, 10);
             if (isNaN(index) || index < 0 || index >= a.length)
                 throw Error(`Index out of bounds: ${index}`);
-            target[index] = ensureNumber(value, a);
+            target[index] = exports.ensureNumber(value, a);
             return true;
         }
     };
     return new Proxy(arr, handler);
 };
-const ensureNumber = (value, l) => {
+exports.ensureNumber = (value, l) => {
     if (typeof value !== 'number' ||
         isNaN(value) ||
         !isFinite(value)) {
@@ -72,11 +70,11 @@ const ensureNumber = (value, l) => {
     // coerce to 32 bit integer
     value = ~~value;
     if (l.signed)
-        return unsignedToSigned(value, l.bitLength);
-    return signedToUnsigned(value, l.bitLength);
+        return exports.unsignedToSigned(value, l.bitLength);
+    return exports.signedToUnsigned(value, l.bitLength);
 };
-const signedToUnsigned = (value, bitLength) => {
-    const maxUint = maxValue(bitLength);
+exports.signedToUnsigned = (value, bitLength) => {
+    const maxUint = exports.maxValue(bitLength);
     while (value >= maxUint) {
         value -= maxUint;
     }
@@ -85,16 +83,20 @@ const signedToUnsigned = (value, bitLength) => {
     }
     return value;
 };
-const unsignedToSigned = (value, bitLength) => {
-    const maxUint = maxValue(bitLength);
+exports.unsignedToSigned = (value, bitLength) => {
+    const maxUint = exports.maxValue(bitLength);
     const maxInt = Math.floor(maxUint / 2 - 1);
+    const minInt = Math.floor(maxUint / 2) * -1;
     while (value >= maxUint) {
         value -= maxUint;
+    }
+    while (value < minInt) {
+        value += maxUint;
     }
     while (value > maxInt) {
         value -= maxUint;
     }
     return value;
 };
-const maxValue = (bitLength) => Math.pow(2, bitLength);
+exports.maxValue = (bitLength) => Math.pow(2, bitLength);
 //# sourceMappingURL=index.js.map

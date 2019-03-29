@@ -1,8 +1,8 @@
 import { YukiLet, YukiArray, YukiNumber } from '../declarations/header/types'
 
-const size = ( arr: any[] ) => arr.length
+export const size = ( arr: any[] ) => arr.length
 
-const CallStack = ( maxSize: number, addressSize = 2 ) => {
+export const CallStack = ( maxSize: number, addressSize = 2 ) => {
   let callStackSize = 0
 
   const $in = () => {
@@ -19,11 +19,11 @@ const CallStack = ( maxSize: number, addressSize = 2 ) => {
   return { $in, $out }
 }
 
-interface MemoryObject {
+export interface MemoryObject {
   [ key: string ]: number | number[]
 }
 
-const Memory = ( lets: YukiLet[], debug = false ) => {
+export const Memory = ( lets: YukiLet[], debug = false ) => {
   const $: MemoryObject = {}
 
   const numbers = new Map<string, YukiNumber>()
@@ -38,12 +38,11 @@ const Memory = ( lets: YukiLet[], debug = false ) => {
   } )
 
   const handler: ProxyHandler<MemoryObject> = {
-    set: ( target, key, value ) => {
-      if ( typeof key !== 'string' ) return false
-
+    set: ( target, key: string, value ) => {
       const yukiNumber = numbers.get( key )
 
-      if ( !yukiNumber ) return false
+      if ( !yukiNumber )
+        throw Error( `Unexpected identifier ${ key }` )
 
       target[ key ] = ensureNumber( value, yukiNumber )
 
@@ -54,14 +53,14 @@ const Memory = ( lets: YukiLet[], debug = false ) => {
   return new Proxy( $, handler )
 }
 
-const ArrayProxy = ( a: YukiArray, debug: boolean ) => {
+export const ArrayProxy = ( a: YukiArray, debug: boolean ) => {
   const arr: number[] = Array( a.length ).fill( 0 )
 
   const handler: ProxyHandler<number[]> = {
-    get: ( target, key ) => {
+    get: ( target, key: string | symbol ) => {
       if ( typeof key === 'symbol' ) return target[ key ]
 
-      const index = typeof key === 'number' ? key : parseInt( key, 10 )
+      const index = parseInt( key, 10 )
 
       if ( isNaN( index ) && debug ) return target[ key ]
 
@@ -70,10 +69,10 @@ const ArrayProxy = ( a: YukiArray, debug: boolean ) => {
 
       return target[ index ]
     },
-    set: ( target, key, value ) => {
+    set: ( target, key: string | symbol, value ) => {
       if ( typeof key === 'symbol' ) return false
 
-      const index = typeof key === 'number' ? key : parseInt( key, 10 )
+      const index = parseInt( key, 10 )
 
       if ( isNaN( index ) || index < 0 || index >= a.length )
         throw Error( `Index out of bounds: ${ index }` )
@@ -87,7 +86,7 @@ const ArrayProxy = ( a: YukiArray, debug: boolean ) => {
   return new Proxy( arr, handler )
 }
 
-const ensureNumber = ( value: number, l: YukiLet ) => {
+export const ensureNumber = ( value: number, l: YukiLet ) => {
   if(
     typeof value !== 'number' ||
     isNaN( value ) ||
@@ -104,7 +103,7 @@ const ensureNumber = ( value: number, l: YukiLet ) => {
   return signedToUnsigned( value, l.bitLength )
 }
 
-const signedToUnsigned = ( value: number, bitLength: number ) => {
+export const signedToUnsigned = ( value: number, bitLength: number ) => {
   const maxUint = maxValue( bitLength )
 
   while ( value >= maxUint ) {
@@ -118,12 +117,17 @@ const signedToUnsigned = ( value: number, bitLength: number ) => {
   return value
 }
 
-const unsignedToSigned = ( value: number, bitLength: number ) => {
+export const unsignedToSigned = ( value: number, bitLength: number ) => {
   const maxUint = maxValue( bitLength )
   const maxInt = Math.floor( maxUint / 2 - 1 )
+  const minInt = Math.floor( maxUint / 2 ) * -1
 
   while ( value >= maxUint ) {
     value -= maxUint
+  }
+
+  while ( value < minInt ) {
+    value += maxUint
   }
 
   while ( value > maxInt ) {
@@ -133,5 +137,5 @@ const unsignedToSigned = ( value: number, bitLength: number ) => {
   return value
 }
 
-const maxValue = ( bitLength: number ) =>
+export const maxValue = ( bitLength: number ) =>
   Math.pow( 2, bitLength )

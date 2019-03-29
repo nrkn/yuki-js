@@ -12,6 +12,7 @@ const replace_1 = require("./main/replace");
 const build_lib_1 = require("./build/build-lib");
 const count_1 = require("./count");
 const bits_bytes_1 = require("bits-bytes");
+const load_lib_script_1 = require("./build/load-lib-script");
 exports.compile = (yukiProgram, opts = {}) => {
     const options = Object.assign({}, exports.defaultCompileOptions, opts);
     const { memorySize, maxProgramSize, instructionSize, lib, requiredExports } = options;
@@ -38,7 +39,7 @@ exports.compile = (yukiProgram, opts = {}) => {
     if (memoryUsed > memorySize)
         throw Error(`Memory allocation exceeded: ${memoryUsed}/${memorySize}`);
     const callstackMax = memorySize - memoryUsed;
-    const libAst = build_lib_1.buildLib(callstackMax, addressSize);
+    const libAst = build_lib_1.buildLib(load_lib_script_1.libScriptAst(), callstackMax, addressSize);
     const header = to_ast_1.declarationsToAst(declarationHeader);
     const main = replace_1.replaceMainProgram(yukiMain, declarationHeader.lets);
     const programSize = count_1.countProgramSize(main, instructionSize);
