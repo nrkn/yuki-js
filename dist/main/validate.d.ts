@@ -1,4 +1,4 @@
-import { Literal, Identifier, Program, AssignmentExpression, MemberExpression, CallExpression, BaseNode, FunctionDeclaration, ReturnStatement, ExportNamedDeclaration } from 'estree';
+import { Literal, Identifier, Program, AssignmentExpression, MemberExpression, CallExpression, BaseNode, FunctionDeclaration, ReturnStatement } from 'estree';
 import { YukiValue } from '../declarations/header/types';
 import { FunctionNames } from './types';
 export declare const ValidateMainProgram: (headerMap: Map<string, YukiValue>, functionNames: FunctionNames) => (program: Program, errors?: Error[]) => Error[];
@@ -8,6 +8,5 @@ export declare const ValidateMemberExpression: (headerMap: Map<string, YukiValue
 export declare const ValidateAssignmentExpression: (headerMap: Map<string, YukiValue>, validateIdentifier: (node: Identifier) => Error[], validateMemberExpression: (node: MemberExpression) => Error[]) => (node: AssignmentExpression) => Error[];
 export declare const ValidateCallExpression: (functionNames: FunctionNames) => (node: CallExpression) => Error[];
 export declare const ValidateFunctionDeclaration: (externals: string[]) => (node: FunctionDeclaration) => Error[];
-export declare const validateExportNamedDeclaration: (node: ExportNamedDeclaration) => Error[];
 export declare const validateReturnStatement: (node: ReturnStatement) => Error[];
 export declare const validateLiteral: (node: Literal) => Error[];

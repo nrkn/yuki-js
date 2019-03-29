@@ -21,7 +21,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
   )
 
   const {
-    memorySize, maxProgramSize, instructionSize, lib, requiredExports
+    memorySize, maxProgramSize, instructionSize, lib, requiredSubroutines
   } = options
 
   const { yukiDeclarations, yukiMain } = splitSource( yukiProgram )
@@ -37,12 +37,14 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
 
   const localSubroutineNames = getSubroutineNames( yukiMain )
 
-  const missingExports = requiredExports.filter( name =>
-    !localSubroutineNames.exports.includes( name )
+  const missingSubroutines = requiredSubroutines.filter( name =>
+    !localSubroutineNames.subroutines.includes( name )
   )
 
-  if( missingExports.length )
-    throw Error( `Missing required exports: ${ missingExports.join( ', ' ) }` )
+  if( missingSubroutines.length )
+    throw Error(
+      `Missing required subroutines: ${ missingSubroutines.join( ', ' ) }`
+    )
 
   const libFunctionNames = getLibFunctionNames( lib )
 
@@ -98,5 +100,5 @@ export const defaultCompileOptions: CompileOptions = {
     body: [],
     sourceType: 'script'
   },
-  requiredExports: []
+  requiredSubroutines: []
 }

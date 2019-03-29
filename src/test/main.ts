@@ -15,8 +15,7 @@ import { FunctionNames } from '../main/types'
 import {
   ValidateNode, ValidateIdentifier, ValidateMemberExpression,
   ValidateAssignmentExpression, ValidateCallExpression,
-  ValidateFunctionDeclaration, validateExportNamedDeclaration,
-  validateReturnStatement, validateLiteral
+  ValidateFunctionDeclaration, validateReturnStatement, validateLiteral
 } from '../main/validate'
 import { getSubroutineNames, getLibFunctionNames } from '../main/util';
 
@@ -26,8 +25,7 @@ describe( 'yuki-js', () => {
       const headerMap = new Map<string, YukiValue>()
       const functionNames: FunctionNames = {
         external: [],
-        subroutines: [],
-        exports: []
+        subroutines: []
       }
 
       describe( 'ValidateNode', () => {
@@ -170,8 +168,7 @@ describe( 'yuki-js', () => {
       describe( 'ValidateCallExpression', () => {
         const functionNames: FunctionNames = {
           external: [ 'foo' ],
-          subroutines: [ 'bar' ],
-          exports: [ 'baz' ]
+          subroutines: [ 'bar' ]
         }
 
         const validateCallExpression = ValidateCallExpression( functionNames )
@@ -240,22 +237,6 @@ describe( 'yuki-js', () => {
           assert(
             errors[ 0 ].message.startsWith(
               'Cannot redefine external function size'
-            )
-          )
-        } )
-      } )
-
-      describe( 'validateExportNamedDeclaration', () => {
-        it( 'Unexpected type VariableDeclaration', () => {
-          const ast = parseModule( 'export const a = 10' )
-
-          const declaration = <ExportNamedDeclaration>ast.body[ 0 ]
-
-          const errors = validateExportNamedDeclaration( declaration )
-
-          assert(
-            errors[ 0 ].message.startsWith(
-              'Unexpected type VariableDeclaration'
             )
           )
         } )

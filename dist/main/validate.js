@@ -25,8 +25,7 @@ const whitelist = [
     'ContinueStatement',
     'DoWhileStatement',
     'FunctionDeclaration',
-    'ReturnStatement',
-    'ExportNamedDeclaration'
+    'ReturnStatement'
 ];
 exports.ValidateMainProgram = (headerMap, functionNames) => {
     const validateNode = exports.ValidateNode(headerMap, functionNames);
@@ -51,7 +50,6 @@ exports.ValidateNode = (headerMap, functionNames) => {
         AssignmentExpression: exports.ValidateAssignmentExpression(headerMap, validateIdentifer, validateMemberExpression),
         CallExpression: exports.ValidateCallExpression(functionNames),
         FunctionDeclaration: exports.ValidateFunctionDeclaration(functionNames.external),
-        ExportNamedDeclaration: exports.validateExportNamedDeclaration,
         ReturnStatement: exports.validateReturnStatement,
         Literal: exports.validateLiteral
     };
@@ -140,8 +138,7 @@ exports.ValidateCallExpression = (functionNames) => (node) => {
         return errors;
     }
     const { name } = node.callee;
-    if (functionNames.subroutines.includes(name) ||
-        functionNames.exports.includes(name)) {
+    if (functionNames.subroutines.includes(name)) {
         if (node.arguments.length) {
             errors.push(util_1.LocError('Unexpected arguments', node));
             return errors;
@@ -165,14 +162,6 @@ exports.ValidateFunctionDeclaration = (externals) => (node) => {
     }
     if (node.params.length) {
         errors.push(util_1.LocError('Unexpected params', node));
-        return errors;
-    }
-    return errors;
-};
-exports.validateExportNamedDeclaration = (node) => {
-    const errors = [];
-    if (node.declaration.type !== 'FunctionDeclaration') {
-        errors.push(util_1.LocError(`Unexpected type ${node.declaration.type}`, node.declaration));
         return errors;
     }
     return errors;

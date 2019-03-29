@@ -4,5 +4,5 @@ export interface CompileOptions {
     maxProgramSize: number;
     instructionSize: number;
     lib: Program;
-    requiredExports: string[];
+    requiredSubroutines: string[];
 }

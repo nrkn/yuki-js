@@ -1,7 +1,6 @@
 import {
   Literal, Identifier, Program, AssignmentExpression, MemberExpression,
-  CallExpression, BaseNode, FunctionDeclaration, ReturnStatement,
-  ExportNamedDeclaration
+  CallExpression, BaseNode, FunctionDeclaration, ReturnStatement
 } from 'estree'
 
 import { LocError } from '../util'
@@ -32,8 +31,7 @@ const whitelist = [
   'ContinueStatement',
   'DoWhileStatement',
   'FunctionDeclaration',
-  'ReturnStatement',
-  'ExportNamedDeclaration'
+  'ReturnStatement'
 ]
 
 export const ValidateMainProgram = (
@@ -74,7 +72,6 @@ export const ValidateNode = (
     ),
     CallExpression: ValidateCallExpression( functionNames ),
     FunctionDeclaration: ValidateFunctionDeclaration( functionNames.external ),
-    ExportNamedDeclaration: validateExportNamedDeclaration,
     ReturnStatement: validateReturnStatement,
     Literal: validateLiteral
   }
@@ -222,8 +219,7 @@ export const ValidateCallExpression = (
     const { name } = node.callee
 
     if (
-      functionNames.subroutines.includes( name ) ||
-      functionNames.exports.includes( name )
+      functionNames.subroutines.includes( name )
     ) {
       if ( node.arguments.length ) {
         errors.push( LocError( 'Unexpected arguments', node ) )
@@ -267,20 +263,6 @@ export const ValidateFunctionDeclaration = ( externals: string[] ) =>
 
     return errors
   }
-
-export const validateExportNamedDeclaration = ( node: ExportNamedDeclaration ) => {
-  const errors: Error[] = []
-
-  if ( node.declaration!.type !== 'FunctionDeclaration' ) {
-    errors.push( LocError(
-        `Unexpected type ${ node.declaration!.type }`, node.declaration!
-    ) )
-
-    return errors
-  }
-
-  return errors
-}
 
 export const validateReturnStatement = ( node: ReturnStatement ) => {
   const errors: Error[] = []

@@ -11,10 +11,12 @@ describe('yuki-js', () => {
                 message: 'Unexpected var at line 1, column 0'
             });
         });
-        it('Missing required exports', () => {
+        it('Missing required subroutines', () => {
             const program = esprima_1.parseScript('');
-            assert.throws(() => __1.compile(program, { requiredExports: ['tick'] }), {
-                message: 'Missing required exports: tick'
+            assert.throws(() => {
+                __1.compile(program, { requiredSubroutines: ['tick'] });
+            }, {
+                message: 'Missing required subroutines: tick'
             });
         });
         it('Invalid Main', () => {

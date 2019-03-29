@@ -15,13 +15,15 @@ describe( 'yuki-js', () => {
       )
     } )
 
-    it( 'Missing required exports', () => {
+    it( 'Missing required subroutines', () => {
       const program = parseScript( '' )
 
       assert.throws(
-        () => compile( program, { requiredExports: [ 'tick' ] } ),
+        () => {
+          compile( program, { requiredSubroutines: [ 'tick' ] } )
+        },
         {
-          message: 'Missing required exports: tick'
+          message: 'Missing required subroutines: tick'
         }
       )
     } )

@@ -100,6 +100,8 @@ const $toSigned = (value, bitLength) => {
 };;
 const $maxValue = bitLength => Math.pow(2, bitLength);;
 const {$in, $out} = $CallStack(1020, 2);
+const xMax = 127;
+const yMax = 127;
 const $ = $Memory([
     {
         'name': 'x',
@@ -203,24 +205,24 @@ function tick() {
     $in();
     for ($.y = 0;; $.y++) {
         for ($.x = 0;; $.x++) {
-            if ($.x === 0 || $.y === 0 || $.x === 127 || $.y === 127 || $.x === $.pX && $.y === $.pY) {
+            if ($.x === 0 || $.y === 0 || $.x === xMax || $.y === yMax || $.x === $.pX && $.y === $.pY) {
                 setPixel($.x, $.y, 1);
             } else {
                 setPixel($.x, $.y, 0);
             }
-            if ($.x === 127)
+            if ($.x === xMax)
                 break;
         }
-        if ($.y === 127)
+        if ($.y === yMax)
             break;
     }
     if (up() && $.pY > 1)
         $.pY--;
-    if (down() && $.pY < 126)
+    if (down() && $.pY < yMax - 1)
         $.pY++;
     if (left() && $.pX > 1)
         $.pX--;
-    if (right() && $.pX < 126)
+    if (right() && $.pX < xMax - 1)
         $.pX++;
     return $out();
 }

@@ -10,8 +10,7 @@ describe('yuki-js', () => {
             const headerMap = new Map();
             const functionNames = {
                 external: [],
-                subroutines: [],
-                exports: []
+                subroutines: []
             };
             describe('ValidateNode', () => {
                 const validateNode = validate_1.ValidateNode(headerMap, functionNames);
@@ -116,8 +115,7 @@ describe('yuki-js', () => {
             describe('ValidateCallExpression', () => {
                 const functionNames = {
                     external: ['foo'],
-                    subroutines: ['bar'],
-                    exports: ['baz']
+                    subroutines: ['bar']
                 };
                 const validateCallExpression = validate_1.ValidateCallExpression(functionNames);
                 const validate = (errorMessage, source) => {
@@ -153,14 +151,6 @@ describe('yuki-js', () => {
                     const declaration = ast.body[0];
                     const errors = validateFunctionDeclaration(declaration);
                     assert(errors[0].message.startsWith('Cannot redefine external function size'));
-                });
-            });
-            describe('validateExportNamedDeclaration', () => {
-                it('Unexpected type VariableDeclaration', () => {
-                    const ast = esprima_1.parseModule('export const a = 10');
-                    const declaration = ast.body[0];
-                    const errors = validate_1.validateExportNamedDeclaration(declaration);
-                    assert(errors[0].message.startsWith('Unexpected type VariableDeclaration'));
                 });
             });
             describe('validateReturnStatement', () => {

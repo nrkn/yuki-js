@@ -143,9 +143,6 @@ function addIfFlag() {
 }
 
 // tick
-export function tick() {
+function tick() {
   addIfFlag()
 }
-
-// can call exported function
-tick()

@@ -65,8 +65,8 @@ of bits required to hold that value
 can call from their program - only top level functions in this program will
 be available, not any of the variables etc.
 
-`requiredExports` is a list of the function names that the user program is
-required to export
+`requiredSubroutines` is a list of the function names that the user program is
+required to implement
 
 The default options are:
 ```ts
@@ -79,7 +79,7 @@ export const defaultCompileOptions: CompileOptions = {
     body: [],
     sourceType: 'script'
   },
-  requiredExports: []
+  requiredSubroutines: []
 }
 ```
 
@@ -169,8 +169,8 @@ function add(){
 
 add()
 
-// only allowed usage of export
-export function tick(){
+// required by options
+function tick(){
   f++
 }
 ```

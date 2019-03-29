@@ -15,7 +15,7 @@ const bits_bytes_1 = require("bits-bytes");
 const libScript = require("./lib-ast/lib.ast.json");
 exports.compile = (yukiProgram, opts = {}) => {
     const options = Object.assign({}, exports.defaultCompileOptions, opts);
-    const { memorySize, maxProgramSize, instructionSize, lib, requiredExports } = options;
+    const { memorySize, maxProgramSize, instructionSize, lib, requiredSubroutines } = options;
     const { yukiDeclarations, yukiMain } = split_source_1.splitSource(yukiProgram);
     if (!predicates_1.isYukiDeclarations(yukiDeclarations)) {
         const errors = validate_1.validateDeclarationsProgram(yukiDeclarations);
@@ -24,9 +24,9 @@ exports.compile = (yukiProgram, opts = {}) => {
     const declarationHeader = header_1.DeclarationHeader(yukiDeclarations);
     const headerMap = util_1.HeaderMap(declarationHeader);
     const localSubroutineNames = util_2.getSubroutineNames(yukiMain);
-    const missingExports = requiredExports.filter(name => !localSubroutineNames.exports.includes(name));
-    if (missingExports.length)
-        throw Error(`Missing required exports: ${missingExports.join(', ')}`);
+    const missingSubroutines = requiredSubroutines.filter(name => !localSubroutineNames.subroutines.includes(name));
+    if (missingSubroutines.length)
+        throw Error(`Missing required subroutines: ${missingSubroutines.join(', ')}`);
     const libFunctionNames = util_2.getLibFunctionNames(lib);
     const functionNames = Object.assign({}, localSubroutineNames, { external: ['size', ...libFunctionNames] });
     const validateMainProgram = validate_2.ValidateMainProgram(headerMap, functionNames);
@@ -63,6 +63,6 @@ exports.defaultCompileOptions = {
         body: [],
         sourceType: 'script'
     },
-    requiredExports: []
+    requiredSubroutines: []
 };
 //# sourceMappingURL=index.js.map
