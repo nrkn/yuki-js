@@ -9,8 +9,10 @@ const gameLibSource = readFileSync( './example/src/lib.js', 'utf8' )
 const yukiAst = parseModule( gameYukiSource, { loc: true } )
 const libAst = parseScript( gameLibSource )
 
-const { main } = compile( yukiAst, { lib: libAst } )
+const { main, memoryUsed, programSize } = compile( yukiAst, { lib: libAst } )
 
 const source = generate( main )
 
 writeFileSync( './example/main.js', source, 'utf8' )
+
+console.log( { memoryUsed, programSize } )
