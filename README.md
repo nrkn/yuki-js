@@ -9,7 +9,7 @@ with various constraints around memory and etc, eg for a
 [fantasy console](https://itch.io/blog/5733/your-field-guide-to-fantasy-consoles)
 project
 
-**This is an 0.0.1 release!**
+**This is an alpha release!**
 
 `npm install yuki-js`
 
