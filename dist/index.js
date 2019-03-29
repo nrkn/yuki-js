@@ -48,8 +48,8 @@ exports.compile = (yukiProgram, opts = {}) => {
         throw Error(`Program size exceeded: ${programSize}/${maxProgramSize}`);
     main.body = [
         ...libAst,
-        ...lib.body,
         ...header.body,
+        ...lib.body,
         ...main.body
     ];
     return { main, memoryUsed, programSize };

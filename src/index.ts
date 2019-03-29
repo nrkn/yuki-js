@@ -81,8 +81,8 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
 
   main.body = [
     ...libAst,
-    ...lib.body,
     ...header.body,
+    ...lib.body,
     ...main.body
   ]
 
