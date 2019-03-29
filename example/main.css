@@ -1,0 +1,28 @@
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #444;
+  color: #fff;
+  font-family: sans-serif;
+}
+
+canvas {
+  display: block;
+  margin: auto;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  width: 100vmin;
+  height: 100vmin;
+  object-fit: contain;
+}
