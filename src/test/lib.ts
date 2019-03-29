@@ -4,12 +4,6 @@ import { YukiLet, YukiNumber } from '../declarations/header/types';
 
 describe( 'yuki-js', () => {
   describe( 'main', () => {
-    it( 'size', () => {
-      const arr = [ 1, 2, 3 ]
-
-      assert.strictEqual( size( arr ), 3 )
-    } )
-
     describe( 'CallStack', () => {
       it( 'Max call stack exceeded', () => {
         const maxSize = 10
@@ -84,15 +78,6 @@ describe( 'yuki-js', () => {
         assert.strictEqual( memory.int8, 10 )
       })
 
-      it( 'Unexpected identifier', () => {
-        assert.throws(
-          () => {
-            memory.foo = 10
-          },
-          { message: 'Unexpected identifier foo' }
-        )
-      })
-
       it( 'Expected a number', () => {
         assert.throws(
           () => {
@@ -122,76 +107,6 @@ describe( 'yuki-js', () => {
         assert.strictEqual( memory.arrInt8[ 0 ], 10 )
       })
 
-      it( 'gets symbol on array', () => {
-        assert.doesNotThrow( () => {
-          memory.arrInt8[ Symbol.iterator ]
-        })
-      })
-
-      it( 'Unexpected index', () => {
-        assert.throws(
-          () => {
-            memory.arrInt8[ 'length' ]
-          },
-          {
-            message: 'Unexpected index length'
-          }
-        )
-
-        assert.throws(
-          () => {
-            memory.arrInt8[ -1 ]
-          },
-          {
-            message: 'Unexpected index -1'
-          }
-        )
-
-        assert.throws(
-          () => {
-            memory.arrInt8[ 3 ]
-          },
-          {
-            message: 'Unexpected index 3'
-          }
-        )
-      })
-
-      it( 'Cannot set symbol on array', () => {
-        assert.throws( () => {
-          memory.arrInt8[ Symbol.iterator ] = [][ Symbol.iterator ]
-        })
-      })
-
-      it( 'Index out of bounds', () => {
-        assert.throws(
-          () => {
-            memory.arrInt8[ 'length' ] = 3
-          },
-          {
-            message: 'Index out of bounds: NaN'
-          }
-        )
-
-        assert.throws(
-          () => {
-            memory.arrInt8[ -1 ] = 0
-          },
-          {
-            message: 'Index out of bounds: -1'
-          }
-        )
-
-        assert.throws(
-          () => {
-            memory.arrInt8[ 3 ] = 0
-          },
-          {
-            message: 'Index out of bounds: 3'
-          }
-        )
-      } )
-
       it( 'raw', () => {
         memory.int8 = -10
         memory.uint8 = 10
@@ -209,6 +124,10 @@ describe( 'yuki-js', () => {
           arrUint8: [ 0, 1, 2 ]
         })
       })
+
+      it( 'size', () => {
+        assert.strictEqual( size( memory.arrInt8 ), 3 )
+      } )
     })
 
     describe( 'ensureNumber', () => {

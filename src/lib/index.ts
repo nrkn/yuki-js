@@ -1,6 +1,6 @@
-import { YukiLet, YukiArray, YukiNumber } from '../declarations/header/types'
+import { YukiLet } from '../declarations/header/types'
 
-export const size = ( arr: number[] ) => arr.length
+export const size = ( arr: any ) => arr.length
 
 export const $CallStack = ( maxSize: number, addressSize = 2 ) => {
   let callStackSize = 0
@@ -20,96 +20,73 @@ export const $CallStack = ( maxSize: number, addressSize = 2 ) => {
 }
 
 export interface MemoryObject {
-  [ key: string ]: number | number[]
+  [ key: string ]: number | { [ key: string ]: number }
 }
 
 export const $Memory = ( lets: YukiLet[] ) => {
   const $: MemoryObject = {}
 
-  const numbers = new Map<string, YukiNumber>()
-
   lets.forEach( l => {
     if ( l.type === 'array' ) {
-      $[ l.name ] = $ArrayProxy( l )
+      const arr = {}
+      const data = Array<number>( l.length ).fill( 0 )
+
+      for ( let i = 0; i < l.length; i++ ) {
+        Object.defineProperty( arr, i, {
+          get() {
+            return data[ i ]
+          },
+          set( value: number ) {
+            data[ i ] = $ensureNumber( value, l )
+          }
+        } )
+      }
+
+      Object.defineProperty( arr, 'length', { get() { return l.length } } )
+
+      $[ l.name ] = arr
     } else {
-      numbers.set( l.name, l )
-      $[ l.name ] = 0
+      let data = 0
+
+      Object.defineProperty( $, l.name, {
+        get() {
+          return data
+        },
+        set( value: number ) {
+          data = $ensureNumber( value, l )
+        }
+      } )
     }
   } )
 
-  const handler: ProxyHandler<MemoryObject> = {
-    get: ( target, key: string ) => {
-      if( key === '$' ){
-        const raw: MemoryObject = {}
+  Object.defineProperty( $, '$', {
+    get() {
+      const raw: any = {}
 
-        lets.forEach( l => {
-          if( l.type === 'number' ){
-            raw[ l.name ] = target[ l.name ]
-          } else {
-            raw[ l.name ] = Array<number>( l.length )
-            for( let i = 0; i < l.length; i++ ){
-              raw[ l.name ][ i ] = target[ l.name ][ i ]
-            }
+      lets.forEach( l => {
+        if ( l.type === 'number' ) {
+          raw[ l.name ] = $[ l.name ]
+        } else {
+          raw[ l.name ] = Array<number>( l.length )
+          for ( let i = 0; i < l.length; i++ ) {
+            raw[ l.name ][ i ] = $[ l.name ][ i ]
           }
-        })
+        }
+      } )
 
-        return raw
-      }
-
-      return target[ key ]
-    },
-    set: ( target, key: string, value ) => {
-      const yukiNumber = numbers.get( key )
-
-      if ( !yukiNumber )
-        throw Error( `Unexpected identifier ${ key }` )
-
-      target[ key ] = $ensureNumber( value, yukiNumber )
-
-      return true
+      return raw
     }
-  }
+  } )
 
-  return new Proxy( $, handler )
-}
-
-export const $ArrayProxy = ( a: YukiArray ) => {
-  const arr: number[] = Array( a.length ).fill( 0 )
-
-  const handler: ProxyHandler<number[]> = {
-    get: ( target, key: string | symbol ) => {
-      if ( typeof key === 'symbol' ) return target[ key ]
-
-      const index = parseInt( key, 10 )
-
-      if ( isNaN( index ) || index < 0 || index >= a.length )
-        throw Error( `Unexpected index ${ key }` )
-
-      return target[ index ]
-    },
-    set: ( target, key: string | symbol, value ) => {
-      if ( typeof key === 'symbol' ) return false
-
-      const index = parseInt( key, 10 )
-
-      if ( isNaN( index ) || index < 0 || index >= a.length )
-        throw Error( `Index out of bounds: ${ index }` )
-
-      target[ index ] = $ensureNumber( value, a )
-
-      return true
-    }
-  }
-
-  return new Proxy( arr, handler )
+  return $
 }
 
 export const $ensureNumber = ( value: number, l: YukiLet ) => {
-  if(
+  if (
     typeof value !== 'number' ||
     isNaN( value ) ||
     !isFinite( value )
-  ){
+  ) {
     throw Error( 'Expected a number' )
   }
 

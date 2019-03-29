@@ -15,67 +15,53 @@ exports.$CallStack = (maxSize, addressSize = 2) => {
 };
 exports.$Memory = (lets) => {
     const $ = {};
-    const numbers = new Map();
     lets.forEach(l => {
         if (l.type === 'array') {
-            $[l.name] = exports.$ArrayProxy(l);
-        }
-        else {
-            numbers.set(l.name, l);
-            $[l.name] = 0;
-        }
-    });
-    const handler = {
-        get: (target, key) => {
-            if (key === '$') {
-                const raw = {};
-                lets.forEach(l => {
-                    if (l.type === 'number') {
-                        raw[l.name] = target[l.name];
-                    }
-                    else {
-                        raw[l.name] = Array(l.length);
-                        for (let i = 0; i < l.length; i++) {
-                            raw[l.name][i] = target[l.name][i];
-                        }
+            const arr = {};
+            const data = Array(l.length).fill(0);
+            for (let i = 0; i < l.length; i++) {
+                Object.defineProperty(arr, i, {
+                    get() {
+                        return data[i];
+                    },
+                    set(value) {
+                        data[i] = exports.$ensureNumber(value, l);
                     }
                 });
-                return raw;
             }
-            return target[key];
-        },
-        set: (target, key, value) => {
-            const yukiNumber = numbers.get(key);
-            if (!yukiNumber)
-                throw Error(`Unexpected identifier ${key}`);
-            target[key] = exports.$ensureNumber(value, yukiNumber);
-            return true;
+            Object.defineProperty(arr, 'length', { get() { return l.length; } });
+            $[l.name] = arr;
         }
-    };
-    return new Proxy($, handler);
-};
-exports.$ArrayProxy = (a) => {
-    const arr = Array(a.length).fill(0);
-    const handler = {
-        get: (target, key) => {
-            if (typeof key === 'symbol')
-                return target[key];
-            const index = parseInt(key, 10);
-            if (isNaN(index) || index < 0 || index >= a.length)
-                throw Error(`Unexpected index ${key}`);
-            return target[index];
-        },
-        set: (target, key, value) => {
-            if (typeof key === 'symbol')
-                return false;
-            const index = parseInt(key, 10);
-            if (isNaN(index) || index < 0 || index >= a.length)
-                throw Error(`Index out of bounds: ${index}`);
-            target[index] = exports.$ensureNumber(value, a);
-            return true;
+        else {
+            let data = 0;
+            Object.defineProperty($, l.name, {
+                get() {
+                    return data;
+                },
+                set(value) {
+                    data = exports.$ensureNumber(value, l);
+                }
+            });
         }
-    };
-    return new Proxy(arr, handler);
+    });
+    Object.defineProperty($, '$', {
+        get() {
+            const raw = {};
+            lets.forEach(l => {
+                if (l.type === 'number') {
+                    raw[l.name] = $[l.name];
+                }
+                else {
+                    raw[l.name] = Array(l.length);
+                    for (let i = 0; i < l.length; i++) {
+                        raw[l.name][i] = $[l.name][i];
+                    }
+                }
+            });
+            return raw;
+        }
+    });
+    return $;
 };
 exports.$ensureNumber = (value, l) => {
     if (typeof value !== 'number' ||
