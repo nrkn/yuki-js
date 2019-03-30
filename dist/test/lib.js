@@ -116,6 +116,15 @@ describe('yuki-js', () => {
             };
             it('Only accepts finite numbers', () => {
                 assert.throws(() => {
+                    lib_1.$ensureNumber('a', unsigned);
+                }, { message: 'Expected a number' });
+                assert.throws(() => {
+                    lib_1.$ensureNumber(NaN, unsigned);
+                }, { message: 'Expected a number' });
+                assert.throws(() => {
+                    lib_1.$ensureNumber(Infinity, unsigned);
+                }, { message: 'Expected a number' });
+                assert.throws(() => {
                     lib_1.$ensureNumber('a', signed);
                 }, { message: 'Expected a number' });
                 assert.throws(() => {

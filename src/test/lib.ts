@@ -150,6 +150,27 @@ describe( 'yuki-js', () => {
       it( 'Only accepts finite numbers', () => {
         assert.throws(
           () => {
+            $ensureNumber( <any>'a', unsigned )
+          },
+          { message: 'Expected a number' }
+        )
+
+        assert.throws(
+          () => {
+            $ensureNumber( NaN, unsigned )
+          },
+          { message: 'Expected a number' }
+        )
+
+        assert.throws(
+          () => {
+            $ensureNumber( Infinity, unsigned )
+          },
+          { message: 'Expected a number' }
+        )
+
+        assert.throws(
+          () => {
             $ensureNumber( <any>'a', signed )
           },
           { message: 'Expected a number' }
@@ -167,7 +188,7 @@ describe( 'yuki-js', () => {
             $ensureNumber( Infinity, signed )
           },
           { message: 'Expected a number' }
-        )
+        )        
       })
 
       it( 'wraps unsigned numbers', () => {
