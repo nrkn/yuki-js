@@ -1388,114 +1388,6 @@
               {
                 "type": "IfStatement",
                 "test": {
-                  "type": "LogicalExpression",
-                  "operator": "||",
-                  "left": {
-                    "type": "LogicalExpression",
-                    "operator": "||",
-                    "left": {
-                      "type": "BinaryExpression",
-                      "operator": "!==",
-                      "left": {
-                        "type": "UnaryExpression",
-                        "operator": "typeof",
-                        "argument": {
-                          "type": "Identifier",
-                          "name": "value"
-                        },
-                        "prefix": true
-                      },
-                      "right": {
-                        "type": "Literal",
-                        "value": "number",
-                        "raw": "'number'"
-                      }
-                    },
-                    "right": {
-                      "type": "CallExpression",
-                      "callee": {
-                        "type": "Identifier",
-                        "name": "isNaN"
-                      },
-                      "arguments": [
-                        {
-                          "type": "Identifier",
-                          "name": "value"
-                        }
-                      ]
-                    }
-                  },
-                  "right": {
-                    "type": "UnaryExpression",
-                    "operator": "!",
-                    "argument": {
-                      "type": "CallExpression",
-                      "callee": {
-                        "type": "Identifier",
-                        "name": "isFinite"
-                      },
-                      "arguments": [
-                        {
-                          "type": "Identifier",
-                          "name": "value"
-                        }
-                      ]
-                    },
-                    "prefix": true
-                  }
-                },
-                "consequent": {
-                  "type": "BlockStatement",
-                  "body": [
-                    {
-                      "type": "ThrowStatement",
-                      "argument": {
-                        "type": "CallExpression",
-                        "callee": {
-                          "type": "Identifier",
-                          "name": "Error"
-                        },
-                        "arguments": [
-                          {
-                            "type": "Literal",
-                            "value": "Expected a number",
-                            "raw": "'Expected a number'"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                "alternate": null
-              },
-              {
-                "type": "ExpressionStatement",
-                "expression": {
-                  "type": "AssignmentExpression",
-                  "operator": "=",
-                  "left": {
-                    "type": "Identifier",
-                    "name": "value"
-                  },
-                  "right": {
-                    "type": "UnaryExpression",
-                    "operator": "~",
-                    "argument": {
-                      "type": "UnaryExpression",
-                      "operator": "~",
-                      "argument": {
-                        "type": "Identifier",
-                        "name": "value"
-                      },
-                      "prefix": true
-                    },
-                    "prefix": true
-                  }
-                }
-              },
-              {
-                "type": "IfStatement",
-                "test": {
                   "type": "MemberExpression",
                   "computed": false,
                   "object": {
@@ -1622,6 +1514,114 @@
           "body": {
             "type": "BlockStatement",
             "body": [
+              {
+                "type": "IfStatement",
+                "test": {
+                  "type": "LogicalExpression",
+                  "operator": "||",
+                  "left": {
+                    "type": "LogicalExpression",
+                    "operator": "||",
+                    "left": {
+                      "type": "BinaryExpression",
+                      "operator": "!==",
+                      "left": {
+                        "type": "UnaryExpression",
+                        "operator": "typeof",
+                        "argument": {
+                          "type": "Identifier",
+                          "name": "value"
+                        },
+                        "prefix": true
+                      },
+                      "right": {
+                        "type": "Literal",
+                        "value": "number",
+                        "raw": "'number'"
+                      }
+                    },
+                    "right": {
+                      "type": "CallExpression",
+                      "callee": {
+                        "type": "Identifier",
+                        "name": "isNaN"
+                      },
+                      "arguments": [
+                        {
+                          "type": "Identifier",
+                          "name": "value"
+                        }
+                      ]
+                    }
+                  },
+                  "right": {
+                    "type": "UnaryExpression",
+                    "operator": "!",
+                    "argument": {
+                      "type": "CallExpression",
+                      "callee": {
+                        "type": "Identifier",
+                        "name": "isFinite"
+                      },
+                      "arguments": [
+                        {
+                          "type": "Identifier",
+                          "name": "value"
+                        }
+                      ]
+                    },
+                    "prefix": true
+                  }
+                },
+                "consequent": {
+                  "type": "BlockStatement",
+                  "body": [
+                    {
+                      "type": "ThrowStatement",
+                      "argument": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "Error"
+                        },
+                        "arguments": [
+                          {
+                            "type": "Literal",
+                            "value": "Expected a number",
+                            "raw": "'Expected a number'"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "alternate": null
+              },
+              {
+                "type": "ExpressionStatement",
+                "expression": {
+                  "type": "AssignmentExpression",
+                  "operator": "=",
+                  "left": {
+                    "type": "Identifier",
+                    "name": "value"
+                  },
+                  "right": {
+                    "type": "UnaryExpression",
+                    "operator": "~",
+                    "argument": {
+                      "type": "UnaryExpression",
+                      "operator": "~",
+                      "argument": {
+                        "type": "Identifier",
+                        "name": "value"
+                      },
+                      "prefix": true
+                    },
+                    "prefix": true
+                  }
+                }
+              },
               {
                 "type": "VariableDeclaration",
                 "declarations": [
@@ -1775,6 +1775,114 @@
           "body": {
             "type": "BlockStatement",
             "body": [
+              {
+                "type": "IfStatement",
+                "test": {
+                  "type": "LogicalExpression",
+                  "operator": "||",
+                  "left": {
+                    "type": "LogicalExpression",
+                    "operator": "||",
+                    "left": {
+                      "type": "BinaryExpression",
+                      "operator": "!==",
+                      "left": {
+                        "type": "UnaryExpression",
+                        "operator": "typeof",
+                        "argument": {
+                          "type": "Identifier",
+                          "name": "value"
+                        },
+                        "prefix": true
+                      },
+                      "right": {
+                        "type": "Literal",
+                        "value": "number",
+                        "raw": "'number'"
+                      }
+                    },
+                    "right": {
+                      "type": "CallExpression",
+                      "callee": {
+                        "type": "Identifier",
+                        "name": "isNaN"
+                      },
+                      "arguments": [
+                        {
+                          "type": "Identifier",
+                          "name": "value"
+                        }
+                      ]
+                    }
+                  },
+                  "right": {
+                    "type": "UnaryExpression",
+                    "operator": "!",
+                    "argument": {
+                      "type": "CallExpression",
+                      "callee": {
+                        "type": "Identifier",
+                        "name": "isFinite"
+                      },
+                      "arguments": [
+                        {
+                          "type": "Identifier",
+                          "name": "value"
+                        }
+                      ]
+                    },
+                    "prefix": true
+                  }
+                },
+                "consequent": {
+                  "type": "BlockStatement",
+                  "body": [
+                    {
+                      "type": "ThrowStatement",
+                      "argument": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "Error"
+                        },
+                        "arguments": [
+                          {
+                            "type": "Literal",
+                            "value": "Expected a number",
+                            "raw": "'Expected a number'"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "alternate": null
+              },
+              {
+                "type": "ExpressionStatement",
+                "expression": {
+                  "type": "AssignmentExpression",
+                  "operator": "=",
+                  "left": {
+                    "type": "Identifier",
+                    "name": "value"
+                  },
+                  "right": {
+                    "type": "UnaryExpression",
+                    "operator": "~",
+                    "argument": {
+                      "type": "UnaryExpression",
+                      "operator": "~",
+                      "argument": {
+                        "type": "Identifier",
+                        "name": "value"
+                      },
+                      "prefix": true
+                    },
+                    "prefix": true
+                  }
+                }
+              },
               {
                 "type": "VariableDeclaration",
                 "declarations": [

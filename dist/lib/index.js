@@ -64,6 +64,11 @@ exports.$Memory = (lets) => {
     return $;
 };
 exports.$ensureNumber = (value, l) => {
+    if (l.signed)
+        return exports.$toSigned(value, l.bitLength);
+    return exports.$toUnsigned(value, l.bitLength);
+};
+exports.$toUnsigned = (value, bitLength) => {
     if (typeof value !== 'number' ||
         isNaN(value) ||
         !isFinite(value)) {
@@ -71,11 +76,6 @@ exports.$ensureNumber = (value, l) => {
     }
     // coerce to 32 bit integer
     value = ~~value;
-    if (l.signed)
-        return exports.$toSigned(value, l.bitLength);
-    return exports.$toUnsigned(value, l.bitLength);
-};
-exports.$toUnsigned = (value, bitLength) => {
     const maxUint = exports.$maxValue(bitLength);
     while (value >= maxUint) {
         value -= maxUint;
@@ -86,6 +86,13 @@ exports.$toUnsigned = (value, bitLength) => {
     return value;
 };
 exports.$toSigned = (value, bitLength) => {
+    if (typeof value !== 'number' ||
+        isNaN(value) ||
+        !isFinite(value)) {
+        throw Error('Expected a number');
+    }
+    // coerce to 32 bit integer
+    value = ~~value;
     const maxUint = exports.$maxValue(bitLength);
     const maxInt = Math.floor(maxUint / 2 - 1);
     const minInt = Math.floor(maxUint / 2) * -1;

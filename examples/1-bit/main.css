@@ -22,7 +22,7 @@ canvas {
   margin: auto;
   image-rendering: crisp-edges;
   image-rendering: pixelated;
-  width: 100vmin;
-  height: 100vmin;
+  width: 100vw;
+  height: 100vh;
   object-fit: contain;
 }

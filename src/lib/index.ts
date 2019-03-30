@@ -82,6 +82,12 @@ export const $Memory = ( lets: YukiLet[] ) => {
 }
 
 export const $ensureNumber = ( value: number, l: YukiLet ) => {
+  if ( l.signed ) return $toSigned( value, l.bitLength )
+
+  return $toUnsigned( value, l.bitLength )
+}
+
+export const $toUnsigned = ( value: number, bitLength: number ) => {
   if (
     typeof value !== 'number' ||
     isNaN( value ) ||
@@ -93,12 +99,6 @@ export const $ensureNumber = ( value: number, l: YukiLet ) => {
   // coerce to 32 bit integer
   value = ~~value
 
-  if ( l.signed ) return $toSigned( value, l.bitLength )
-
-  return $toUnsigned( value, l.bitLength )
-}
-
-export const $toUnsigned = ( value: number, bitLength: number ) => {
   const maxUint = $maxValue( bitLength )
 
   while ( value >= maxUint ) {
@@ -113,6 +113,17 @@ export const $toUnsigned = ( value: number, bitLength: number ) => {
 }
 
 export const $toSigned = ( value: number, bitLength: number ) => {
+  if (
+    typeof value !== 'number' ||
+    isNaN( value ) ||
+    !isFinite( value )
+  ) {
+    throw Error( 'Expected a number' )
+  }
+  
+  // coerce to 32 bit integer
+  value = ~~value
+
   const maxUint = $maxValue( bitLength )
   const maxInt = Math.floor( maxUint / 2 - 1 )
   const minInt = Math.floor( maxUint / 2 ) * -1

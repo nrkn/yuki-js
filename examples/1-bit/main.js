@@ -68,15 +68,15 @@ const $Memory = lets => {
     return $;
 };;
 const $ensureNumber = (value, l) => {
-    if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
-        throw Error('Expected a number');
-    }
-    value = ~~value;
     if (l.signed)
         return $toSigned(value, l.bitLength);
     return $toUnsigned(value, l.bitLength);
 };;
 const $toUnsigned = (value, bitLength) => {
+    if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
+        throw Error('Expected a number');
+    }
+    value = ~~value;
     const maxUint = $maxValue(bitLength);
     while (value >= maxUint) {
         value -= maxUint;
@@ -87,6 +87,10 @@ const $toUnsigned = (value, bitLength) => {
     return value;
 };;
 const $toSigned = (value, bitLength) => {
+    if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
+        throw Error('Expected a number');
+    }
+    value = ~~value;
     const maxUint = $maxValue(bitLength);
     const maxInt = Math.floor(maxUint / 2 - 1);
     const minInt = Math.floor(maxUint / 2) * -1;
