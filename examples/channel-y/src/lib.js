@@ -118,9 +118,6 @@ function setBackground( row, backgroundColor ){
 
 function setPixel( x, y, color ) {
     x = $toUnsigned( x, 7 )
-
-    while( x > width ) x -= width
-
     y = $toUnsigned( y, 6 )
 
     const i = y * width + x
