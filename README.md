@@ -13,6 +13,14 @@ project
 
 `npm install yuki-js`
 
+## example
+
+In the examples folder you will find Pong implemented in yuki-js, with
+constraints set up to mirror the
+[Fairchild Channel F](https://en.wikipedia.org/wiki/Fairchild_Channel_F):
+
+![pong](./examples/channel-y/screenshot.png)
+
 ## compiling yuki-js programs
 
 ```js
