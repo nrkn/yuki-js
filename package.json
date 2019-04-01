@@ -1,6 +1,6 @@
 {
   "name": "yuki-js",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A tiny subset of JavaScript with configurable constraints",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
@@ -19,7 +19,10 @@
     "type": "git",
     "url": "git+https://github.com/nrkn/yuki-js.git"
   },
-  "keywords": [],
+  "keywords": [
+    "compile", "fantasy", "console", "fantasy console", "subset", "memory",
+    "constraints", "yuki"
+  ],
   "author": "Nik Coughlin <nrkn.com@gmail.com>",
   "license": "MIT",
   "bugs": {

@@ -30,9 +30,10 @@ arrow keys to start a new match
 
 ```js
 const { compile } = require( 'yuki-js' )
-
-// requires an esprima-style AST - you can create one from source very easily
-// using the esprima package
+/*
+requires an esprima-style AST - you can create one from source code
+using the esprima package
+*/
 const yukiAst = {
   type: 'Program',
   body: [
@@ -41,8 +42,10 @@ const yukiAst = {
   sourceType: 'module'
 }
 
-// main is an esprima-style AST - you can turn it back into source code using
-// the escodegen package
+/*
+main is an esprima-style AST - you can turn it back into source code
+using the escodegen package
+*/
 const { main } = compile( yukiAst )
 ```
 
@@ -170,10 +173,9 @@ i[ 2 ] = h
 j = d && e[ 0 ]
 
 /*
-  `size` is built in - member expressions other than array indexers are not
-  allowed, so you cannot do `g.length`
+  `size` is built in - member expressions other than array indexers are
+  not allowed, so you cannot do `g.length`
 */
-//
 length = size( g )
 
 function add(){
