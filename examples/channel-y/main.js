@@ -424,7 +424,7 @@ const $ = $Memory([
         'signed': false
     },
     {
-        'name': 'sprite',
+        'name': 'spriteIndex',
         'valueType': 'let',
         'type': 'number',
         'bitLength': 4,
@@ -684,8 +684,6 @@ function setBackground(row, backgroundColor) {
 }
 function setPixel(x, y, color) {
     x = $toUnsigned(x, 7);
-    while (x > width)
-        x -= width;
     y = $toUnsigned(y, 6);
     const i = y * width + x;
     color = $toUnsigned(color, 2);
@@ -697,18 +695,6 @@ function setPixel(x, y, color) {
         color = $palette[$foreground[color]];
     }
     $pixels[i] = color;
-}
-$.p1Y = 51;
-$.p2Y = 51;
-for ($.y = 0;; $.y++) {
-    setBackground($.y, $.y < scoreTop ? 1 : 3);
-    for ($.x = 0;; $.x++) {
-        setPixel($.x, $.y, 3);
-        if ($.x === xMax)
-            break;
-    }
-    if ($.y === yMax)
-        break;
 }
 function resetBall1() {
     $in();
@@ -734,7 +720,7 @@ function drawSprite() {
     $in();
     for ($.y = 0; $.y < $.spriteHeight; $.y++) {
         for ($.x = 0; $.x < $.spriteWidth; $.x++) {
-            if (numberSprites[$.sprite * $.spriteWidth * $.spriteHeight + $.y * $.spriteWidth + $.x]) {
+            if (numberSprites[$.spriteIndex * $.spriteWidth * $.spriteHeight + $.y * $.spriteWidth + $.x]) {
                 setPixel($.x + $.x1, $.y + $.y1, $.color);
             }
         }
@@ -776,16 +762,16 @@ function drawScore() {
     $.spriteWidth = 5;
     $.spriteHeight = 5;
     $.y1 = scoreTop + 1;
-    $.sprite = $.score1 < 10 ? 0 : 1;
+    $.spriteIndex = $.score1 < 10 ? 0 : 1;
     $.x1 = 35;
     drawSprite();
-    $.sprite = $.score1 < 10 ? $.score1 : $.score1 - 10;
+    $.spriteIndex = $.score1 < 10 ? $.score1 : $.score1 - 10;
     $.x1 = 41;
     drawSprite();
-    $.sprite = $.score2 < 10 ? 0 : 1;
+    $.spriteIndex = $.score2 < 10 ? 0 : 1;
     $.x1 = 81;
     drawSprite();
-    $.sprite = $.score2 < 10 ? $.score2 : $.score2 - 10;
+    $.spriteIndex = $.score2 < 10 ? $.score2 : $.score2 - 10;
     $.x1 = 87;
     drawSprite();
     return $out();
@@ -925,6 +911,18 @@ function tick() {
     drawBall();
     drawScore();
     return $out();
+}
+$.p1Y = 51;
+$.p2Y = 51;
+for ($.y = 0;; $.y++) {
+    setBackground($.y, $.y < scoreTop ? 1 : 3);
+    for ($.x = 0;; $.x++) {
+        setPixel($.x, $.y, 3);
+        if ($.x === xMax)
+            break;
+    }
+    if ($.y === yMax)
+        break;
 }
 if (rnd(2))
     resetBall1();

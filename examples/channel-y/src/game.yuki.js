@@ -114,21 +114,6 @@ let volleyCount = Int3
 let score1 = Uint4
 let score2 = Uint4
 
-p1Y = 51
-p2Y = 51
-
-for( y = 0;; y++ ){
-  setBackground( y, y < scoreTop ? 1 : 3 )
-
-  for( x = 0;; x++ ){
-    setPixel( x, y, 3 )
-
-    if( x === xMax ) break
-  }
-
-  if( y === yMax ) break
-}
-
 function resetBall1(){
   ballX = 3
   ballY = p1Y + 6
@@ -348,7 +333,7 @@ function tick() {
   color = 1
   drawPlayfield()
 
-  // undraw objects
+  // clear objects
   color = 3
   drawPlayer1()
   drawPlayer2()
@@ -370,6 +355,21 @@ function tick() {
   color = ballPlayer ? 2 : 0
   drawBall()
   drawScore()
+}
+
+p1Y = 51
+p2Y = 51
+
+for( y = 0;; y++ ){
+  setBackground( y, y < scoreTop ? 1 : 3 )
+
+  for( x = 0;; x++ ){
+    setPixel( x, y, 3 )
+
+    if( x === xMax ) break
+  }
+
+  if( y === yMax ) break
 }
 
 if( rnd( 2 ) )
