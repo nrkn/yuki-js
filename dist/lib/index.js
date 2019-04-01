@@ -68,12 +68,17 @@ exports.$ensureNumber = (value, l) => {
         return exports.$toSigned(value, l.bitLength);
     return exports.$toUnsigned(value, l.bitLength);
 };
-exports.$toUnsigned = (value, bitLength) => {
+exports.$assertNumber = (value) => {
+    if (typeof value === 'boolean')
+        return;
     if (typeof value !== 'number' ||
         isNaN(value) ||
         !isFinite(value)) {
         throw Error('Expected a number');
     }
+};
+exports.$toUnsigned = (value, bitLength) => {
+    exports.$assertNumber(value);
     // coerce to 32 bit integer
     value = ~~value;
     const maxUint = exports.$maxValue(bitLength);
@@ -86,11 +91,7 @@ exports.$toUnsigned = (value, bitLength) => {
     return value;
 };
 exports.$toSigned = (value, bitLength) => {
-    if (typeof value !== 'number' ||
-        isNaN(value) ||
-        !isFinite(value)) {
-        throw Error('Expected a number');
-    }
+    exports.$assertNumber(value);
     // coerce to 32 bit integer
     value = ~~value;
     const maxUint = exports.$maxValue(bitLength);

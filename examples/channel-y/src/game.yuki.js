@@ -23,7 +23,7 @@ const centerY = 27
 
 const scoreTop = 54
 
-const numberSprites = [
+const textSprites = [
   1, 1, 1, 1, 1,
   1, 0, 0, 0, 1,
   1, 0, 0, 0, 1,
@@ -98,10 +98,12 @@ let spriteIndex = Uint4
 let spriteWidth = Uint4
 let spriteHeight = Uint4
 
-let p1Y = Uint8
-let p2Y = Uint8
+let p1Y = Int9
+let p2Y = Int9
+let p1Speed = Uint4
+let p2Speed = Uint4
 
-let ballX = Uint8
+let ballX = Int9
 let ballY = Int9
 let ballSpeedX = Int4
 let ballSpeedY = Int4
@@ -114,71 +116,69 @@ let volleyCount = Int3
 let score1 = Uint4
 let score2 = Uint4
 
-function resetBall1(){
-  ballX = 3
-  ballY = p1Y + 6
-  ballSpeedX = 1
-  ballSpeedY = 0
-  volleyCount = 0
-  ballPlayer = 0
-}
+let winScreen = Bool
 
-function resetBall2(){
-  ballX = subgridWidth - 3
-  ballY = p2Y + 6
-  ballSpeedX = -1
-  ballSpeedY = 0
-  volleyCount = 0
-  ballPlayer = 1
+function clearScreen() {
+  for ( y = 0; ; y++ ) {
+    setBackground( y, y < scoreTop ? 1 : 3 )
+
+    for ( x = 0; ; x++ ) {
+      setPixel( x, y, y < scoreTop ? color : 3 )
+
+      if ( x === xMax ) break
+    }
+
+    if ( y === yMax ) break
+  }
 }
 
 function drawSprite() {
-  for( y = 0; y < spriteHeight; y++ ){
-    for( x = 0; x < spriteWidth; x++ ){
-      if(
-        numberSprites[
+  for ( y = 0; y < spriteHeight; y++ ) {
+    for ( x = 0; x < spriteWidth; x++ ) {
+      if (
+        textSprites[
           ( spriteIndex * spriteWidth * spriteHeight ) + ( y * spriteWidth ) + x
         ]
-      ){
+      ) {
         setPixel( x + x1, y + y1, color )
       }
     }
   }
 }
 
-function drawHorizontal(){
-  for( x = x1; x <= x2; x++ ){
+function drawLineHorizontal() {
+  for ( x = x1; x <= x2; x++ ) {
     setPixel( x, y1, color )
   }
 }
 
-function drawVertical(){
-  for( y = y1; y <= y2; y++ ){
+function drawLineVertical() {
+  for ( y = y1; y <= y2; y++ ) {
     setPixel( x1, y, color )
   }
 }
 
-function drawPlayfield(){
+function drawPlayfield() {
   // top line
   y1 = playfieldTop
   x1 = playfieldLeft
   x2 = playfieldRight
-  drawHorizontal()
+  drawLineHorizontal()
 
   // bottom line
   y1 = playfieldBottom
-  drawHorizontal()
+  drawLineHorizontal()
 
   // center line
-  for( x = 0; x < 5; x++ ){
+  for ( x = 0; x < 5; x++ ) {
     x1 = centerX
     y1 = ( x * 9 ) + playfieldTop + 2
     y2 = y1 + 5
-    drawVertical()
+    drawLineVertical()
   }
 }
 
-function drawScore(){
+function drawScore() {
   spriteWidth = 5
   spriteHeight = 5
 
@@ -206,70 +206,89 @@ function drawScore(){
   drawSprite()
 }
 
-function drawPlayer1(){
+function drawPlayer1() {
   x1 = playfieldLeft
   y1 = p1Y / 3 + playfieldTop + 1
   y2 = y1 + 5
-  drawVertical()
+  drawLineVertical()
 }
 
-function drawPlayer2(){
+function drawPlayer2() {
   x1 = playfieldRight
   y1 = p2Y / 3 + playfieldTop + 1
   y2 = y1 + 5
-  drawVertical()
+  drawLineVertical()
 }
 
-function drawBall(){
+function drawBall() {
   x1 = ballX / 3 + playfieldLeft
   y1 = ballY / 3 + playfieldTop + 1
   y2 = y1 + 1
-  drawVertical()
+  drawLineVertical()
   x1++
-  drawVertical()
+  drawLineVertical()
 }
 
-function updateBall(){
+function resetBall1() {
+  ballX = 3
+  ballY = p1Y + 6
+  ballSpeedX = 1
+  ballSpeedY = 0
+  volleyCount = 0
+  ballPlayer = 0
+}
+
+function resetBall2() {
+  ballX = subgridWidth - 3
+  ballY = p2Y + 6
+  ballSpeedX = -1
+  ballSpeedY = 0
+  volleyCount = 0
+  ballPlayer = 1
+}
+
+function setBallSpeedY() {
+  if ( yOffset < 3 ) {
+    ballSpeedY = -3
+  } else if ( yOffset < 6 ) {
+    ballSpeedY = -2
+  } else if ( yOffset < 9 ) {
+    ballSpeedY = -1
+  } else if ( yOffset < 14 ) {
+    ballSpeedY = 0
+  } else if ( yOffset < 17 ) {
+    ballSpeedY = 1
+  } else if ( yOffset < 20 ) {
+    ballSpeedY = 2
+  } else {
+    ballSpeedY = 3
+  }
+}
+
+function updateBall() {
   ballX += ballSpeedX
   ballY += ballSpeedY
 
-  if( ballY < 0 ){
+  if ( ballY < 0 ) {
     ballY = 0
     ballSpeedY *= -1
-  } else if( ballY > subgridHeight - 6 ){
+  } else if ( ballY > subgridHeight - 6 ) {
     ballY = subgridHeight - 6
     ballSpeedY *= -1
   }
 
-  if( ballSpeedX > 0 ){
-    if( ballX > subgridWidth - 9 ){
+  if ( ballSpeedX > 0 ) {
+    if ( ballX > subgridWidth - 9 ) {
       yOffset = ballY - p2Y + 5
 
-      if( yOffset >= 0 && yOffset < 23 ){
+      if ( yOffset >= 0 && yOffset < 23 ) {
         ballX = subgridWidth - 9
 
-        // find out where on the paddle we hit and set ballSpeedY accordingly
-        // offset is
-        if( yOffset < 3 ){
-          ballSpeedY = -3
-        } else if( yOffset < 6 ){
-          ballSpeedY = -2
-        } else if( yOffset < 9 ){
-          ballSpeedY = -1
-        } else if( yOffset < 14 ){
-          ballSpeedY = 0
-        } else if( yOffset < 17 ){
-          ballSpeedY = 1
-        } else if( yOffset < 20 ){
-          ballSpeedY = 2
-        } else {
-          ballSpeedY = 3
-        }
+        setBallSpeedY()
 
-        // ball speed should increase when hit by paddle
-        if( ballSpeedX < 3 ){
+        if ( ballSpeedX < 3 ) {
           volleyCount++
-          if( volleyCount === 3 ){
+          if ( volleyCount === 3 ) {
             ballSpeedX++
             volleyCount = 0
           }
@@ -278,42 +297,26 @@ function updateBall(){
         ballSpeedX *= -1
         ballPlayer = 1
       } else {
-        // really, we should let it exit the play area somewhat
-        // - and probably let the player choose to launch it
         score1++
         resetBall1()
+
+        if( score1 === 11 ){
+          winP1()
+        }
       }
     }
   } else {
-    if( ballX < 3 ){
+    if ( ballX < 3 ) {
       yOffset = ballY - p1Y + 5
 
-      if( yOffset >= 0 && yOffset < 23 ){
+      if ( yOffset >= 0 && yOffset < 23 ) {
         ballX = 3
 
-        // find out where on the paddle we hit and set ballSpeedY accordingly
-        // offset is
-        yOffset = ballY - p1Y + 5
-        if( yOffset < 3 ){
-          ballSpeedY = -3
-        } else if( yOffset < 6 ){
-          ballSpeedY = -2
-        } else if( yOffset < 9 ){
-          ballSpeedY = -1
-        } else if( yOffset < 14 ){
-          ballSpeedY = 0
-        } else if( yOffset < 17 ){
-          ballSpeedY = 1
-        } else if( yOffset < 20 ){
-          ballSpeedY = 2
-        } else {
-          ballSpeedY = 3
-        }
+        setBallSpeedY()
 
-        // ball speed should increase when hit by paddle
-        if( ballSpeedX > -3 ){
+        if ( ballSpeedX > -3 ) {
           volleyCount++
-          if( volleyCount === 3 ){
+          if ( volleyCount === 3 ) {
             ballSpeedX--
             volleyCount = 0
           }
@@ -324,12 +327,50 @@ function updateBall(){
       } else {
         score2++
         resetBall2()
+
+        if( score2 === 11 ){
+          winP2()
+        }
       }
     }
   }
 }
 
+function handleInput() {
+  if ( up1() || down1() ) {
+    if ( up1() ) p1Y -= p1Speed / 3
+    if ( down1() ) p1Y += p1Speed / 3
+
+    if ( p1Y < 3 ) p1Y = 3
+    if ( p1Y > subgridHeight - 18 ) p1Y = subgridHeight - 18
+
+    if ( p1Speed < 15 ) p1Speed++
+  } else {
+    p1Speed = 0
+  }
+
+  if ( up2() || down2() ) {
+    if ( up2() ) p2Y -= p2Speed / 3
+    if ( down2() ) p2Y += p2Speed / 3
+
+    if ( p2Y < 3 ) p2Y = 3
+    if ( p2Y > subgridHeight - 18 ) p2Y = subgridHeight - 18
+
+    if ( p2Speed < 15 ) p2Speed++
+  } else {
+    p2Speed = 0
+  }
+}
+
 function tick() {
+  if( winScreen ){
+    if( left1() || right1() || left2() || right2() ){
+      start()
+    } else {
+      return
+    }
+  }
+
   color = 1
   drawPlayfield()
 
@@ -340,12 +381,10 @@ function tick() {
   drawBall()
   drawScore()
 
-  if ( up1() && p1Y > 3 ) p1Y -= 3
-  if ( down1() && p1Y < subgridHeight - 18 ) p1Y += 3
-  if ( up2() && p2Y > 3 ) p2Y -= 3
-  if ( down2() && p2Y < subgridHeight - 18 ) p2Y += 3
-
+  handleInput()
   updateBall()
+
+  if( winScreen ) return
 
   // draw objects
   color = 0
@@ -357,22 +396,37 @@ function tick() {
   drawScore()
 }
 
-p1Y = 51
-p2Y = 51
+function win(){
+  winScreen = true
 
-for( y = 0;; y++ ){
-  setBackground( y, y < scoreTop ? 1 : 3 )
-
-  for( x = 0;; x++ ){
-    setPixel( x, y, 3 )
-
-    if( x === xMax ) break
-  }
-
-  if( y === yMax ) break
+  clearScreen()
+  drawScore()
 }
 
-if( rnd( 2 ) )
-  resetBall1()
-else
-  resetBall2()
+function winP1(){
+  color = 0
+  win()
+}
+
+function winP2(){
+  color = 2
+  win()
+}
+
+function start(){
+  winScreen = false
+  p1Y = 51
+  p2Y = 51
+  score1 = 0
+  score2 = 0
+
+  color = 3
+  clearScreen()
+
+  if ( rnd( 2 ) )
+    resetBall1()
+  else
+    resetBall2()
+}
+
+start()

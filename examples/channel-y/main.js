@@ -72,10 +72,15 @@ const $ensureNumber = (value, l) => {
         return $toSigned(value, l.bitLength);
     return $toUnsigned(value, l.bitLength);
 };;
-const $toUnsigned = (value, bitLength) => {
+const $assertNumber = value => {
+    if (typeof value === 'boolean')
+        return;
     if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
         throw Error('Expected a number');
     }
+};;
+const $toUnsigned = (value, bitLength) => {
+    $assertNumber(value);
     value = ~~value;
     const maxUint = $maxValue(bitLength);
     while (value >= maxUint) {
@@ -87,9 +92,7 @@ const $toUnsigned = (value, bitLength) => {
     return value;
 };;
 const $toSigned = (value, bitLength) => {
-    if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
-        throw Error('Expected a number');
-    }
+    $assertNumber(value);
     value = ~~value;
     const maxUint = $maxValue(bitLength);
     const maxInt = Math.floor(maxUint / 2 - 1);
@@ -103,7 +106,7 @@ const $toSigned = (value, bitLength) => {
     return value;
 };;
 const $maxValue = bitLength => Math.pow(2, bitLength);;
-const {$in, $out} = $CallStack(49, 2);
+const {$in, $out} = $CallStack(48, 2);
 const xMax = 127;
 const yMax = 63;
 const viewWidth = 102;
@@ -121,7 +124,7 @@ const subgridHeight = 132;
 const centerX = 63;
 const centerY = 27;
 const scoreTop = 54;
-const numberSprites = Object.freeze([
+const textSprites = Object.freeze([
     1,
     1,
     1,
@@ -448,22 +451,36 @@ const $ = $Memory([
         'name': 'p1Y',
         'valueType': 'let',
         'type': 'number',
-        'bitLength': 8,
-        'signed': false
+        'bitLength': 9,
+        'signed': true
     },
     {
         'name': 'p2Y',
         'valueType': 'let',
         'type': 'number',
-        'bitLength': 8,
+        'bitLength': 9,
+        'signed': true
+    },
+    {
+        'name': 'p1Speed',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 4,
+        'signed': false
+    },
+    {
+        'name': 'p2Speed',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 4,
         'signed': false
     },
     {
         'name': 'ballX',
         'valueType': 'let',
         'type': 'number',
-        'bitLength': 8,
-        'signed': false
+        'bitLength': 9,
+        'signed': true
     },
     {
         'name': 'ballY',
@@ -519,6 +536,13 @@ const $ = $Memory([
         'valueType': 'let',
         'type': 'number',
         'bitLength': 4,
+        'signed': false
+    },
+    {
+        'name': 'winScreen',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 1,
         'signed': false
     }
 ]);
@@ -696,45 +720,39 @@ function setPixel(x, y, color) {
     }
     $pixels[i] = color;
 }
-function resetBall1() {
+function clearScreen() {
     $in();
-    $.ballX = 3;
-    $.ballY = $.p1Y + 6;
-    $.ballSpeedX = 1;
-    $.ballSpeedY = 0;
-    $.volleyCount = 0;
-    $.ballPlayer = 0;
-    return $out();
-}
-function resetBall2() {
-    $in();
-    $.ballX = subgridWidth - 3;
-    $.ballY = $.p2Y + 6;
-    $.ballSpeedX = -1;
-    $.ballSpeedY = 0;
-    $.volleyCount = 0;
-    $.ballPlayer = 1;
+    for ($.y = 0;; $.y++) {
+        setBackground($.y, $.y < scoreTop ? 1 : 3);
+        for ($.x = 0;; $.x++) {
+            setPixel($.x, $.y, $.y < scoreTop ? $.color : 3);
+            if ($.x === xMax)
+                break;
+        }
+        if ($.y === yMax)
+            break;
+    }
     return $out();
 }
 function drawSprite() {
     $in();
     for ($.y = 0; $.y < $.spriteHeight; $.y++) {
         for ($.x = 0; $.x < $.spriteWidth; $.x++) {
-            if (numberSprites[$.spriteIndex * $.spriteWidth * $.spriteHeight + $.y * $.spriteWidth + $.x]) {
+            if (textSprites[$.spriteIndex * $.spriteWidth * $.spriteHeight + $.y * $.spriteWidth + $.x]) {
                 setPixel($.x + $.x1, $.y + $.y1, $.color);
             }
         }
     }
     return $out();
 }
-function drawHorizontal() {
+function drawLineHorizontal() {
     $in();
     for ($.x = $.x1; $.x <= $.x2; $.x++) {
         setPixel($.x, $.y1, $.color);
     }
     return $out();
 }
-function drawVertical() {
+function drawLineVertical() {
     $in();
     for ($.y = $.y1; $.y <= $.y2; $.y++) {
         setPixel($.x1, $.y, $.color);
@@ -746,14 +764,14 @@ function drawPlayfield() {
     $.y1 = playfieldTop;
     $.x1 = playfieldLeft;
     $.x2 = playfieldRight;
-    drawHorizontal();
+    drawLineHorizontal();
     $.y1 = playfieldBottom;
-    drawHorizontal();
+    drawLineHorizontal();
     for ($.x = 0; $.x < 5; $.x++) {
         $.x1 = centerX;
         $.y1 = $.x * 9 + playfieldTop + 2;
         $.y2 = $.y1 + 5;
-        drawVertical();
+        drawLineVertical();
     }
     return $out();
 }
@@ -781,7 +799,7 @@ function drawPlayer1() {
     $.x1 = playfieldLeft;
     $.y1 = $.p1Y / 3 + playfieldTop + 1;
     $.y2 = $.y1 + 5;
-    drawVertical();
+    drawLineVertical();
     return $out();
 }
 function drawPlayer2() {
@@ -789,7 +807,7 @@ function drawPlayer2() {
     $.x1 = playfieldRight;
     $.y1 = $.p2Y / 3 + playfieldTop + 1;
     $.y2 = $.y1 + 5;
-    drawVertical();
+    drawLineVertical();
     return $out();
 }
 function drawBall() {
@@ -797,9 +815,48 @@ function drawBall() {
     $.x1 = $.ballX / 3 + playfieldLeft;
     $.y1 = $.ballY / 3 + playfieldTop + 1;
     $.y2 = $.y1 + 1;
-    drawVertical();
+    drawLineVertical();
     $.x1++;
-    drawVertical();
+    drawLineVertical();
+    return $out();
+}
+function resetBall1() {
+    $in();
+    $.ballX = 3;
+    $.ballY = $.p1Y + 6;
+    $.ballSpeedX = 1;
+    $.ballSpeedY = 0;
+    $.volleyCount = 0;
+    $.ballPlayer = 0;
+    return $out();
+}
+function resetBall2() {
+    $in();
+    $.ballX = subgridWidth - 3;
+    $.ballY = $.p2Y + 6;
+    $.ballSpeedX = -1;
+    $.ballSpeedY = 0;
+    $.volleyCount = 0;
+    $.ballPlayer = 1;
+    return $out();
+}
+function setBallSpeedY() {
+    $in();
+    if ($.yOffset < 3) {
+        $.ballSpeedY = -3;
+    } else if ($.yOffset < 6) {
+        $.ballSpeedY = -2;
+    } else if ($.yOffset < 9) {
+        $.ballSpeedY = -1;
+    } else if ($.yOffset < 14) {
+        $.ballSpeedY = 0;
+    } else if ($.yOffset < 17) {
+        $.ballSpeedY = 1;
+    } else if ($.yOffset < 20) {
+        $.ballSpeedY = 2;
+    } else {
+        $.ballSpeedY = 3;
+    }
     return $out();
 }
 function updateBall() {
@@ -818,21 +875,7 @@ function updateBall() {
             $.yOffset = $.ballY - $.p2Y + 5;
             if ($.yOffset >= 0 && $.yOffset < 23) {
                 $.ballX = subgridWidth - 9;
-                if ($.yOffset < 3) {
-                    $.ballSpeedY = -3;
-                } else if ($.yOffset < 6) {
-                    $.ballSpeedY = -2;
-                } else if ($.yOffset < 9) {
-                    $.ballSpeedY = -1;
-                } else if ($.yOffset < 14) {
-                    $.ballSpeedY = 0;
-                } else if ($.yOffset < 17) {
-                    $.ballSpeedY = 1;
-                } else if ($.yOffset < 20) {
-                    $.ballSpeedY = 2;
-                } else {
-                    $.ballSpeedY = 3;
-                }
+                setBallSpeedY();
                 if ($.ballSpeedX < 3) {
                     $.volleyCount++;
                     if ($.volleyCount === 3) {
@@ -845,6 +888,9 @@ function updateBall() {
             } else {
                 $.score1++;
                 resetBall1();
+                if ($.score1 === 11) {
+                    winP1();
+                }
             }
         }
     } else {
@@ -852,22 +898,7 @@ function updateBall() {
             $.yOffset = $.ballY - $.p1Y + 5;
             if ($.yOffset >= 0 && $.yOffset < 23) {
                 $.ballX = 3;
-                $.yOffset = $.ballY - $.p1Y + 5;
-                if ($.yOffset < 3) {
-                    $.ballSpeedY = -3;
-                } else if ($.yOffset < 6) {
-                    $.ballSpeedY = -2;
-                } else if ($.yOffset < 9) {
-                    $.ballSpeedY = -1;
-                } else if ($.yOffset < 14) {
-                    $.ballSpeedY = 0;
-                } else if ($.yOffset < 17) {
-                    $.ballSpeedY = 1;
-                } else if ($.yOffset < 20) {
-                    $.ballSpeedY = 2;
-                } else {
-                    $.ballSpeedY = 3;
-                }
+                setBallSpeedY();
                 if ($.ballSpeedX > -3) {
                     $.volleyCount++;
                     if ($.volleyCount === 3) {
@@ -880,13 +911,55 @@ function updateBall() {
             } else {
                 $.score2++;
                 resetBall2();
+                if ($.score2 === 11) {
+                    winP2();
+                }
             }
         }
     }
     return $out();
 }
+function handleInput() {
+    $in();
+    if (up1() || down1()) {
+        if (up1())
+            $.p1Y -= $.p1Speed / 3;
+        if (down1())
+            $.p1Y += $.p1Speed / 3;
+        if ($.p1Y < 3)
+            $.p1Y = 3;
+        if ($.p1Y > subgridHeight - 18)
+            $.p1Y = subgridHeight - 18;
+        if ($.p1Speed < 15)
+            $.p1Speed++;
+    } else {
+        $.p1Speed = 0;
+    }
+    if (up2() || down2()) {
+        if (up2())
+            $.p2Y -= $.p2Speed / 3;
+        if (down2())
+            $.p2Y += $.p2Speed / 3;
+        if ($.p2Y < 3)
+            $.p2Y = 3;
+        if ($.p2Y > subgridHeight - 18)
+            $.p2Y = subgridHeight - 18;
+        if ($.p2Speed < 15)
+            $.p2Speed++;
+    } else {
+        $.p2Speed = 0;
+    }
+    return $out();
+}
 function tick() {
     $in();
+    if ($.winScreen) {
+        if (left1() || right1() || left2() || right2()) {
+            start();
+        } else {
+            return $out();
+        }
+    }
     $.color = 1;
     drawPlayfield();
     $.color = 3;
@@ -894,15 +967,10 @@ function tick() {
     drawPlayer2();
     drawBall();
     drawScore();
-    if (up1() && $.p1Y > 3)
-        $.p1Y -= 3;
-    if (down1() && $.p1Y < subgridHeight - 18)
-        $.p1Y += 3;
-    if (up2() && $.p2Y > 3)
-        $.p2Y -= 3;
-    if (down2() && $.p2Y < subgridHeight - 18)
-        $.p2Y += 3;
+    handleInput();
     updateBall();
+    if ($.winScreen)
+        return $out();
     $.color = 0;
     drawPlayer1();
     $.color = 2;
@@ -912,19 +980,38 @@ function tick() {
     drawScore();
     return $out();
 }
-$.p1Y = 51;
-$.p2Y = 51;
-for ($.y = 0;; $.y++) {
-    setBackground($.y, $.y < scoreTop ? 1 : 3);
-    for ($.x = 0;; $.x++) {
-        setPixel($.x, $.y, 3);
-        if ($.x === xMax)
-            break;
-    }
-    if ($.y === yMax)
-        break;
+function win() {
+    $in();
+    $.winScreen = true;
+    clearScreen();
+    drawScore();
+    return $out();
 }
-if (rnd(2))
-    resetBall1();
-else
-    resetBall2();
+function winP1() {
+    $in();
+    $.color = 0;
+    win();
+    return $out();
+}
+function winP2() {
+    $in();
+    $.color = 2;
+    win();
+    return $out();
+}
+function start() {
+    $in();
+    $.winScreen = false;
+    $.p1Y = 51;
+    $.p2Y = 51;
+    $.score1 = 0;
+    $.score2 = 0;
+    $.color = 3;
+    clearScreen();
+    if (rnd(2))
+        resetBall1();
+    else
+        resetBall2();
+    return $out();
+}
+start();

@@ -87,7 +87,9 @@ export const $ensureNumber = ( value: number, l: YukiLet ) => {
   return $toUnsigned( value, l.bitLength )
 }
 
-export const $toUnsigned = ( value: number, bitLength: number ) => {
+export const $assertNumber = ( value: any ) => {
+  if ( typeof value === 'boolean' ) return
+
   if (
     typeof value !== 'number' ||
     isNaN( value ) ||
@@ -95,6 +97,10 @@ export const $toUnsigned = ( value: number, bitLength: number ) => {
   ) {
     throw Error( 'Expected a number' )
   }
+}
+
+export const $toUnsigned = ( value: number, bitLength: number ) => {
+  $assertNumber( value )
 
   // coerce to 32 bit integer
   value = ~~value
@@ -113,14 +119,8 @@ export const $toUnsigned = ( value: number, bitLength: number ) => {
 }
 
 export const $toSigned = ( value: number, bitLength: number ) => {
-  if (
-    typeof value !== 'number' ||
-    isNaN( value ) ||
-    !isFinite( value )
-  ) {
-    throw Error( 'Expected a number' )
-  }
-  
+  $assertNumber( value )
+
   // coerce to 32 bit integer
   value = ~~value
 

@@ -72,10 +72,15 @@ const $ensureNumber = (value, l) => {
         return $toSigned(value, l.bitLength);
     return $toUnsigned(value, l.bitLength);
 };;
-const $toUnsigned = (value, bitLength) => {
+const $assertNumber = value => {
+    if (typeof value === 'boolean')
+        return;
     if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
         throw Error('Expected a number');
     }
+};;
+const $toUnsigned = (value, bitLength) => {
+    $assertNumber(value);
     value = ~~value;
     const maxUint = $maxValue(bitLength);
     while (value >= maxUint) {
@@ -87,9 +92,7 @@ const $toUnsigned = (value, bitLength) => {
     return value;
 };;
 const $toSigned = (value, bitLength) => {
-    if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
-        throw Error('Expected a number');
-    }
+    $assertNumber(value);
     value = ~~value;
     const maxUint = $maxValue(bitLength);
     const maxInt = Math.floor(maxUint / 2 - 1);

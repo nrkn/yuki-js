@@ -11,7 +11,7 @@ import { declarationsToAst } from './declarations/header/to-ast'
 import { replaceMainProgram } from './main/replace'
 import { CompileOptions } from './types'
 import { buildLib } from './build-lib'
-import { countMemory, countProgramSize } from './count'
+import { countMemory, countProgramSize, countConsts } from './count'
 import { valueToBitLength, bitLengthToBytes } from 'bits-bytes'
 import * as libScript from './lib-ast/lib.ast.json'
 
@@ -76,7 +76,9 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
   const header = declarationsToAst( declarationHeader )
   const main = replaceMainProgram( yukiMain, declarationHeader.lets )
 
-  const programSize = countProgramSize( main, instructionSize )
+  const instructionsSize = countProgramSize( main, instructionSize )
+  const constsSize = countConsts( declarationHeader.consts )
+  const programSize = instructionsSize + constsSize
 
   if( programSize > maxProgramSize )
     throw Error( `Program size exceeded: ${ programSize }/${ maxProgramSize }` )

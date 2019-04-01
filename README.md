@@ -21,6 +21,11 @@ constraints set up to mirror the
 
 ![pong](./examples/channel-y/screenshot.png)
 
+Player 1 uses WASD, Player 2 uses arrow keys
+
+When a player wins a match their color will fill the screen, left or right
+arrow keys to start a new match
+
 ## compiling yuki-js programs
 
 ```js

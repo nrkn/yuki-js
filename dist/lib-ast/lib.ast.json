@@ -1495,7 +1495,7 @@
                     },
                     "property": {
                         "type": "Identifier",
-                        "name": "$toUnsigned"
+                        "name": "$assertNumber"
                     }
                 },
                 "right": {
@@ -1505,15 +1505,37 @@
                         {
                             "type": "Identifier",
                             "name": "value"
-                        },
-                        {
-                            "type": "Identifier",
-                            "name": "bitLength"
                         }
                     ],
                     "body": {
                         "type": "BlockStatement",
                         "body": [
+                            {
+                                "type": "IfStatement",
+                                "test": {
+                                    "type": "BinaryExpression",
+                                    "operator": "===",
+                                    "left": {
+                                        "type": "UnaryExpression",
+                                        "operator": "typeof",
+                                        "argument": {
+                                            "type": "Identifier",
+                                            "name": "value"
+                                        },
+                                        "prefix": true
+                                    },
+                                    "right": {
+                                        "type": "Literal",
+                                        "value": "boolean",
+                                        "raw": "'boolean'"
+                                    }
+                                },
+                                "consequent": {
+                                    "type": "ReturnStatement",
+                                    "argument": null
+                                },
+                                "alternate": null
+                            },
                             {
                                 "type": "IfStatement",
                                 "test": {
@@ -1596,6 +1618,71 @@
                                     ]
                                 },
                                 "alternate": null
+                            }
+                        ]
+                    },
+                    "generator": false,
+                    "expression": false,
+                    "async": false
+                }
+            }
+        },
+        {
+            "type": "ExpressionStatement",
+            "expression": {
+                "type": "AssignmentExpression",
+                "operator": "=",
+                "left": {
+                    "type": "MemberExpression",
+                    "computed": false,
+                    "object": {
+                        "type": "Identifier",
+                        "name": "exports"
+                    },
+                    "property": {
+                        "type": "Identifier",
+                        "name": "$toUnsigned"
+                    }
+                },
+                "right": {
+                    "type": "ArrowFunctionExpression",
+                    "id": null,
+                    "params": [
+                        {
+                            "type": "Identifier",
+                            "name": "value"
+                        },
+                        {
+                            "type": "Identifier",
+                            "name": "bitLength"
+                        }
+                    ],
+                    "body": {
+                        "type": "BlockStatement",
+                        "body": [
+                            {
+                                "type": "ExpressionStatement",
+                                "expression": {
+                                    "type": "CallExpression",
+                                    "callee": {
+                                        "type": "MemberExpression",
+                                        "computed": false,
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "exports"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "name": "$assertNumber"
+                                        }
+                                    },
+                                    "arguments": [
+                                        {
+                                            "type": "Identifier",
+                                            "name": "value"
+                                        }
+                                    ]
+                                }
                             },
                             {
                                 "type": "ExpressionStatement",
@@ -1776,87 +1863,28 @@
                         "type": "BlockStatement",
                         "body": [
                             {
-                                "type": "IfStatement",
-                                "test": {
-                                    "type": "LogicalExpression",
-                                    "operator": "||",
-                                    "left": {
-                                        "type": "LogicalExpression",
-                                        "operator": "||",
-                                        "left": {
-                                            "type": "BinaryExpression",
-                                            "operator": "!==",
-                                            "left": {
-                                                "type": "UnaryExpression",
-                                                "operator": "typeof",
-                                                "argument": {
-                                                    "type": "Identifier",
-                                                    "name": "value"
-                                                },
-                                                "prefix": true
-                                            },
-                                            "right": {
-                                                "type": "Literal",
-                                                "value": "number",
-                                                "raw": "'number'"
-                                            }
+                                "type": "ExpressionStatement",
+                                "expression": {
+                                    "type": "CallExpression",
+                                    "callee": {
+                                        "type": "MemberExpression",
+                                        "computed": false,
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "exports"
                                         },
-                                        "right": {
-                                            "type": "CallExpression",
-                                            "callee": {
-                                                "type": "Identifier",
-                                                "name": "isNaN"
-                                            },
-                                            "arguments": [
-                                                {
-                                                    "type": "Identifier",
-                                                    "name": "value"
-                                                }
-                                            ]
+                                        "property": {
+                                            "type": "Identifier",
+                                            "name": "$assertNumber"
                                         }
                                     },
-                                    "right": {
-                                        "type": "UnaryExpression",
-                                        "operator": "!",
-                                        "argument": {
-                                            "type": "CallExpression",
-                                            "callee": {
-                                                "type": "Identifier",
-                                                "name": "isFinite"
-                                            },
-                                            "arguments": [
-                                                {
-                                                    "type": "Identifier",
-                                                    "name": "value"
-                                                }
-                                            ]
-                                        },
-                                        "prefix": true
-                                    }
-                                },
-                                "consequent": {
-                                    "type": "BlockStatement",
-                                    "body": [
+                                    "arguments": [
                                         {
-                                            "type": "ThrowStatement",
-                                            "argument": {
-                                                "type": "CallExpression",
-                                                "callee": {
-                                                    "type": "Identifier",
-                                                    "name": "Error"
-                                                },
-                                                "arguments": [
-                                                    {
-                                                        "type": "Literal",
-                                                        "value": "Expected a number",
-                                                        "raw": "'Expected a number'"
-                                                    }
-                                                ]
-                                            }
+                                            "type": "Identifier",
+                                            "name": "value"
                                         }
                                     ]
-                                },
-                                "alternate": null
+                                }
                             },
                             {
                                 "type": "ExpressionStatement",

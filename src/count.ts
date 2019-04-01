@@ -1,4 +1,4 @@
-import { YukiLet } from './declarations/header/types'
+import { YukiLet, YukiConst } from './declarations/header/types'
 import { Program } from 'estree'
 import { Visitor, traverse } from 'estraverse'
 import { valueToBitLength } from 'bits-bytes'
@@ -13,6 +13,26 @@ export const countMemory = ( lets: YukiLet[] ) => {
       bitLength += current.bitLength * current.length
     }
   })
+
+  return bitLength
+}
+
+export const countConsts = ( consts: YukiConst[] ) => {
+  let bitLength = 0
+
+  const addNumber = ( value: number ) => {
+    if ( value < 0 ) value = ( value * 2 ) - 1
+
+    bitLength += valueToBitLength( value )
+  }
+
+  consts.forEach( current => {
+    if ( current.type === 'number' ) {
+      addNumber( current.value )
+    } else {
+      current.value.forEach( addNumber )
+    }
+  } )
 
   return bitLength
 }

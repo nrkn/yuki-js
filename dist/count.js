@@ -14,6 +14,23 @@ exports.countMemory = (lets) => {
     });
     return bitLength;
 };
+exports.countConsts = (consts) => {
+    let bitLength = 0;
+    const addNumber = (value) => {
+        if (value < 0)
+            value = (value * 2) - 1;
+        bitLength += bits_bytes_1.valueToBitLength(value);
+    };
+    consts.forEach(current => {
+        if (current.type === 'number') {
+            addNumber(current.value);
+        }
+        else {
+            current.value.forEach(addNumber);
+        }
+    });
+    return bitLength;
+};
 exports.countProgramSize = (ast, instructionSize) => {
     let count = 0;
     const visitor = {
