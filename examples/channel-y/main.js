@@ -103,9 +103,276 @@ const $toSigned = (value, bitLength) => {
     return value;
 };;
 const $maxValue = bitLength => Math.pow(2, bitLength);;
-const {$in, $out} = $CallStack(60, 2);
-const xMax = 95;
+const {$in, $out} = $CallStack(49, 2);
+const xMax = 127;
 const yMax = 63;
+const viewWidth = 102;
+const viewHeight = 58;
+const viewLeft = 13;
+const viewTop = 3;
+const playfieldWidth = 63;
+const playfieldHeight = 46;
+const playfieldTop = 6;
+const playfieldBottom = 51;
+const playfieldLeft = 32;
+const playfieldRight = 94;
+const subgridWidth = 189;
+const subgridHeight = 132;
+const centerX = 63;
+const centerY = 27;
+const scoreTop = 54;
+const numberSprites = Object.freeze([
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+]);
 const $ = $Memory([
     {
         'name': 'x',
@@ -118,32 +385,153 @@ const $ = $Memory([
         'name': 'y',
         'valueType': 'let',
         'type': 'number',
-        'bitLength': 7,
+        'bitLength': 6,
         'signed': false
     },
     {
-        'name': 'pX',
+        'name': 'x1',
         'valueType': 'let',
         'type': 'number',
         'bitLength': 7,
         'signed': false
     },
     {
-        'name': 'pY',
+        'name': 'y1',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 6,
+        'signed': false
+    },
+    {
+        'name': 'x2',
         'valueType': 'let',
         'type': 'number',
         'bitLength': 7,
+        'signed': false
+    },
+    {
+        'name': 'y2',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 6,
+        'signed': false
+    },
+    {
+        'name': 'color',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 2,
+        'signed': false
+    },
+    {
+        'name': 'sprite',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 4,
+        'signed': false
+    },
+    {
+        'name': 'spriteWidth',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 4,
+        'signed': false
+    },
+    {
+        'name': 'spriteHeight',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 4,
+        'signed': false
+    },
+    {
+        'name': 'p1Y',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 8,
+        'signed': false
+    },
+    {
+        'name': 'p2Y',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 8,
+        'signed': false
+    },
+    {
+        'name': 'ballX',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 8,
+        'signed': false
+    },
+    {
+        'name': 'ballY',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 9,
+        'signed': true
+    },
+    {
+        'name': 'ballSpeedX',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 4,
+        'signed': true
+    },
+    {
+        'name': 'ballSpeedY',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 4,
+        'signed': true
+    },
+    {
+        'name': 'ballPlayer',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 1,
+        'signed': false
+    },
+    {
+        'name': 'yOffset',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 9,
+        'signed': true
+    },
+    {
+        'name': 'volleyCount',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 3,
+        'signed': true
+    },
+    {
+        'name': 'score1',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 4,
+        'signed': false
+    },
+    {
+        'name': 'score2',
+        'valueType': 'let',
+        'type': 'number',
+        'bitLength': 4,
         'signed': false
     }
 ]);
 'use strict';
-const width = 96;
+const width = 128;
 const height = 64;
 const $backgrounds = new Array(height);
 const $pixels = new Array(width * height);
 const $canvas = document.getElementById('c');
 const $context = $canvas.getContext('2d');
 const $imageData = new ImageData(width, height);
+$canvas.width = width;
+$canvas.height = height;
 const $palette = {
     lightGrey: [
         224,
@@ -217,42 +605,77 @@ const $draw = () => {
     $blit();
     requestAnimationFrame($draw);
 };
-let $isUp = false;
-let $isDown = false;
-let $isLeft = false;
-let $isRight = false;
+let $isUp1 = false;
+let $isDown1 = false;
+let $isLeft1 = false;
+let $isRight1 = false;
+let $isUp2 = false;
+let $isDown2 = false;
+let $isLeft2 = false;
+let $isRight2 = false;
 document.addEventListener('keydown', e => {
+    if (e.key.toLowerCase() === 'w')
+        $isUp1 = true;
+    if (e.key.toLowerCase() === 's')
+        $isDown1 = true;
+    if (e.key.toLowerCase() === 'a')
+        $isLeft1 = true;
+    if (e.key.toLowerCase() === 'd')
+        $isRight1 = true;
     if (e.key === 'ArrowUp')
-        $isUp = true;
+        $isUp2 = true;
     if (e.key === 'ArrowDown')
-        $isDown = true;
+        $isDown2 = true;
     if (e.key === 'ArrowLeft')
-        $isLeft = true;
+        $isLeft2 = true;
     if (e.key === 'ArrowRight')
-        $isRight = true;
+        $isRight2 = true;
 });
 document.addEventListener('keyup', e => {
+    if (e.key.toLowerCase() === 'w')
+        $isUp1 = false;
+    if (e.key.toLowerCase() === 's')
+        $isDown1 = false;
+    if (e.key.toLowerCase() === 'a')
+        $isLeft1 = false;
+    if (e.key.toLowerCase() === 'd')
+        $isRight1 = false;
     if (e.key === 'ArrowUp')
-        $isUp = false;
+        $isUp2 = false;
     if (e.key === 'ArrowDown')
-        $isDown = false;
+        $isDown2 = false;
     if (e.key === 'ArrowLeft')
-        $isLeft = false;
+        $isLeft2 = false;
     if (e.key === 'ArrowRight')
-        $isRight = false;
+        $isRight2 = false;
 });
 $draw();
-function up() {
-    return $isUp;
+function up1() {
+    return $isUp1;
 }
-function down() {
-    return $isDown;
+function down1() {
+    return $isDown1;
 }
-function left() {
-    return $isLeft;
+function left1() {
+    return $isLeft1;
 }
-function right() {
-    return $isRight;
+function right1() {
+    return $isRight1;
+}
+function up2() {
+    return $isUp2;
+}
+function down2() {
+    return $isDown2;
+}
+function left2() {
+    return $isLeft2;
+}
+function right2() {
+    return $isRight2;
+}
+function rnd(value) {
+    return Math.floor(Math.random() * value);
 }
 function setBackground(row, backgroundColor) {
     row = $toUnsigned(row, 6);
@@ -275,31 +698,235 @@ function setPixel(x, y, color) {
     }
     $pixels[i] = color;
 }
-$.pX = 48;
-$.pY = 32;
+$.p1Y = 51;
+$.p2Y = 51;
 for ($.y = 0;; $.y++) {
-    setBackground($.y, $.y / 16);
+    setBackground($.y, $.y < scoreTop ? 1 : 3);
+    for ($.x = 0;; $.x++) {
+        setPixel($.x, $.y, 3);
+        if ($.x === xMax)
+            break;
+    }
     if ($.y === yMax)
         break;
 }
-function tick() {
+function resetBall1() {
     $in();
-    for ($.y = 0;; $.y++) {
-        for ($.x = 0;; $.x++) {
-            setPixel($.x, $.y, $.x === 0 || $.y === 0 || $.x === xMax || $.y === yMax ? $.x / 32 : $.x === $.pX && $.y === $.pY ? 3 - $.x / 32 : 3);
-            if ($.x === xMax)
-                break;
-        }
-        if ($.y === yMax)
-            break;
-    }
-    if (up() && $.pY > 1)
-        $.pY--;
-    if (down() && $.pY < yMax - 1)
-        $.pY++;
-    if (left() && $.pX > 1)
-        $.pX--;
-    if (right() && $.pX < xMax - 1)
-        $.pX++;
+    $.ballX = 3;
+    $.ballY = $.p1Y + 6;
+    $.ballSpeedX = 1;
+    $.ballSpeedY = 0;
+    $.volleyCount = 0;
+    $.ballPlayer = 0;
     return $out();
 }
+function resetBall2() {
+    $in();
+    $.ballX = subgridWidth - 3;
+    $.ballY = $.p2Y + 6;
+    $.ballSpeedX = -1;
+    $.ballSpeedY = 0;
+    $.volleyCount = 0;
+    $.ballPlayer = 1;
+    return $out();
+}
+function drawSprite() {
+    $in();
+    for ($.y = 0; $.y < $.spriteHeight; $.y++) {
+        for ($.x = 0; $.x < $.spriteWidth; $.x++) {
+            if (numberSprites[$.sprite * $.spriteWidth * $.spriteHeight + $.y * $.spriteWidth + $.x]) {
+                setPixel($.x + $.x1, $.y + $.y1, $.color);
+            }
+        }
+    }
+    return $out();
+}
+function drawHorizontal() {
+    $in();
+    for ($.x = $.x1; $.x <= $.x2; $.x++) {
+        setPixel($.x, $.y1, $.color);
+    }
+    return $out();
+}
+function drawVertical() {
+    $in();
+    for ($.y = $.y1; $.y <= $.y2; $.y++) {
+        setPixel($.x1, $.y, $.color);
+    }
+    return $out();
+}
+function drawPlayfield() {
+    $in();
+    $.y1 = playfieldTop;
+    $.x1 = playfieldLeft;
+    $.x2 = playfieldRight;
+    drawHorizontal();
+    $.y1 = playfieldBottom;
+    drawHorizontal();
+    for ($.x = 0; $.x < 5; $.x++) {
+        $.x1 = centerX;
+        $.y1 = $.x * 9 + playfieldTop + 2;
+        $.y2 = $.y1 + 5;
+        drawVertical();
+    }
+    return $out();
+}
+function drawScore() {
+    $in();
+    $.spriteWidth = 5;
+    $.spriteHeight = 5;
+    $.y1 = scoreTop + 1;
+    $.sprite = $.score1 < 10 ? 0 : 1;
+    $.x1 = 35;
+    drawSprite();
+    $.sprite = $.score1 < 10 ? $.score1 : $.score1 - 10;
+    $.x1 = 41;
+    drawSprite();
+    $.sprite = $.score2 < 10 ? 0 : 1;
+    $.x1 = 81;
+    drawSprite();
+    $.sprite = $.score2 < 10 ? $.score2 : $.score2 - 10;
+    $.x1 = 87;
+    drawSprite();
+    return $out();
+}
+function drawPlayer1() {
+    $in();
+    $.x1 = playfieldLeft;
+    $.y1 = $.p1Y / 3 + playfieldTop + 1;
+    $.y2 = $.y1 + 5;
+    drawVertical();
+    return $out();
+}
+function drawPlayer2() {
+    $in();
+    $.x1 = playfieldRight;
+    $.y1 = $.p2Y / 3 + playfieldTop + 1;
+    $.y2 = $.y1 + 5;
+    drawVertical();
+    return $out();
+}
+function drawBall() {
+    $in();
+    $.x1 = $.ballX / 3 + playfieldLeft;
+    $.y1 = $.ballY / 3 + playfieldTop + 1;
+    $.y2 = $.y1 + 1;
+    drawVertical();
+    $.x1++;
+    drawVertical();
+    return $out();
+}
+function updateBall() {
+    $in();
+    $.ballX += $.ballSpeedX;
+    $.ballY += $.ballSpeedY;
+    if ($.ballY < 0) {
+        $.ballY = 0;
+        $.ballSpeedY *= -1;
+    } else if ($.ballY > subgridHeight - 6) {
+        $.ballY = subgridHeight - 6;
+        $.ballSpeedY *= -1;
+    }
+    if ($.ballSpeedX > 0) {
+        if ($.ballX > subgridWidth - 9) {
+            $.yOffset = $.ballY - $.p2Y + 5;
+            if ($.yOffset >= 0 && $.yOffset < 23) {
+                $.ballX = subgridWidth - 9;
+                if ($.yOffset < 3) {
+                    $.ballSpeedY = -3;
+                } else if ($.yOffset < 6) {
+                    $.ballSpeedY = -2;
+                } else if ($.yOffset < 9) {
+                    $.ballSpeedY = -1;
+                } else if ($.yOffset < 14) {
+                    $.ballSpeedY = 0;
+                } else if ($.yOffset < 17) {
+                    $.ballSpeedY = 1;
+                } else if ($.yOffset < 20) {
+                    $.ballSpeedY = 2;
+                } else {
+                    $.ballSpeedY = 3;
+                }
+                if ($.ballSpeedX < 3) {
+                    $.volleyCount++;
+                    if ($.volleyCount === 3) {
+                        $.ballSpeedX++;
+                        $.volleyCount = 0;
+                    }
+                }
+                $.ballSpeedX *= -1;
+                $.ballPlayer = 1;
+            } else {
+                $.score1++;
+                resetBall1();
+            }
+        }
+    } else {
+        if ($.ballX < 3) {
+            $.yOffset = $.ballY - $.p1Y + 5;
+            if ($.yOffset >= 0 && $.yOffset < 23) {
+                $.ballX = 3;
+                $.yOffset = $.ballY - $.p1Y + 5;
+                if ($.yOffset < 3) {
+                    $.ballSpeedY = -3;
+                } else if ($.yOffset < 6) {
+                    $.ballSpeedY = -2;
+                } else if ($.yOffset < 9) {
+                    $.ballSpeedY = -1;
+                } else if ($.yOffset < 14) {
+                    $.ballSpeedY = 0;
+                } else if ($.yOffset < 17) {
+                    $.ballSpeedY = 1;
+                } else if ($.yOffset < 20) {
+                    $.ballSpeedY = 2;
+                } else {
+                    $.ballSpeedY = 3;
+                }
+                if ($.ballSpeedX > -3) {
+                    $.volleyCount++;
+                    if ($.volleyCount === 3) {
+                        $.ballSpeedX--;
+                        $.volleyCount = 0;
+                    }
+                }
+                $.ballSpeedX *= -1;
+                $.ballPlayer = 0;
+            } else {
+                $.score2++;
+                resetBall2();
+            }
+        }
+    }
+    return $out();
+}
+function tick() {
+    $in();
+    $.color = 1;
+    drawPlayfield();
+    $.color = 3;
+    drawPlayer1();
+    drawPlayer2();
+    drawBall();
+    drawScore();
+    if (up1() && $.p1Y > 3)
+        $.p1Y -= 3;
+    if (down1() && $.p1Y < subgridHeight - 18)
+        $.p1Y += 3;
+    if (up2() && $.p2Y > 3)
+        $.p2Y -= 3;
+    if (down2() && $.p2Y < subgridHeight - 18)
+        $.p2Y += 3;
+    updateBall();
+    $.color = 0;
+    drawPlayer1();
+    $.color = 2;
+    drawPlayer2();
+    $.color = $.ballPlayer ? 2 : 0;
+    drawBall();
+    drawScore();
+    return $out();
+}
+if (rnd(2))
+    resetBall1();
+else
+    resetBall2();

@@ -1,6 +1,6 @@
 "use strict"
 
-const width = 96
+const width = 128
 const height = 64
 
 const $backgrounds = new Array( height )
@@ -8,6 +8,9 @@ const $pixels = new Array( width * height )
 const $canvas = document.getElementById( 'c' )
 const $context = $canvas.getContext( '2d' )
 const $imageData = new ImageData( width, height )
+
+$canvas.width = width
+$canvas.height = height
 
 const $palette = {
     lightGrey: [ 224, 224, 224 ],
@@ -44,39 +47,67 @@ const $draw = () => {
     requestAnimationFrame( $draw )
 }
 
-let $isUp = false
-let $isDown = false
-let $isLeft = false
-let $isRight = false
+let $isUp1 = false
+let $isDown1 = false
+let $isLeft1 = false
+let $isRight1 = false
+let $isUp2 = false
+let $isDown2 = false
+let $isLeft2 = false
+let $isRight2 = false
 
 document.addEventListener( 'keydown', e => {
+    if ( e.key.toLowerCase() === 'w' )
+        $isUp1 = true
+    if ( e.key.toLowerCase() === 's' )
+        $isDown1 = true
+    if ( e.key.toLowerCase() === 'a' )
+        $isLeft1 = true
+    if ( e.key.toLowerCase() === 'd' )
+        $isRight1 = true
     if ( e.key === 'ArrowUp' )
-        $isUp = true
+        $isUp2 = true
     if ( e.key === 'ArrowDown' )
-        $isDown = true
+        $isDown2 = true
     if ( e.key === 'ArrowLeft' )
-        $isLeft = true
+        $isLeft2 = true
     if ( e.key === 'ArrowRight' )
-        $isRight = true
+        $isRight2 = true
 } )
 
 document.addEventListener( 'keyup', e => {
+    if ( e.key.toLowerCase() === 'w' )
+        $isUp1 = false
+    if ( e.key.toLowerCase() === 's' )
+        $isDown1 = false
+    if ( e.key.toLowerCase() === 'a' )
+        $isLeft1 = false
+    if ( e.key.toLowerCase() === 'd' )
+        $isRight1 = false
     if ( e.key === 'ArrowUp' )
-        $isUp = false
+        $isUp2 = false
     if ( e.key === 'ArrowDown' )
-        $isDown = false
+        $isDown2 = false
     if ( e.key === 'ArrowLeft' )
-        $isLeft = false
+        $isLeft2 = false
     if ( e.key === 'ArrowRight' )
-        $isRight = false
+        $isRight2 = false
 } )
 
 $draw()
 
-function up() { return $isUp }
-function down() { return $isDown }
-function left() { return $isLeft }
-function right() { return $isRight }
+function up1() { return $isUp1 }
+function down1() { return $isDown1 }
+function left1() { return $isLeft1 }
+function right1() { return $isRight1 }
+function up2() { return $isUp2 }
+function down2() { return $isDown2 }
+function left2() { return $isLeft2 }
+function right2() { return $isRight2 }
+
+function rnd( value ){
+    return Math.floor( Math.random() * value )
+}
 
 function setBackground( row, backgroundColor ){
     row = $toUnsigned( row, 6 )

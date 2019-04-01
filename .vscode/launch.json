@@ -24,6 +24,12 @@
       "request": "launch",
       "name": "Bresenham Example",
       "program": "${workspaceFolder}/dist/examples/bresenham"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Build Examples",
+      "program": "${workspaceFolder}/dist/build/build-examples"
     }
   ]
 }

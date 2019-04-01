@@ -30,7 +30,7 @@ export const countProgramSize = ( ast: Program, instructionSize: number ) => {
           parent.type === 'UnaryExpression' &&
           parent.operator === '-'
         ){
-          value = ( value * -2 ) - 1
+          value = ( value * 2 ) - 1
         }
 
         count += valueToBitLength( value )

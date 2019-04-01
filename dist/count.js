@@ -23,7 +23,7 @@ exports.countProgramSize = (ast, instructionSize) => {
                 if (parent &&
                     parent.type === 'UnaryExpression' &&
                     parent.operator === '-') {
-                    value = (value * -2) - 1;
+                    value = (value * 2) - 1;
                 }
                 count += bits_bytes_1.valueToBitLength(value);
             }
