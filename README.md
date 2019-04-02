@@ -11,6 +11,8 @@ project
 
 **This is an alpha release!**
 
+## install
+
 `npm install yuki-js`
 
 ## example
