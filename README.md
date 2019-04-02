@@ -30,6 +30,9 @@ arrow keys to start a new match
 
 ## compiling yuki-js programs
 
+[TypeScript Example](./src/build/build-examples.ts)
+[JavaScript Example](./dist/build/build-examples.js)
+
 ```js
 const { compile } = require( 'yuki-js' )
 /*
@@ -102,6 +105,8 @@ export const defaultCompileOptions: CompileOptions = {
 ```
 
 ## writing yuki-js programs
+
+[Example Program](./examples/channel-y/src/game.yuki.js)
 
 Programs are normal JavaScript, but all `const` and `let` statements must
 appear at the beginning of the program - `var` is not supported
@@ -191,6 +196,17 @@ function tick(){
   f++
 }
 ```
+## writing a lib for use from yuki-js
+
+[Example Lib](./examples/channel-y/src/lib.js)
+
+A lib can be used to provide IO, graphics, sound etc to yuki-js user programs
+
+Only top-level `function` declarations will be available
+
+By convention, anything that could be potentially overwritten by a user program
+should be given a name starting with `$`, as identifiers in yuki-js may not
+start with a `$`
 
 ## design and features
 
