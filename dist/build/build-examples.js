@@ -8,7 +8,7 @@ const build1Bit = () => {
     console.log('1 bit');
     const gameYukiSource = fs_1.readFileSync('./examples/1-bit/src/game.yuki.js', 'utf8');
     const gameLibSource = fs_1.readFileSync('./examples/1-bit/src/lib.js', 'utf8');
-    const yukiAst = esprima_1.parseModule(gameYukiSource, { loc: true });
+    const yukiAst = esprima_1.parseScript(gameYukiSource, { loc: true });
     const libAst = esprima_1.parseScript(gameLibSource);
     const { main, memoryUsed, programSize } = __1.compile(yukiAst, { lib: libAst });
     const source = escodegen_1.generate(main);
@@ -19,7 +19,7 @@ const buildChannelY = () => {
     console.log('channel Y');
     const gameYukiSource = fs_1.readFileSync('./examples/channel-y/src/game.yuki.js', 'utf8');
     const gameLibSource = fs_1.readFileSync('./examples/channel-y/src/lib.js', 'utf8');
-    const yukiAst = esprima_1.parseModule(gameYukiSource, { loc: true });
+    const yukiAst = esprima_1.parseScript(gameYukiSource, { loc: true });
     const libAst = esprima_1.parseScript(gameLibSource);
     const { main, memoryUsed, programSize } = __1.compile(yukiAst, {
         lib: libAst,
