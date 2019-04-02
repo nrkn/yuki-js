@@ -77,7 +77,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
   const main = replaceMainProgram( yukiMain, declarationHeader.lets )
 
   const instructionsSize = countProgramSize( main, instructionSize )
-  const constsSize = countConsts( declarationHeader.consts )
+  const constsSize = bitLengthToBytes( countConsts( declarationHeader.consts ) )
   const programSize = instructionsSize + constsSize
 
   if ( programSize > maxProgramSize )

@@ -44,7 +44,7 @@ exports.compile = (yukiProgram, opts = {}) => {
     const header = to_ast_1.declarationsToAst(declarationHeader);
     const main = replace_1.replaceMainProgram(yukiMain, declarationHeader.lets);
     const instructionsSize = count_1.countProgramSize(main, instructionSize);
-    const constsSize = count_1.countConsts(declarationHeader.consts);
+    const constsSize = bits_bytes_1.bitLengthToBytes(count_1.countConsts(declarationHeader.consts));
     const programSize = instructionsSize + constsSize;
     if (programSize > maxProgramSize)
         throw Error(`Program size exceeded: ${programSize}/${maxProgramSize}`);
