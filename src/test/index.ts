@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 import * as assert from 'assert'
-import { parseModule, parseScript } from 'esprima'
+import { parseScript } from 'esprima'
 import { compile } from '..'
 import { CompileOptions } from '../types'
 import { bresenhamYuki } from '../examples/bresenham'
@@ -11,7 +11,7 @@ const kitchenSinkJs = readFileSync(
   './src/test/fixtures/kitchen-sink.yuki.js', 'utf8'
 )
 
-const kitchenSinkAst = parseModule( kitchenSinkJs )
+const kitchenSinkAst = parseScript( kitchenSinkJs )
 
 describe( 'yuki-js', () => {
   it( 'compiles', () => {

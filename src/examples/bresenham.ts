@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs'
-import { parseModule, parseScript } from 'esprima'
+import { parseScript } from 'esprima'
 import { compile } from '..'
 import { CompileOptions } from '../types'
 import { generate } from 'escodegen'
@@ -11,7 +11,7 @@ const bresenhamYukiLib = readFileSync(
   './src/examples/bresenham.lib.js', 'utf8'
 )
 
-export const bresenhamYuki = parseModule( bresenhamYukiSource, { loc: true })
+export const bresenhamYuki = parseScript( bresenhamYukiSource, { loc: true })
 
 const lib = parseScript( bresenhamYukiLib )
 

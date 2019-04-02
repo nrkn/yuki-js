@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs'
-import { parseModule, parseScript } from 'esprima'
+import { parseScript } from 'esprima'
 import { generate } from 'escodegen'
 import { compile } from '..'
 
@@ -9,7 +9,7 @@ const build1Bit = () => {
   const gameYukiSource = readFileSync( './examples/1-bit/src/game.yuki.js', 'utf8' )
   const gameLibSource = readFileSync( './examples/1-bit/src/lib.js', 'utf8' )
 
-  const yukiAst = parseModule( gameYukiSource, { loc: true } )
+  const yukiAst = parseScript( gameYukiSource, { loc: true } )
   const libAst = parseScript( gameLibSource )
 
   const { main, memoryUsed, programSize } = compile( yukiAst, { lib: libAst } )
@@ -27,7 +27,7 @@ const buildChannelY = () => {
   const gameYukiSource = readFileSync( './examples/channel-y/src/game.yuki.js', 'utf8' )
   const gameLibSource = readFileSync( './examples/channel-y/src/lib.js', 'utf8' )
 
-  const yukiAst = parseModule( gameYukiSource, { loc: true } )
+  const yukiAst = parseScript( gameYukiSource, { loc: true } )
   const libAst = parseScript( gameLibSource )
 
   const { main, memoryUsed, programSize } = compile( yukiAst, {

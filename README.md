@@ -15,8 +15,8 @@ project
 
 ## example
 
-In the examples folder you will find Pong implemented in yuki-js, with
-constraints set up to mirror the
+In the [examples folder](./examples/channel-y) you will find Pong implemented in
+yuki-js, with constraints set up to mirror the
 [Fairchild Channel F](https://en.wikipedia.org/wiki/Fairchild_Channel_F):
 
 ![pong](./examples/channel-y/screenshot.png)
@@ -25,6 +25,8 @@ Player 1 uses WASD, Player 2 uses arrow keys
 
 When a player wins a match their color will fill the screen, left or right
 arrow keys to start a new match
+
+[Play it here](http://nrkn.com/yuki/channel-y)
 
 ## compiling yuki-js programs
 
