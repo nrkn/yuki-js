@@ -7,12 +7,12 @@ export const countMemory = ( lets: YukiLet[] ) => {
   let bitLength = 0
 
   lets.forEach( current => {
-    if( current.type === 'number' ){
+    if ( current.type === 'number' ) {
       bitLength += current.bitLength
     } else {
       bitLength += current.bitLength * current.length
     }
-  })
+  } )
 
   return bitLength
 }
@@ -42,14 +42,14 @@ export const countProgramSize = ( ast: Program, instructionSize: number ) => {
 
   const visitor: Visitor = {
     enter: ( node, parent ) => {
-      if( node.type === 'Literal' && typeof node.value === 'number' ){
+      if ( node.type === 'Literal' && typeof node.value === 'number' ) {
         let value = node.value
 
-        if(
+        if (
           parent &&
           parent.type === 'UnaryExpression' &&
           parent.operator === '-'
-        ){
+        ) {
           value = ( value * 2 ) - 1
         }
 

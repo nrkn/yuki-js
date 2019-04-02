@@ -1,5 +1,5 @@
 import { Program } from 'esprima'
-import { LocError } from './util';
+import { LocError } from './util'
 
 export const splitSource = ( program: Program ) => {
   const yukiDeclarations: Program = {
@@ -19,7 +19,7 @@ export const splitSource = ( program: Program ) => {
   program.body.forEach( node => {
     isDeclaration = isDeclaration && node.type === 'VariableDeclaration'
 
-    if( isDeclaration ){
+    if ( isDeclaration ) {
       yukiDeclarations.body.push( node )
       return
     }
@@ -28,7 +28,7 @@ export const splitSource = ( program: Program ) => {
       throw LocError( 'Unexpected VariableDeclaration', node )
 
     yukiMain.body.push( node )
-  })
+  } )
 
   return { yukiDeclarations, yukiMain }
 }

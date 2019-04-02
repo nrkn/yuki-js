@@ -1,10 +1,9 @@
 import * as assert from 'assert'
-import { parseScript, parseModule } from 'esprima'
+import { parseScript } from 'esprima'
 
 import {
   Identifier, ExpressionStatement, MemberExpression, AssignmentExpression,
-  CallExpression, FunctionDeclaration, ExportNamedDeclaration, ReturnStatement,
-  Literal
+  CallExpression, FunctionDeclaration, ReturnStatement, Literal
 } from 'estree'
 
 import {
@@ -12,12 +11,14 @@ import {
 } from '../declarations/header/types'
 
 import { FunctionNames } from '../main/types'
+
 import {
   ValidateNode, ValidateIdentifier, ValidateMemberExpression,
   ValidateAssignmentExpression, ValidateCallExpression,
   ValidateFunctionDeclaration, validateReturnStatement, validateLiteral
 } from '../main/validate'
-import { getSubroutineNames, getLibFunctionNames } from '../main/util';
+
+import { getSubroutineNames, getLibFunctionNames } from '../main/util'
 
 describe( 'yuki-js', () => {
   describe( 'main', () => {
@@ -316,8 +317,8 @@ describe( 'yuki-js', () => {
           const names = getLibFunctionNames( ast )
 
           assert.deepEqual( names, [ 'b' ] )
-        })
-      })
+        } )
+      } )
     } )
   } )
 } )

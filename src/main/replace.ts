@@ -1,4 +1,7 @@
-import { Identifier, MemberExpression, Program, ReturnStatement, FunctionDeclaration } from 'estree'
+import {
+  Identifier, MemberExpression, Program, ReturnStatement, FunctionDeclaration
+} from 'estree'
+
 import { YukiLet } from '../declarations/header/types'
 import { replace, Visitor } from 'estraverse'
 
@@ -22,11 +25,11 @@ export const replaceMainProgram = ( program: Program, lets: YukiLet[] ) => {
         return replaceIdentifier( node )
       }
 
-      if( node.type === 'ReturnStatement' && !node.argument ){
+      if ( node.type === 'ReturnStatement' && !node.argument ) {
         return replaceReturn( node )
       }
 
-      if( node.type === 'FunctionDeclaration' ){
+      if ( node.type === 'FunctionDeclaration' ) {
         return replaceFunction( node )
       }
 
@@ -82,7 +85,7 @@ const replaceFunction = ( node: FunctionDeclaration ) => {
 
 const replaceReturn = ( _node: ReturnStatement ) => returnStatement()
 
-const returnStatement = (): ReturnStatement => ({
+const returnStatement = (): ReturnStatement => ( {
   type: 'ReturnStatement',
   argument: {
     type: 'CallExpression',
@@ -92,4 +95,4 @@ const returnStatement = (): ReturnStatement => ({
     },
     arguments: []
   }
-})
+} )

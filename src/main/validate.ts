@@ -241,13 +241,13 @@ export const ValidateFunctionDeclaration = ( externals: string[] ) =>
   ( node: FunctionDeclaration ) => {
     const errors: Error[] = []
 
-    if( node.id!.name.startsWith( '$' ) ){
+    if ( node.id!.name.startsWith( '$' ) ) {
       errors.push( LocError( 'Function names cannot start with $', node ) )
 
       return errors
     }
 
-    if( externals.includes( node.id!.name ) ){
+    if ( externals.includes( node.id!.name ) ) {
       errors.push( LocError(
         `Cannot redefine external function ${ node.id!.name }`, node
       ) )

@@ -1,4 +1,8 @@
-import { Program, VariableDeclaration, VariableDeclarator, Literal, BaseNode, UnaryExpression } from 'estree'
+import {
+  Program, VariableDeclaration, VariableDeclarator, Literal, BaseNode,
+  UnaryExpression
+} from 'estree'
+
 import { numberTypes } from '../number-types'
 import { LocError } from '../util'
 

@@ -26,7 +26,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
 
   const { yukiDeclarations, yukiMain } = splitSource( yukiProgram )
 
-  if ( !isYukiDeclarations( yukiDeclarations ) ){
+  if ( !isYukiDeclarations( yukiDeclarations ) ) {
     const errors = validateDeclarationsProgram( yukiDeclarations )
 
     throw errors[ 0 ]
@@ -41,7 +41,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
     !localSubroutineNames.subroutines.includes( name )
   )
 
-  if( missingSubroutines.length )
+  if ( missingSubroutines.length )
     throw Error(
       `Missing required subroutines: ${ missingSubroutines.join( ', ' ) }`
     )
@@ -57,15 +57,15 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
 
   const errors = validateMainProgram( yukiMain )
 
-  if( errors.length ){
+  if ( errors.length ) {
     throw errors[ 0 ]
   }
 
   const addressSize = bitLengthToBytes( valueToBitLength( maxProgramSize ) )
   const memoryUsed = bitLengthToBytes( countMemory( declarationHeader.lets ) )
 
-  if( memoryUsed > memorySize )
-    throw Error( `Memory allocation exceeded: ${ memoryUsed}/${ memorySize }` )
+  if ( memoryUsed > memorySize )
+    throw Error( `Memory allocation exceeded: ${ memoryUsed }/${ memorySize }` )
 
   const libScriptAst: Program = JSON.parse( JSON.stringify( libScript ) )
 
@@ -80,7 +80,7 @@ export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {
   const constsSize = countConsts( declarationHeader.consts )
   const programSize = instructionsSize + constsSize
 
-  if( programSize > maxProgramSize )
+  if ( programSize > maxProgramSize )
     throw Error( `Program size exceeded: ${ programSize }/${ maxProgramSize }` )
 
   main.body = [

@@ -1,7 +1,6 @@
 import * as assert from 'assert'
 import { size, $CallStack, $Memory, $ensureNumber } from '../lib'
-import { YukiLet, YukiNumber } from '../declarations/header/types';
-import { isAbsolute } from 'path';
+import { YukiLet, YukiNumber } from '../declarations/header/types'
 
 describe( 'yuki-js', () => {
   describe( 'main', () => {
@@ -77,7 +76,7 @@ describe( 'yuki-js', () => {
         memory.int8 = 10
 
         assert.strictEqual( memory.int8, 10 )
-      })
+      } )
 
       it( 'Expected a number', () => {
         assert.throws(
@@ -100,18 +99,18 @@ describe( 'yuki-js', () => {
           },
           { message: 'Expected a number' }
         )
-      })
+      } )
 
       it( 'sets array member', () => {
         memory.arrInt8[ 0 ] = 10
 
         assert.strictEqual( memory.arrInt8[ 0 ], 10 )
-      })
+      } )
 
       it( 'raw', () => {
         memory.int8 = -10
         memory.uint8 = 10
-        for( let i = 0; i < 3; i++ ){
+        for ( let i = 0; i < 3; i++ ) {
           memory.arrInt8[ i ] = -i
           memory.arrUint8[ i ] = i
         }
@@ -123,13 +122,13 @@ describe( 'yuki-js', () => {
           uint8: 10,
           arrInt8: [ 0, -1, -2 ],
           arrUint8: [ 0, 1, 2 ]
-        })
-      })
+        } )
+      } )
 
       it( 'size', () => {
         assert.strictEqual( size( memory.arrInt8 ), 3 )
       } )
-    })
+    } )
 
     describe( 'ensureNumber', () => {
       const signed: YukiNumber = {
@@ -190,34 +189,34 @@ describe( 'yuki-js', () => {
           },
           { message: 'Expected a number' }
         )
-      })
+      } )
 
       it( 'wraps unsigned numbers', () => {
         assert.strictEqual( $ensureNumber( 256, unsigned ), 0 )
         assert.strictEqual( $ensureNumber( 345, unsigned ), 89 )
-      })
+      } )
 
       it( 'wraps signed numbers', () => {
         assert.strictEqual( $ensureNumber( -129, signed ), 127 )
         assert.strictEqual( $ensureNumber( -345, signed ), -89 )
-      })
+      } )
 
       it( 'coerces unsigned to signed', () => {
         assert.strictEqual( $ensureNumber( 135, signed ), -121 )
         assert.strictEqual( $ensureNumber( 345, signed ), 89 )
-      })
+      } )
 
       it( 'coerces signed to unsigned', () => {
         assert.strictEqual( $ensureNumber( -256, unsigned ), 0 )
         assert.strictEqual( $ensureNumber( -345, unsigned ), 167 )
-      })
+      } )
 
       it( 'coerces boolean to number', () => {
         assert.strictEqual( $ensureNumber( true, unsigned ), 1 )
         assert.strictEqual( $ensureNumber( false, unsigned ), 0 )
         assert.strictEqual( $ensureNumber( true, signed ), 1 )
         assert.strictEqual( $ensureNumber( false, signed ), 0 )
-      })
-    })
+      } )
+    } )
   } )
 } )

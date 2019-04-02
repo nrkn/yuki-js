@@ -37,7 +37,7 @@ describe( 'yuki-js', () => {
           message: 'Unexpected type string at line 1, column 0'
         }
       )
-    })
+    } )
 
     it( 'Memory allocation exceeded', () => {
       const program = parseScript( 'let x = Uint16' )
@@ -48,7 +48,7 @@ describe( 'yuki-js', () => {
           message: 'Memory allocation exceeded: 2/1'
         }
       )
-    })
+    } )
 
     it( 'Program size exceeded', () => {
       const program = parseScript( 'let x = Uint16; x = 0' )
@@ -59,6 +59,6 @@ describe( 'yuki-js', () => {
           message: 'Program size exceeded: 7/1'
         }
       )
-    })
+    } )
   } )
 } )

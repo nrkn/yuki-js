@@ -3,7 +3,7 @@ import {
 } from '../types'
 
 import { YukiDeclarationHeader, YukiValueType } from './types'
-import { UnaryExpression } from 'estree';
+import { UnaryExpression } from 'estree'
 
 export const DeclarationHeader =
   ( program: YukiDeclarationProgram ) => {
@@ -25,7 +25,7 @@ export const DeclarationHeader =
         const type = getType( init )
         const constValue = getConstValue( init )
 
-        if( type === 'number' ){
+        if ( type === 'number' ) {
           const value = <number>constValue
 
           consts.push( {
@@ -47,23 +47,23 @@ export const DeclarationHeader =
         const { id, init } = declarator
         const { name } = id
 
-        if( init.type === 'Identifier' ){
+        if ( init.type === 'Identifier' ) {
           const bitLength = getBitLength( init.name )
           const signed = isSigned( init.name )
           const type = 'number'
 
-          lets.push({
+          lets.push( {
             name, valueType, type, bitLength, signed
-          })
+          } )
         } else {
           const bitLength = getBitLength( init.callee.name )
           const signed = isSigned( init.callee.name )
           const length = getLiteralValue( init.arguments[ 0 ] )
           const type = 'array'
 
-          lets.push({
+          lets.push( {
             name, valueType, type, bitLength, length, signed
-          })
+          } )
         }
       }
     } )
@@ -75,7 +75,7 @@ const getConstValue =
   ( node: YukiLiteral | UnaryExpression | YukiArrayExpression ) => {
     if ( node.type === 'Literal' ) return getLiteralValue( node )
 
-    if( node.type === 'UnaryExpression' ){
+    if ( node.type === 'UnaryExpression' ) {
       return getLiteralValue( <YukiLiteral>node.argument ) * -1
     }
 

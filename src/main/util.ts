@@ -8,7 +8,7 @@ export const getSubroutineNames = ( program: Program ) => {
     enter: ( node, parent ) => {
       if ( node.type !== 'FunctionDeclaration' ) return
 
-      if ( parent && parent!.type !== 'Program'  )
+      if ( parent && parent!.type !== 'Program' )
         throw LocError( `Functions cannot be nested in ${ parent.type }`, node )
 
       const name = node.id!.name

@@ -78,21 +78,21 @@ const yukiConstArrayToAst = ( arr: YukiConstArray ) => {
     type: 'ArrayExpression',
     elements: value.map( v => (
       v < 0 ?
-      <UnaryExpression>{
-        type: 'UnaryExpression',
-        operator: '-',
-        prefix: true,
-        argument: {
+        <UnaryExpression>{
+          type: 'UnaryExpression',
+          operator: '-',
+          prefix: true,
+          argument: {
+            type: 'Literal',
+            value: v * -1,
+            raw: String( v * -1 )
+          }
+        } :
+        <SimpleLiteral>{
           type: 'Literal',
-          value: v * -1,
-          raw: String( v * -1 )
+          value: v,
+          raw: String( v )
         }
-      }:
-      <SimpleLiteral>{
-        type: 'Literal',
-        value: v,
-        raw: String( v )
-      }
     ) )
   }
 
