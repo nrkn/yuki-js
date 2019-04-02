@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const estraverse_1 = require("estraverse");
 const bits_bytes_1 = require("bits-bytes");
+const util_1 = require("./util");
 exports.countMemory = (lets) => {
     let bitLength = 0;
     lets.forEach(current => {
@@ -17,8 +18,7 @@ exports.countMemory = (lets) => {
 exports.countConsts = (consts) => {
     let bitLength = 0;
     const addNumber = (value) => {
-        if (value < 0)
-            value = (value * 2) - 1;
+        value = util_1.normalizeRangeForBitLength(value);
         bitLength += bits_bytes_1.valueToBitLength(value);
     };
     consts.forEach(current => {
@@ -26,7 +26,13 @@ exports.countConsts = (consts) => {
             addNumber(current.value);
         }
         else {
-            current.value.forEach(addNumber);
+            let max = 0;
+            current.value.forEach(v => {
+                v = util_1.normalizeRangeForBitLength(v);
+                if (v > max)
+                    max = v;
+            });
+            bitLength += bits_bytes_1.valueToBitLength(max) * current.value.length;
         }
     });
     return bitLength;
@@ -40,7 +46,7 @@ exports.countProgramSize = (ast, instructionSize) => {
                 if (parent &&
                     parent.type === 'UnaryExpression' &&
                     parent.operator === '-') {
-                    value = (value * 2) - 1;
+                    value = util_1.normalizeRangeForBitLength(value);
                 }
                 count += bits_bytes_1.valueToBitLength(value);
             }

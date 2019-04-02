@@ -2,6 +2,7 @@ import { YukiLet, YukiConst } from './declarations/header/types'
 import { Program } from 'estree'
 import { Visitor, traverse } from 'estraverse'
 import { valueToBitLength } from 'bits-bytes'
+import { normalizeRangeForBitLength } from './util';
 
 export const countMemory = ( lets: YukiLet[] ) => {
   let bitLength = 0
@@ -21,8 +22,7 @@ export const countConsts = ( consts: YukiConst[] ) => {
   let bitLength = 0
 
   const addNumber = ( value: number ) => {
-    if ( value < 0 ) value = ( value * 2 ) - 1
-
+    value = normalizeRangeForBitLength( value )
     bitLength += valueToBitLength( value )
   }
 
@@ -30,7 +30,14 @@ export const countConsts = ( consts: YukiConst[] ) => {
     if ( current.type === 'number' ) {
       addNumber( current.value )
     } else {
-      current.value.forEach( addNumber )
+      let max = 0
+
+      current.value.forEach( v => {
+        v = normalizeRangeForBitLength( v )
+        if( v > max ) max = v
+      })
+
+      bitLength += valueToBitLength( max ) * current.value.length
     }
   } )
 
@@ -50,7 +57,7 @@ export const countProgramSize = ( ast: Program, instructionSize: number ) => {
           parent.type === 'UnaryExpression' &&
           parent.operator === '-'
         ) {
-          value = ( value * 2 ) - 1
+          value = normalizeRangeForBitLength( value )
         }
 
         count += valueToBitLength( value )

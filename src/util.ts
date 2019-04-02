@@ -1,5 +1,6 @@
 import { BaseNode } from 'estree'
 import { YukiDeclarationHeader, YukiValue } from './declarations/header/types'
+import { valueToBitLength } from 'bits-bytes'
 
 export const LocError = ( message: string, node: BaseNode ) => {
   if ( node.loc ) {
@@ -19,3 +20,6 @@ export const HeaderMap = ( header: YukiDeclarationHeader ) => {
 
   return headerMap
 }
+
+export const normalizeRangeForBitLength = ( value: number ) =>
+  value < 0 ? ( value * 2 ) - 1 : value

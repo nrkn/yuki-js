@@ -13,4 +13,5 @@ exports.HeaderMap = (header) => {
     header.lets.forEach(l => headerMap.set(l.name, l));
     return headerMap;
 };
+exports.normalizeRangeForBitLength = (value) => value < 0 ? (value * 2) - 1 : value;
 //# sourceMappingURL=util.js.map
