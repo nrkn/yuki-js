@@ -21,6 +21,22 @@ exports.declarationsToAst = (declarations) => {
 const yukiConstNumberToAst = (num) => {
     const { name, value } = num;
     const raw = String(value);
+    const init = (value < 0 ?
+        {
+            type: 'UnaryExpression',
+            operator: '-',
+            prefix: true,
+            argument: {
+                type: 'Literal',
+                value: value * -1,
+                raw: String(value * -1)
+            }
+        } :
+        {
+            type: 'Literal',
+            value,
+            raw
+        });
     const declaration = {
         type: 'VariableDeclaration',
         declarations: [
@@ -30,11 +46,7 @@ const yukiConstNumberToAst = (num) => {
                     type: 'Identifier',
                     name
                 },
-                init: {
-                    type: 'Literal',
-                    value,
-                    raw
-                }
+                init
             }
         ],
         kind: 'const'
@@ -45,11 +57,22 @@ const yukiConstArrayToAst = (arr) => {
     const { name, value } = arr;
     const arrayExpression = {
         type: 'ArrayExpression',
-        elements: value.map(v => ({
-            type: 'Literal',
-            value: v,
-            raw: String(v)
-        }))
+        elements: value.map(v => (v < 0 ?
+            {
+                type: 'UnaryExpression',
+                operator: '-',
+                prefix: true,
+                argument: {
+                    type: 'Literal',
+                    value: v * -1,
+                    raw: String(v * -1)
+                }
+            } :
+            {
+                type: 'Literal',
+                value: v,
+                raw: String(v)
+            }))
     };
     const declaration = {
         type: 'VariableDeclaration',

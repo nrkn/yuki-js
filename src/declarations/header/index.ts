@@ -3,6 +3,7 @@ import {
 } from '../types'
 
 import { YukiDeclarationHeader, YukiValueType } from './types'
+import { UnaryExpression } from 'estree';
 
 export const DeclarationHeader =
   ( program: YukiDeclarationProgram ) => {
@@ -71,10 +72,14 @@ export const DeclarationHeader =
   }
 
 const getConstValue =
-  ( node: YukiLiteral | YukiArrayExpression ) => {
+  ( node: YukiLiteral | UnaryExpression | YukiArrayExpression ) => {
     if ( node.type === 'Literal' ) return getLiteralValue( node )
 
-    return ( <YukiLiteral[]>node.elements ).map( getLiteralValue )
+    if( node.type === 'UnaryExpression' ){
+      return getLiteralValue( <YukiLiteral>node.argument ) * -1
+    }
+
+    return ( <YukiLiteral[]>node.elements ).map( getConstValue )
   }
 
 const getLiteralValue = ( literal: YukiLiteral ) => {
@@ -86,8 +91,9 @@ const getLiteralValue = ( literal: YukiLiteral ) => {
 }
 
 const getType =
-  ( node: YukiLiteral | YukiArrayExpression ): YukiValueType => {
-    if ( node.type === 'Literal' ) return 'number'
+  ( node: YukiLiteral | UnaryExpression | YukiArrayExpression ): YukiValueType => {
+    if ( node.type === 'Literal' || node.type === 'UnaryExpression' )
+      return 'number'
 
     return 'array'
   }

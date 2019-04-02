@@ -1,31 +1,31 @@
-import { Program, VariableDeclaration, VariableDeclarator } from 'estree'
+import { Program, VariableDeclaration, VariableDeclarator, Literal, BaseNode, UnaryExpression } from 'estree'
 import { numberTypes } from '../number-types'
 import { LocError } from '../util'
 
 export const validateDeclarationsProgram =
   ( program: Program, errors: Error[] = [] ) => {
     program.body.forEach( ( node, i ) => {
-      if( node.type === 'VariableDeclaration' ){
+      if ( node.type === 'VariableDeclaration' ) {
         errors.push( ...validateVariableDeclaration( node ) )
       } else {
         errors.push( LocError(
           'Expected VariableDeclaration', node
         ) )
       }
-    })
+    } )
 
     return errors
   }
 
 const validateVariableDeclaration =
   ( declaration: VariableDeclaration, errors: Error[] = [] ) => {
-    if( declaration.kind === 'var' ){
+    if ( declaration.kind === 'var' ) {
       errors.push( LocError( 'Unexpected var', declaration ) )
 
       return errors
     }
 
-    if( declaration.declarations.length !== 1 ){
+    if ( declaration.declarations.length !== 1 ) {
       errors.push( LocError( 'Expected a single declaration', declaration ) )
 
       return errors
@@ -35,7 +35,7 @@ const validateVariableDeclaration =
 
     const { id, init } = declarator
 
-    if( init === null ){
+    if ( init === null ) {
       errors.push( LocError( 'Expected init', declarator ) )
 
       return errors
@@ -47,7 +47,7 @@ const validateVariableDeclaration =
       return errors
     }
 
-    if( id.name.startsWith( '$' ) ){
+    if ( id.name.startsWith( '$' ) ) {
       errors.push(
         LocError( 'Identifier names cannot start with $', declarator )
       )
@@ -55,7 +55,7 @@ const validateVariableDeclaration =
       return errors
     }
 
-    if( declaration.kind === 'const' ){
+    if ( declaration.kind === 'const' ) {
       errors.push( ...validateConst( declarator, errors ) )
 
       return errors
@@ -66,24 +66,60 @@ const validateVariableDeclaration =
     return errors
   }
 
+const validateLiteral = ( literal: Literal, parent: BaseNode, errors: Error[] ) => {
+  if ( typeof literal.value === 'boolean' ) return errors
+  if ( typeof literal.value === 'number' ) return errors
+
+  errors.push( LocError(
+    'Expected boolean or number', parent
+  ) )
+
+  return errors
+}
+
+const validateUnaryExpression = ( unary: UnaryExpression, parent: BaseNode, errors: Error[] ) => {
+  if ( unary.operator !== '-' ) {
+    errors.push( LocError(
+      'Expected UnaryExpression operator to be -', unary
+    ) )
+
+    return errors
+  }
+
+  const { argument } = unary
+
+  if ( argument.type === 'Literal' ) {
+    errors.push( ...validateLiteral( argument, parent, errors ) )
+
+    return errors
+  }
+
+  errors.push( LocError(
+    'Expected UnaryExpression argument to be Literal', unary
+  ) )
+
+  return errors
+}
+
 export const validateConst =
   ( declarator: VariableDeclarator, errors: Error[] = [] ) => {
     const init = declarator.init!
 
-    if( init.type === 'Literal' ){
-      if( typeof init.value === 'boolean' ) return errors
-      if ( typeof init.value === 'number' ) return errors
-
-      errors.push( LocError(
-        'Expected boolean or number', declarator
-      ) )
+    if ( init.type === 'Literal' ) {
+      errors.push( ...validateLiteral( init, declarator, errors ) )
 
       return errors
     }
 
-    if( init.type === 'ArrayExpression' ){
+    if ( init.type === 'UnaryExpression' ) {
+      errors.push( ...validateUnaryExpression( init, declarator, errors ) )
+
+      return errors
+    }
+
+    if ( init.type === 'ArrayExpression' ) {
       const { elements } = init
-      if( elements.length < 1 ){
+      if ( elements.length < 1 ) {
         errors.push( LocError(
           'Unexpected empty ArrayExpression', declarator
         ) )
@@ -94,10 +130,10 @@ export const validateConst =
       let firstType = 'undefined'
 
       elements.forEach( ( node, i ) => {
-        if( node.type === 'Literal' ){
+        if ( node.type === 'Literal' ) {
           if ( i === 0 ) firstType = typeof node.value
 
-          if( typeof node.value !== firstType ){
+          if ( typeof node.value !== firstType ) {
             errors.push( LocError(
               `Expected ArrayExpression[${ i }] to be ${ firstType }`,
               node
@@ -116,10 +152,17 @@ export const validateConst =
           return
         }
 
-        errors.push(
-          LocError( `Expected ArrayExpression[${ i }] to be Literal`, node )
-        )
-      })
+        if ( node.type === 'UnaryExpression' ) {
+          errors.push( ...validateUnaryExpression( node, node, errors ) )
+
+          return
+        }
+
+        errors.push( LocError(
+          `Expected ArrayExpression[${ i }] to be Literal or UnaryExpression`,
+          node
+        ) )
+      } )
 
       return errors
     }
@@ -134,7 +177,7 @@ export const validateLet =
     const init = declarator.init!
 
     if ( init.type === 'Identifier' ) {
-      if( numberTypes.includes( init.name ) ) return errors
+      if ( numberTypes.includes( init.name ) ) return errors
 
       errors.push( LocError(
         `Unexpected init name ${ init.name }`, declarator
@@ -143,10 +186,10 @@ export const validateLet =
       return errors
     }
 
-    if( init.type === 'CallExpression' ){
-      if( init.callee.type === 'Identifier' ){
-        if ( numberTypes.includes( init.callee.name ) ){
-          if( init.arguments.length !== 1 ){
+    if ( init.type === 'CallExpression' ) {
+      if ( init.callee.type === 'Identifier' ) {
+        if ( numberTypes.includes( init.callee.name ) ) {
+          if ( init.arguments.length !== 1 ) {
             errors.push( LocError( `Expected single argument`, declarator ) )
 
             return errors
@@ -154,8 +197,8 @@ export const validateLet =
 
           const argument = init.arguments[ 0 ]
 
-          if( argument.type === 'Literal' ){
-            if( typeof argument.value === 'number' ) return errors
+          if ( argument.type === 'Literal' ) {
+            if ( typeof argument.value === 'number' ) return errors
 
             errors.push( LocError(
               `Unexpected argument ${ typeof argument.value }`, argument

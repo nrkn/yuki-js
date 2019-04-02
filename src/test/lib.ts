@@ -1,6 +1,7 @@
 import * as assert from 'assert'
 import { size, $CallStack, $Memory, $ensureNumber } from '../lib'
 import { YukiLet, YukiNumber } from '../declarations/header/types';
+import { isAbsolute } from 'path';
 
 describe( 'yuki-js', () => {
   describe( 'main', () => {
@@ -188,7 +189,7 @@ describe( 'yuki-js', () => {
             $ensureNumber( Infinity, signed )
           },
           { message: 'Expected a number' }
-        )        
+        )
       })
 
       it( 'wraps unsigned numbers', () => {
@@ -209,6 +210,13 @@ describe( 'yuki-js', () => {
       it( 'coerces signed to unsigned', () => {
         assert.strictEqual( $ensureNumber( -256, unsigned ), 0 )
         assert.strictEqual( $ensureNumber( -345, unsigned ), 167 )
+      })
+
+      it( 'coerces boolean to number', () => {
+        assert.strictEqual( $ensureNumber( true, unsigned ), 1 )
+        assert.strictEqual( $ensureNumber( false, unsigned ), 0 )
+        assert.strictEqual( $ensureNumber( true, signed ), 1 )
+        assert.strictEqual( $ensureNumber( false, signed ), 0 )
       })
     })
   } )

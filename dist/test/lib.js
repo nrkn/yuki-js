@@ -150,6 +150,12 @@ describe('yuki-js', () => {
                 assert.strictEqual(lib_1.$ensureNumber(-256, unsigned), 0);
                 assert.strictEqual(lib_1.$ensureNumber(-345, unsigned), 167);
             });
+            it('coerces boolean to number', () => {
+                assert.strictEqual(lib_1.$ensureNumber(true, unsigned), 1);
+                assert.strictEqual(lib_1.$ensureNumber(false, unsigned), 0);
+                assert.strictEqual(lib_1.$ensureNumber(true, signed), 1);
+                assert.strictEqual(lib_1.$ensureNumber(false, signed), 0);
+            });
         });
     });
 });

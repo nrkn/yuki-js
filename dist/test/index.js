@@ -12,7 +12,9 @@ const kitchenSinkAst = esprima_1.parseModule(kitchenSinkJs);
 describe('yuki-js', () => {
     it('compiles', () => {
         const { main } = __1.compile(kitchenSinkAst);
+        const source = escodegen_1.generate(main);
         assert(main);
+        assert(source);
     });
     it('executes', () => {
         const expect = [

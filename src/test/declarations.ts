@@ -38,7 +38,7 @@ describe( 'yuki-js', () => {
             const declarator = declaration.declarations[ 0 ]
             const errors = validateConst( declarator )
 
-            assert.strictEqual( errors.length, 1 )
+            assert( errors.length > 0 )
             assert(
               errors[ 0 ].message.startsWith( errorMessage )
             )
@@ -51,6 +51,8 @@ describe( 'yuki-js', () => {
         validate( 'Expected ArrayExpression[1] to be number', 'const x = [ 1, false ]' )
         validate( 'Unexpected string in ArrayExpression[0]', 'const x = [ "" ]' )
         validate( 'Expected ArrayExpression[0] to be Literal', 'const x = [ a ]' )
+        validate( 'Expected UnaryExpression operator to be -', 'const x = +2' )
+        validate( 'Expected UnaryExpression argument to be Literal', 'const x = -a' )
       } )
 
       describe( 'let', () => {

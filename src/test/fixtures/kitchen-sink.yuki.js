@@ -3,8 +3,9 @@ const FLAG_1 = true
 const FLAG_2 = false
 // const number
 const VAL_1 = 10
+const VAL_2 = -10
 // const array
-const ARR_1 = [ 1, 2, 3 ]
+const ARR_1 = [ 1, 2, -3 ]
 const FLAGS_1 = [ true, false, true ]
 
 // mutable flag
@@ -25,6 +26,7 @@ let arr2 = Uint8( 20 )
 
 // assignment
 i = VAL_1
+i = VAL_2
 e = 10
 flags[ 0 ] = true
 a = ARR_1[ 0 ]

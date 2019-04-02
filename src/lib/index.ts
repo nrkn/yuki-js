@@ -81,7 +81,7 @@ export const $Memory = ( lets: YukiLet[] ) => {
   return $
 }
 
-export const $ensureNumber = ( value: number, l: YukiLet ) => {
+export const $ensureNumber = ( value: number | boolean, l: YukiLet ) => {
   if ( l.signed ) return $toSigned( value, l.bitLength )
 
   return $toUnsigned( value, l.bitLength )
@@ -99,7 +99,7 @@ export const $assertNumber = ( value: any ) => {
   }
 }
 
-export const $toUnsigned = ( value: number, bitLength: number ) => {
+export const $toUnsigned = ( value: number | boolean, bitLength: number ) => {
   $assertNumber( value )
 
   // coerce to 32 bit integer
@@ -118,7 +118,7 @@ export const $toUnsigned = ( value: number, bitLength: number ) => {
   return value
 }
 
-export const $toSigned = ( value: number, bitLength: number ) => {
+export const $toSigned = ( value: number | boolean, bitLength: number ) => {
   $assertNumber( value )
 
   // coerce to 32 bit integer

@@ -43,14 +43,35 @@ const validateVariableDeclaration = (declaration, errors = []) => {
     errors.push(...exports.validateLet(declarator, errors));
     return errors;
 };
+const validateLiteral = (literal, parent, errors) => {
+    if (typeof literal.value === 'boolean')
+        return errors;
+    if (typeof literal.value === 'number')
+        return errors;
+    errors.push(util_1.LocError('Expected boolean or number', parent));
+    return errors;
+};
+const validateUnaryExpression = (unary, parent, errors) => {
+    if (unary.operator !== '-') {
+        errors.push(util_1.LocError('Expected UnaryExpression operator to be -', unary));
+        return errors;
+    }
+    const { argument } = unary;
+    if (argument.type === 'Literal') {
+        errors.push(...validateLiteral(argument, parent, errors));
+        return errors;
+    }
+    errors.push(util_1.LocError('Expected UnaryExpression argument to be Literal', unary));
+    return errors;
+};
 exports.validateConst = (declarator, errors = []) => {
     const init = declarator.init;
     if (init.type === 'Literal') {
-        if (typeof init.value === 'boolean')
-            return errors;
-        if (typeof init.value === 'number')
-            return errors;
-        errors.push(util_1.LocError('Expected boolean or number', declarator));
+        errors.push(...validateLiteral(init, declarator, errors));
+        return errors;
+    }
+    if (init.type === 'UnaryExpression') {
+        errors.push(...validateUnaryExpression(init, declarator, errors));
         return errors;
     }
     if (init.type === 'ArrayExpression') {
@@ -75,7 +96,11 @@ exports.validateConst = (declarator, errors = []) => {
                 errors.push(util_1.LocError(`Unexpected ${typeof node.value} in ArrayExpression[${i}]`, node));
                 return;
             }
-            errors.push(util_1.LocError(`Expected ArrayExpression[${i}] to be Literal`, node));
+            if (node.type === 'UnaryExpression') {
+                errors.push(...validateUnaryExpression(node, node, errors));
+                return;
+            }
+            errors.push(util_1.LocError(`Expected ArrayExpression[${i}] to be Literal or UnaryExpression`, node));
         });
         return errors;
     }

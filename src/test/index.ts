@@ -5,7 +5,7 @@ import { compile } from '..'
 import { CompileOptions } from '../types'
 import { bresenhamYuki } from '../examples/bresenham'
 import { generate } from 'escodegen'
-import { splitSource } from '../split-source';
+import { splitSource } from '../split-source'
 
 const kitchenSinkJs = readFileSync(
   './src/test/fixtures/kitchen-sink.yuki.js', 'utf8'
@@ -16,8 +16,10 @@ const kitchenSinkAst = parseModule( kitchenSinkJs )
 describe( 'yuki-js', () => {
   it( 'compiles', () => {
     const { main } = compile( kitchenSinkAst )
+    const source = generate( main )
 
     assert( main )
+    assert( source )
   } )
 
   it( 'executes', () => {

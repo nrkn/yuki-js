@@ -1,14 +1,14 @@
 import {
-  YukiDeclarationHeader, YukiConstNumber, YukiConstArray, YukiLet, YukiNumber,
-  YukiArray
+  YukiDeclarationHeader, YukiConstNumber, YukiConstArray, YukiLet
 } from './types'
 
 import {
-  VariableDeclaration, Property, ObjectExpression, Program, ArrayExpression,
-  SimpleLiteral,
+  VariableDeclaration, Program, ArrayExpression, SimpleLiteral,
   ExpressionStatement,
+  UnaryExpression
 } from 'estree'
-import { parseScript } from 'esprima';
+
+import { parseScript } from 'esprima'
 
 export const declarationsToAst = ( declarations: YukiDeclarationHeader ) => {
   const program: Program = {
@@ -34,6 +34,25 @@ const yukiConstNumberToAst = ( num: YukiConstNumber ) => {
   const { name, value } = num
   const raw = String( value )
 
+  const init: UnaryExpression | SimpleLiteral = (
+    value < 0 ?
+      {
+        type: 'UnaryExpression',
+        operator: '-',
+        prefix: true,
+        argument: {
+          type: 'Literal',
+          value: value * -1,
+          raw: String( value * -1 )
+        }
+      } :
+      {
+        type: 'Literal',
+        value,
+        raw
+      }
+  )
+
   const declaration: VariableDeclaration = {
     type: 'VariableDeclaration',
     declarations: [
@@ -43,11 +62,7 @@ const yukiConstNumberToAst = ( num: YukiConstNumber ) => {
           type: 'Identifier',
           name
         },
-        init: {
-          type: 'Literal',
-          value,
-          raw
-        }
+        init
       }
     ],
     kind: 'const'
@@ -62,6 +77,17 @@ const yukiConstArrayToAst = ( arr: YukiConstArray ) => {
   const arrayExpression: ArrayExpression = {
     type: 'ArrayExpression',
     elements: value.map( v => (
+      v < 0 ?
+      <UnaryExpression>{
+        type: 'UnaryExpression',
+        operator: '-',
+        prefix: true,
+        argument: {
+          type: 'Literal',
+          value: v * -1,
+          raw: String( v * -1 )
+        }
+      }:
       <SimpleLiteral>{
         type: 'Literal',
         value: v,

@@ -56,7 +56,10 @@ exports.DeclarationHeader = (program) => {
 const getConstValue = (node) => {
     if (node.type === 'Literal')
         return getLiteralValue(node);
-    return node.elements.map(getLiteralValue);
+    if (node.type === 'UnaryExpression') {
+        return getLiteralValue(node.argument) * -1;
+    }
+    return node.elements.map(getConstValue);
 };
 const getLiteralValue = (literal) => {
     if (typeof literal.value === 'boolean') {
@@ -65,7 +68,7 @@ const getLiteralValue = (literal) => {
     return literal.value;
 };
 const getType = (node) => {
-    if (node.type === 'Literal')
+    if (node.type === 'Literal' || node.type === 'UnaryExpression')
         return 'number';
     return 'array';
 };
