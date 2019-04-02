@@ -30,7 +30,7 @@ arrow keys to start a new match
 
 ## compiling yuki-js programs
 
-[TypeScript Example](./src/build/build-examples.ts)
+[TypeScript Example](./src/build/build-examples.ts) |
 [JavaScript Example](./dist/build/build-examples.js)
 
 ```js
