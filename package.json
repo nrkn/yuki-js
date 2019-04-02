@@ -1,7 +1,7 @@
 {
   "name": "yuki-js",
   "version": "0.0.8",
-  "description": "A tiny subset of JavaScript with configurable constraints",
+  "description": "A tiny subset of JavaScript with configurable constraints for creating fantasy consoles",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
