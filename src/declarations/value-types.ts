@@ -1,8 +1,3 @@
-export interface YukiDeclarationHeader {
-  consts: YukiConst[]
-  lets: YukiLet[]
-}
-
 export type YukiValueType = 'number' | 'array'
 
 export interface YukiValue {

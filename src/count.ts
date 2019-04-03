@@ -1,51 +1,31 @@
-import { YukiLet, YukiConst } from './declarations/header/types'
+import { YukiLet, YukiConst } from './declarations/value-types'
 import { Program } from 'estree'
 import { Visitor, traverse } from 'estraverse'
 import { valueToBitLength } from 'bits-bytes'
-import { normalizeRangeForBitLength } from './util';
+import { normalizeRangeForBitLength } from './util'
+import { declarationToYukiValue } from './declarations';
+import { YukiDeclaration } from './declarations/types';
 
-export const countMemory = ( lets: YukiLet[] ) => {
-  let bitLength = 0
+export const countConst = ( current: YukiConst ) => {
+  if ( current.type === 'number' ) {
+    const value = normalizeRangeForBitLength( current.value )
 
-  lets.forEach( current => {
-    if ( current.type === 'number' ) {
-      bitLength += current.bitLength
-    } else {
-      bitLength += current.bitLength * current.length
-    }
-  } )
+    return valueToBitLength( value )
+  } else {
+    let max = 0
 
-  return bitLength
-}
+    current.value.forEach( v => {
+      v = normalizeRangeForBitLength( v )
+      if ( v > max ) max = v
+    } )
 
-export const countConsts = ( consts: YukiConst[] ) => {
-  let bitLength = 0
-
-  const addNumber = ( value: number ) => {
-    value = normalizeRangeForBitLength( value )
-    bitLength += valueToBitLength( value )
+    return valueToBitLength( max ) * current.value.length
   }
-
-  consts.forEach( current => {
-    if ( current.type === 'number' ) {
-      addNumber( current.value )
-    } else {
-      let max = 0
-
-      current.value.forEach( v => {
-        v = normalizeRangeForBitLength( v )
-        if( v > max ) max = v
-      })
-
-      bitLength += valueToBitLength( max ) * current.value.length
-    }
-  } )
-
-  return bitLength
 }
 
 export const countProgramSize = ( ast: Program, instructionSize: number ) => {
-  let count = 0
+  let programSize = 0
+  let constBits = 0
 
   const visitor: Visitor = {
     enter: ( node, parent ) => {
@@ -60,14 +40,20 @@ export const countProgramSize = ( ast: Program, instructionSize: number ) => {
           value = normalizeRangeForBitLength( value )
         }
 
-        count += valueToBitLength( value )
+        programSize += valueToBitLength( value )
+      } else if( node.type === 'VariableDeclaration' && node.kind === 'const' ){
+        const c = <YukiConst>declarationToYukiValue( <YukiDeclaration>node )
+
+        constBits += countConst( c )
       } else {
-        count += instructionSize
+        programSize += instructionSize
       }
     }
   }
 
   traverse( ast, visitor )
 
-  return count
+  programSize += Math.ceil( constBits / 8 )
+
+  return programSize
 }

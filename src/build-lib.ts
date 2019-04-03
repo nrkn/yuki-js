@@ -1,12 +1,7 @@
-import { parseScript } from 'esprima'
 import { replace } from 'estraverse'
 import { Program, VariableDeclaration, VariableDeclarator } from 'estree'
 
-export const buildLib = ( libAst: Program, maxSize: number, addressSize: number ) => {
-  const callStackAst = parseScript( `
-    const { $in, $out } = $CallStack( ${ maxSize }, ${ addressSize } )
-  `)
-
+export const buildLib = ( libAst: Program ) => {
   replace( libAst, {
     enter: ( node, parent ) => {
       if (
@@ -50,8 +45,7 @@ export const buildLib = ( libAst: Program, maxSize: number, addressSize: number 
 
   libAst.body = [
     useStrict,
-    ...rest,
-    ...callStackAst.body
+    ...rest
   ]
 
   return libAst.body

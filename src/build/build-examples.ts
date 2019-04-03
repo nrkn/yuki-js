@@ -12,13 +12,13 @@ const build1Bit = () => {
   const yukiAst = parseScript( gameYukiSource, { loc: true } )
   const libAst = parseScript( gameLibSource )
 
-  const { main, memoryUsed, programSize } = compile( yukiAst, { lib: libAst } )
+  const { main, programSize } = compile( yukiAst, { lib: libAst } )
 
   const source = generate( main )
 
   writeFileSync( './examples/1-bit/main.js', source, 'utf8' )
 
-  console.log( { memoryUsed, programSize } )
+  console.log( { programSize } )
 }
 
 const buildChannelY = () => {
@@ -30,7 +30,7 @@ const buildChannelY = () => {
   const yukiAst = parseScript( gameYukiSource, { loc: true } )
   const libAst = parseScript( gameLibSource )
 
-  const { main, memoryUsed, programSize } = compile( yukiAst, {
+  const { main, programSize } = compile( yukiAst, {
     lib: libAst,
     maxProgramSize: 2048,
     memorySize: 64,
@@ -41,7 +41,7 @@ const buildChannelY = () => {
 
   writeFileSync( './examples/channel-y/main.js', source, 'utf8' )
 
-  console.log( { memoryUsed, programSize } )
+  console.log( { programSize } )
 }
 
 build1Bit()

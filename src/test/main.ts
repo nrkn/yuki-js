@@ -8,12 +8,12 @@ import {
 
 import {
   YukiValue, YukiArray, YukiNumber, YukiConstNumber, YukiConstArray
-} from '../declarations/header/types'
+} from '../declarations/value-types'
 
 import { FunctionNames } from '../main/types'
 
 import {
-  ValidateNode, ValidateIdentifier, ValidateMemberExpression,
+  ValidateNode, ValidateIdentifier, validateMemberExpression,
   ValidateAssignmentExpression, ValidateCallExpression,
   ValidateFunctionDeclaration, validateReturnStatement, validateLiteral
 } from '../main/validate'
@@ -23,14 +23,13 @@ import { getSubroutineNames, getLibFunctionNames } from '../main/util'
 describe( 'yuki-js', () => {
   describe( 'main', () => {
     describe( 'validate', () => {
-      const headerMap = new Map<string, YukiValue>()
       const functionNames: FunctionNames = {
         external: [],
         subroutines: []
       }
 
       describe( 'ValidateNode', () => {
-        const validateNode = ValidateNode( headerMap, functionNames )
+        const validateNode = ValidateNode( functionNames )
 
         it( 'Unexpected type VariableDeclaration', () => {
           const ast = parseScript( 'let x = 0' )
@@ -40,21 +39,6 @@ describe( 'yuki-js', () => {
 
           assert.strictEqual( errors.length, 1 )
           assert( errors[ 0 ].message.startsWith( 'Unexpected type VariableDeclaration' ) )
-        } )
-      } )
-
-      describe( 'ValidateIdentifier', () => {
-        it( 'Unexpected Identifier a', () => {
-          const validateIdentifier = ValidateIdentifier( headerMap, [] )
-          const ast = parseScript( 'a' )
-
-          const expression = <ExpressionStatement>ast.body[ 0 ]
-          const identifier = <Identifier>expression.expression
-
-          const errors = validateIdentifier( identifier )
-
-          assert.strictEqual( errors.length, 1 )
-          assert( errors[ 0 ].message.startsWith( 'Unexpected Identifier a' ) )
         } )
       } )
 
@@ -70,8 +54,6 @@ describe( 'yuki-js', () => {
         }
 
         headerMap.set( 'a', a )
-
-        const validateMemberExpression = ValidateMemberExpression( headerMap )
 
         const validate = ( errorMessage: string, source: string ) => {
           it( errorMessage, () => {
@@ -133,10 +115,8 @@ describe( 'yuki-js', () => {
         headerMap.set( 'c', c )
         headerMap.set( 'd', d )
 
-        const validateMemberExpression = ValidateMemberExpression( headerMap )
-        const validateIdentifier = ValidateIdentifier( headerMap, [ 'foo' ] )
         const validateAssignmentExpression = ValidateAssignmentExpression(
-          headerMap, validateIdentifier, validateMemberExpression
+          validateMemberExpression
         )
 
         const validate = ( errorMessage: string, source: string ) => {
@@ -265,7 +245,7 @@ describe( 'yuki-js', () => {
           const expression = <ExpressionStatement>ast.body[ 0 ]
           const literal = <Literal>expression.expression
 
-          const errors = validateLiteral( literal )
+          const errors = validateLiteral( literal, expression, [] )
 
           assert(
             errors[ 0 ].message.startsWith( 'Unexpected type string' )

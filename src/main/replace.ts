@@ -1,20 +1,22 @@
 import {
-  Identifier, MemberExpression, Program, ReturnStatement, FunctionDeclaration
+  Program, ReturnStatement, FunctionDeclaration, VariableDeclaration, ExpressionStatement, AssignmentExpression, BlockStatement
 } from 'estree'
 
-import { YukiLet } from '../declarations/header/types'
 import { replace, Visitor } from 'estraverse'
+import { identifierToAst, declarationToAst } from '../declarations'
+import { YukiDeclaration } from '../declarations/types';
 
-export const replaceMainProgram = ( program: Program, lets: YukiLet[] ) => {
+export const replaceMainProgram = ( program: Program, memorySize: number, addressSize: number ) => {
   program = JSON.parse( JSON.stringify( program ) )
 
-  const map = new Map<string, YukiLet>()
-
-  lets.forEach( l => map.set( l.name, l ) )
+  program.body = [
+    ...initContext( memorySize, addressSize ),
+    ...program.body
+  ]
 
   const visitor: Visitor = {
     enter: ( node, parent ) => {
-      if ( node.type === 'Identifier' && map.has( node.name ) ) {
+      if ( node.type === 'Identifier' ) {
         if (
           parent &&
           parent.type === 'MemberExpression' &&
@@ -22,7 +24,26 @@ export const replaceMainProgram = ( program: Program, lets: YukiLet[] ) => {
           parent.object.name === '$'
         ) return node
 
-        return replaceIdentifier( node )
+        return identifierToAst( node )
+      }
+
+      if( node.type === 'BlockStatement' ){
+        const block = <BlockStatement>JSON.parse( JSON.stringify( node ) )
+
+        block.body = [
+          ...enterContext( memorySize, addressSize ),
+          ...block.body,
+          {
+            type: 'ExpressionStatement',
+            expression: exitContext()
+          }
+        ]
+
+        return block
+      }
+
+      if( node.type === 'VariableDeclaration' ){
+        return declarationToAst( <YukiDeclaration>node )
       }
 
       if ( node.type === 'ReturnStatement' && !node.argument ) {
@@ -42,23 +63,148 @@ export const replaceMainProgram = ( program: Program, lets: YukiLet[] ) => {
   return program
 }
 
-const replaceIdentifier = ( node: Identifier ) => {
-  const { name } = node
-
-  const expression: MemberExpression = {
-    type: 'MemberExpression',
-    computed: false,
-    object: {
-      type: 'Identifier',
-      name: '$'
+const initContext = ( memorySize: number, addressSize: number ) => {
+  const context: VariableDeclaration[] = [
+    {
+      type: 'VariableDeclaration',
+      declarations: [
+        {
+          type: 'VariableDeclarator',
+          id: {
+            type: 'Identifier',
+            name: '$context'
+          },
+          init: {
+            type: 'CallExpression',
+            callee: {
+              type: 'Identifier',
+              name: '$Context'
+            },
+            arguments: [ {
+              type: 'Literal',
+              value: memorySize,
+              raw: String( memorySize )
+            }, {
+              type: 'Literal',
+              value: addressSize,
+              raw: String( addressSize )
+            } ]
+          }
+        }
+      ],
+      kind: 'let'
     },
-    property: {
+    {
+      type: 'VariableDeclaration',
+      declarations: [
+        {
+          type: 'VariableDeclarator',
+          id: {
+            type: 'ObjectPattern',
+            properties: [
+              {
+                type: 'Property',
+                key: {
+                  type: 'Identifier',
+                  name: '$'
+                },
+                computed: false,
+                value: {
+                  type: 'Identifier',
+                  name: '$'
+                },
+                kind: 'init',
+                method: false,
+                shorthand: true
+              }
+            ]
+          },
+          init: {
+            type: 'Identifier',
+            name: '$context'
+          }
+        }
+      ],
+      kind: 'let'
+    }
+  ]
+
+  return context
+}
+
+const enterContext = ( memorySize: number, addressSize: number ) => {
+  const enter: [ VariableDeclaration, ExpressionStatement ] = [
+    {
+      type: 'VariableDeclaration',
+      declarations: [
+        {
+          type: 'VariableDeclarator',
+          id: {
+            type: 'Identifier',
+            name: '$parent'
+          },
+          init: {
+            type: 'Identifier',
+            name: '$context'
+          }
+        }
+      ],
+      kind: 'const'
+    },
+    {
+      type: 'ExpressionStatement',
+      expression: {
+        type: 'AssignmentExpression',
+        operator: '=',
+        left: {
+          type: 'Identifier',
+          name: '$context'
+        },
+        right: {
+          type: 'CallExpression',
+          callee: {
+            type: 'Identifier',
+            name: '$Context'
+          },
+          arguments: [
+            {
+              type: 'Literal',
+              value: memorySize,
+              raw: String( memorySize )
+            },
+            {
+              type: 'Literal',
+              value: addressSize,
+              raw: String( addressSize )
+            },
+            {
+              type: 'Identifier',
+              name: '$parent'
+            }
+          ]
+        }
+      }
+    }
+  ]
+
+  return enter
+}
+
+const exitContext = () => {
+  const exit: AssignmentExpression = {
+    type: 'AssignmentExpression',
+    operator: '=',
+    left: {
       type: 'Identifier',
-      name
+      name: '$context'
+    },
+    right: {
+      type: 'Identifier',
+      name: 'parent'
     }
   }
 
-  return expression
+  return exit
 }
 
 const replaceFunction = ( node: FunctionDeclaration ) => {
@@ -66,14 +212,22 @@ const replaceFunction = ( node: FunctionDeclaration ) => {
 
   node.body.body = [
     {
-      "type": "ExpressionStatement",
-      "expression": {
-        "type": "CallExpression",
-        "callee": {
-          "type": "Identifier",
-          "name": "$in"
+      type: 'ExpressionStatement',
+      expression: {
+        type: 'CallExpression',
+        callee: {
+          type: 'MemberExpression',
+          computed: false,
+          object: {
+            type: 'Identifier',
+            name: '$context'
+          },
+          property: {
+            type: 'Identifier',
+            name: 'fnIn'
+          }
         },
-        "arguments": []
+        arguments: []
       }
     },
     ...node.body.body,
@@ -88,11 +242,25 @@ const replaceReturn = ( _node: ReturnStatement ) => returnStatement()
 const returnStatement = (): ReturnStatement => ( {
   type: 'ReturnStatement',
   argument: {
-    type: 'CallExpression',
-    callee: {
-      type: 'Identifier',
-      name: '$out'
-    },
-    arguments: []
+    type: 'SequenceExpression',
+    expressions: [
+      {
+        type: 'CallExpression',
+        callee: {
+          type: 'MemberExpression',
+          computed: false,
+          object: {
+            type: 'Identifier',
+            name: '$context'
+          },
+          property: {
+            type: 'Identifier',
+            name: 'fnOut'
+          }
+        },
+        arguments: []
+      },
+      exitContext()
+    ]
   }
 } )
