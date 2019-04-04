@@ -1,11 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const esprima_1 = require("esprima");
 const estraverse_1 = require("estraverse");
-exports.buildLib = (libAst, maxSize, addressSize) => {
-    const callStackAst = esprima_1.parseScript(`
-    const { $in, $out } = $CallStack( ${maxSize}, ${addressSize} )
-  `);
+exports.buildLib = (libAst) => {
     estraverse_1.replace(libAst, {
         enter: (node, parent) => {
             if (node.type === 'AssignmentExpression' &&
@@ -42,8 +38,7 @@ exports.buildLib = (libAst, maxSize, addressSize) => {
     const [useStrict, , ...rest] = libAst.body;
     libAst.body = [
         useStrict,
-        ...rest,
-        ...callStackAst.body
+        ...rest
     ];
     return libAst.body;
 };

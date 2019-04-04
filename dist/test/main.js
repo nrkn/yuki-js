@@ -7,30 +7,18 @@ const util_1 = require("../main/util");
 describe('yuki-js', () => {
     describe('main', () => {
         describe('validate', () => {
-            const headerMap = new Map();
             const functionNames = {
                 external: [],
                 subroutines: []
             };
             describe('ValidateNode', () => {
-                const validateNode = validate_1.ValidateNode(headerMap, functionNames);
+                const validateNode = validate_1.ValidateNode(functionNames);
                 it('Unexpected type VariableDeclaration', () => {
                     const ast = esprima_1.parseScript('let x = 0');
                     const node = ast.body[0];
                     const errors = validateNode(node);
                     assert.strictEqual(errors.length, 1);
                     assert(errors[0].message.startsWith('Unexpected type VariableDeclaration'));
-                });
-            });
-            describe('ValidateIdentifier', () => {
-                it('Unexpected Identifier a', () => {
-                    const validateIdentifier = validate_1.ValidateIdentifier(headerMap, []);
-                    const ast = esprima_1.parseScript('a');
-                    const expression = ast.body[0];
-                    const identifier = expression.expression;
-                    const errors = validateIdentifier(identifier);
-                    assert.strictEqual(errors.length, 1);
-                    assert(errors[0].message.startsWith('Unexpected Identifier a'));
                 });
             });
             describe('ValidateMemberExpression', () => {
@@ -43,13 +31,12 @@ describe('yuki-js', () => {
                     signed: true
                 };
                 headerMap.set('a', a);
-                const validateMemberExpression = validate_1.ValidateMemberExpression(headerMap);
                 const validate = (errorMessage, source) => {
                     it(errorMessage, () => {
                         const ast = esprima_1.parseScript(source);
                         const expression = ast.body[0];
                         const memberExpression = expression.expression;
-                        const errors = validateMemberExpression(memberExpression);
+                        const errors = validate_1.validateMemberExpression(memberExpression);
                         assert.strictEqual(errors.length, 1);
                         assert(errors[0].message.startsWith(errorMessage));
                     });
@@ -91,9 +78,7 @@ describe('yuki-js', () => {
                 headerMap.set('b', b);
                 headerMap.set('c', c);
                 headerMap.set('d', d);
-                const validateMemberExpression = validate_1.ValidateMemberExpression(headerMap);
-                const validateIdentifier = validate_1.ValidateIdentifier(headerMap, ['foo']);
-                const validateAssignmentExpression = validate_1.ValidateAssignmentExpression(headerMap, validateIdentifier, validateMemberExpression);
+                const validateAssignmentExpression = validate_1.ValidateAssignmentExpression(validate_1.validateMemberExpression);
                 const validate = (errorMessage, source) => {
                     it(errorMessage, () => {
                         const ast = esprima_1.parseScript(source);
@@ -167,7 +152,7 @@ describe('yuki-js', () => {
                     const ast = esprima_1.parseScript('""');
                     const expression = ast.body[0];
                     const literal = expression.expression;
-                    const errors = validate_1.validateLiteral(literal);
+                    const errors = validate_1.validateLiteral(literal, expression, []);
                     assert(errors[0].message.startsWith('Unexpected type string'));
                 });
             });

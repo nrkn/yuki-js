@@ -1,3 +1,2 @@
 import { Program } from 'estree';
-import { YukiLet } from '../declarations/header/types';
-export declare const replaceMainProgram: (program: Program, lets: YukiLet[]) => Program;
+export declare const replaceMainProgram: (program: Program, memorySize: number, addressSize: number) => Program;

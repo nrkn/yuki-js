@@ -3,42 +3,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const estraverse_1 = require("estraverse");
 const bits_bytes_1 = require("bits-bytes");
 const util_1 = require("./util");
-exports.countMemory = (lets) => {
-    let bitLength = 0;
-    lets.forEach(current => {
-        if (current.type === 'number') {
-            bitLength += current.bitLength;
-        }
-        else {
-            bitLength += current.bitLength * current.length;
-        }
-    });
-    return bitLength;
-};
-exports.countConsts = (consts) => {
-    let bitLength = 0;
-    const addNumber = (value) => {
-        value = util_1.normalizeRangeForBitLength(value);
-        bitLength += bits_bytes_1.valueToBitLength(value);
-    };
-    consts.forEach(current => {
-        if (current.type === 'number') {
-            addNumber(current.value);
-        }
-        else {
-            let max = 0;
-            current.value.forEach(v => {
-                v = util_1.normalizeRangeForBitLength(v);
-                if (v > max)
-                    max = v;
-            });
-            bitLength += bits_bytes_1.valueToBitLength(max) * current.value.length;
-        }
-    });
-    return bitLength;
+const declarations_1 = require("./declarations");
+exports.countConst = (current) => {
+    if (current.type === 'number') {
+        const value = util_1.normalizeRangeForBitLength(current.value);
+        return bits_bytes_1.valueToBitLength(value);
+    }
+    else {
+        let max = 0;
+        current.value.forEach(v => {
+            v = util_1.normalizeRangeForBitLength(v);
+            if (v > max)
+                max = v;
+        });
+        return bits_bytes_1.valueToBitLength(max) * current.value.length;
+    }
 };
 exports.countProgramSize = (ast, instructionSize) => {
-    let count = 0;
+    let programSize = 0;
+    let constBits = 0;
     const visitor = {
         enter: (node, parent) => {
             if (node.type === 'Literal' && typeof node.value === 'number') {
@@ -48,14 +31,19 @@ exports.countProgramSize = (ast, instructionSize) => {
                     parent.operator === '-') {
                     value = util_1.normalizeRangeForBitLength(value);
                 }
-                count += bits_bytes_1.valueToBitLength(value);
+                programSize += bits_bytes_1.valueToBitLength(value);
+            }
+            else if (node.type === 'VariableDeclaration' && node.kind === 'const') {
+                const c = declarations_1.declarationToYukiValue(node);
+                constBits += exports.countConst(c);
             }
             else {
-                count += instructionSize;
+                programSize += instructionSize;
             }
         }
     };
     estraverse_1.traverse(ast, visitor);
-    return count;
+    programSize += Math.ceil(constBits / 8);
+    return programSize;
 };
 //# sourceMappingURL=count.js.map

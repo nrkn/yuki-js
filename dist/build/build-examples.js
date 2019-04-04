@@ -10,10 +10,10 @@ const build1Bit = () => {
     const gameLibSource = fs_1.readFileSync('./examples/1-bit/src/lib.js', 'utf8');
     const yukiAst = esprima_1.parseScript(gameYukiSource, { loc: true });
     const libAst = esprima_1.parseScript(gameLibSource);
-    const { main, memoryUsed, programSize } = __1.compile(yukiAst, { lib: libAst });
+    const { main, programSize } = __1.compile(yukiAst, { lib: libAst });
     const source = escodegen_1.generate(main);
     fs_1.writeFileSync('./examples/1-bit/main.js', source, 'utf8');
-    console.log({ memoryUsed, programSize });
+    console.log({ programSize });
 };
 const buildChannelY = () => {
     console.log('channel Y');
@@ -21,7 +21,7 @@ const buildChannelY = () => {
     const gameLibSource = fs_1.readFileSync('./examples/channel-y/src/lib.js', 'utf8');
     const yukiAst = esprima_1.parseScript(gameYukiSource, { loc: true });
     const libAst = esprima_1.parseScript(gameLibSource);
-    const { main, memoryUsed, programSize } = __1.compile(yukiAst, {
+    const { main, programSize } = __1.compile(yukiAst, {
         lib: libAst,
         maxProgramSize: 2048,
         memorySize: 64,
@@ -29,7 +29,7 @@ const buildChannelY = () => {
     });
     const source = escodegen_1.generate(main);
     fs_1.writeFileSync('./examples/channel-y/main.js', source, 'utf8');
-    console.log({ memoryUsed, programSize });
+    console.log({ programSize });
 };
 build1Bit();
 buildChannelY();
