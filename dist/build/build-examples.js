@@ -9,9 +9,14 @@ const build1Bit = () => {
     const gameYukiSource = fs_1.readFileSync('./examples/1-bit/src/game.yuki.js', 'utf8');
     const gameLibSource = fs_1.readFileSync('./examples/1-bit/src/lib.js', 'utf8');
     const yukiAst = esprima_1.parseScript(gameYukiSource, { loc: true });
-    const libAst = esprima_1.parseScript(gameLibSource);
-    const { main, programSize } = __1.compile(yukiAst, { lib: libAst });
-    const source = escodegen_1.generate(main);
+    const externalLib = esprima_1.parseScript(gameLibSource);
+    const externalScope = {
+        consts: [],
+        functions: ['up', 'down', 'left', 'right', 'setPixel']
+    };
+    const requiredFunctions = ['tick'];
+    const { program, programSize } = __1.compile(yukiAst, { externalLib, externalScope, requiredFunctions });
+    const source = escodegen_1.generate(program);
     fs_1.writeFileSync('./examples/1-bit/main.js', source, 'utf8');
     console.log({ programSize });
 };
@@ -20,14 +25,22 @@ const buildChannelY = () => {
     const gameYukiSource = fs_1.readFileSync('./examples/channel-y/src/game.yuki.js', 'utf8');
     const gameLibSource = fs_1.readFileSync('./examples/channel-y/src/lib.js', 'utf8');
     const yukiAst = esprima_1.parseScript(gameYukiSource, { loc: true });
-    const libAst = esprima_1.parseScript(gameLibSource);
-    const { main, programSize } = __1.compile(yukiAst, {
-        lib: libAst,
+    const externalLib = esprima_1.parseScript(gameLibSource);
+    const externalScope = {
+        consts: [],
+        functions: [
+            'up1', 'down1', 'left1', 'right1', 'up2', 'down2', 'left2', 'right2',
+            'setPixel', 'setBackground', 'rnd'
+        ]
+    };
+    const { program, programSize } = __1.compile(yukiAst, {
+        externalLib,
+        externalScope,
         maxProgramSize: 2048,
         memorySize: 64,
-        requiredSubroutines: ['tick']
+        requiredFunctions: ['tick']
     });
-    const source = escodegen_1.generate(main);
+    const source = escodegen_1.generate(program);
     fs_1.writeFileSync('./examples/channel-y/main.js', source, 'utf8');
     console.log({ programSize });
 };

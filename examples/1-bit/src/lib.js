@@ -54,7 +54,9 @@ document.addEventListener( 'keyup', e => {
         $isRight = false
 } )
 
-$draw()
+const $init = () => {
+    $draw()
+}
 
 function up() { return $isUp }
 function down() { return $isDown }

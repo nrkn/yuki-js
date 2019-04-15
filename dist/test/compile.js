@@ -5,36 +5,32 @@ const esprima_1 = require("esprima");
 const __1 = require("..");
 describe('yuki-js', () => {
     describe('compile', () => {
-        it('Invalid Declarations', () => {
-            const program = esprima_1.parseScript('var x = Int8', { loc: true });
-            assert.throws(() => __1.compile(program), {
-                message: 'Unexpected var at line 1, column 0'
-            });
-        });
-        it('Missing required subroutines', () => {
-            const program = esprima_1.parseScript('');
+        it('maxProgramSize', () => {
+            const source = 'const x = 10';
+            const program = esprima_1.parseScript(source);
+            const opts = {
+                maxProgramSize: 1
+            };
+            assert.doesNotThrow(() => __1.compile(program));
             assert.throws(() => {
-                __1.compile(program, { requiredSubroutines: ['tick'] });
+                __1.compile(program, opts);
             }, {
-                message: 'Missing required subroutines: tick'
+                message: 'Program size exceeded: 8/1'
             });
         });
-        it('Invalid Main', () => {
-            const program = esprima_1.parseScript('""', { loc: true });
-            assert.throws(() => __1.compile(program), {
-                message: 'Unexpected type string at line 1, column 0'
-            });
-        });
-        it('Memory allocation exceeded', () => {
-            const program = esprima_1.parseScript('let x = Uint16');
-            assert.throws(() => __1.compile(program, { memorySize: 1 }), {
-                message: 'Memory allocation exceeded: 2/1'
-            });
-        });
-        it('Program size exceeded', () => {
-            const program = esprima_1.parseScript('let x = Uint16; x = 0');
-            assert.throws(() => __1.compile(program, { maxProgramSize: 1 }), {
-                message: 'Program size exceeded: 7/1'
+        it('missing functions', () => {
+            const pass = 'function foo(){};function bar(){}';
+            const fail = 'const x = 10';
+            const passProgram = esprima_1.parseScript(pass);
+            const failProgram = esprima_1.parseScript(fail);
+            const opts = {
+                requiredFunctions: ['foo', 'bar']
+            };
+            assert.doesNotThrow(() => __1.compile(passProgram, opts));
+            assert.throws(() => {
+                __1.compile(failProgram, opts);
+            }, {
+                message: 'Missing required functions: foo, bar'
             });
         });
     });

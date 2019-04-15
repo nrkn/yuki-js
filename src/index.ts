@@ -1,79 +1,73 @@
-import { Program } from 'estree'
-import { getSubroutineNames, getLibFunctionNames } from './main/util'
-import { FunctionNames } from './main/types'
-import { ValidateMainProgram } from './main/validate'
-import { replaceMainProgram } from './main/replace'
+import { Program, ExpressionStatement } from 'estree'
 import { CompileOptions } from './types'
-import { buildLib } from './build-lib'
+import { DefaultCompileOptions } from './default-options'
+import { DefaultTransformOptions } from './transform/default-options'
+import { transform } from './transform'
+import * as libObj from './lib/lib.json'
+import { bitLengthToBytes, valueToBitLength } from 'bits-bytes'
+import { transformLib } from './transform/transform-lib'
 import { countProgramSize } from './count'
-import { valueToBitLength, bitLengthToBytes } from 'bits-bytes'
-import * as libScript from './lib-ast/lib.ast.json'
 
-export const compile = ( yukiProgram: Program, opts: Partial<CompileOptions> = {} ) => {
-  const options: CompileOptions = Object.assign(
-    {}, defaultCompileOptions, opts
-  )
-
-  const {
-    memorySize, maxProgramSize, instructionSize, lib, requiredSubroutines
-  } = options
-
-  const localSubroutineNames = getSubroutineNames( yukiProgram )
-
-  const missingSubroutines = requiredSubroutines.filter( name =>
-    !localSubroutineNames.subroutines.includes( name )
-  )
-
-  if ( missingSubroutines.length )
-    throw Error(
-      `Missing required subroutines: ${ missingSubroutines.join( ', ' ) }`
+export const compile =
+  ( yukiProgram: Program, opts: Partial<CompileOptions> = {} ) => {
+    const options: CompileOptions = Object.assign(
+      {}, DefaultCompileOptions(), opts
     )
 
-  const libFunctionNames = getLibFunctionNames( lib )
+    const {
+      memorySize, maxProgramSize, instructionSize, externalLib, externalScope,
+      requiredFunctions
+    } = options
 
-  const functionNames: FunctionNames = {
-    ...localSubroutineNames,
-    external: [ 'size', ...libFunctionNames ]
+    const programSize = countProgramSize( yukiProgram, instructionSize )
+
+    if ( programSize > maxProgramSize )
+      throw Error(
+        `Program size exceeded: ${ programSize }/${ maxProgramSize }`
+      )
+
+    const transformOptions = DefaultTransformOptions()
+
+    transformOptions.external.consts.push( ...externalScope.consts )
+    transformOptions.external.functions.push( ...externalScope.functions )
+
+    const program = transform( yukiProgram, transformOptions )
+
+    const programFunctions = transformOptions.scope.functions
+
+    const missingFunctions = requiredFunctions.filter( name =>
+      !programFunctions.includes( name )
+    )
+
+    if ( missingFunctions.length )
+      throw Error(
+        `Missing required functions: ${ missingFunctions.join( ', ' ) }`
+      )
+
+    const addressSize = bitLengthToBytes( valueToBitLength( maxProgramSize ) )
+
+    let lib = JSON.parse( JSON.stringify( libObj ) ) as Program
+
+    lib = transformLib( lib, memorySize, addressSize )
+
+    const initCall: ExpressionStatement = {
+      type: 'ExpressionStatement',
+      expression: {
+        type: 'CallExpression',
+        callee: {
+          type: 'Identifier',
+          name: '$init'
+        },
+        arguments: []
+      }
+    }
+
+    program.body = [
+      ...lib.body,
+      ...externalLib.body,
+      ...program.body,
+      initCall
+    ]
+
+    return { program, programSize }
   }
-
-  const validateMainProgram = ValidateMainProgram( functionNames )
-
-  const errors = validateMainProgram( yukiProgram )
-
-  if ( errors.length ) {
-    throw errors[ 0 ]
-  }
-
-  const addressSize = bitLengthToBytes( valueToBitLength( maxProgramSize ) )
-
-  const libScriptAst: Program = JSON.parse( JSON.stringify( libScript ) )
-
-  const libAst = buildLib( libScriptAst )
-
-  const main = replaceMainProgram( yukiProgram, memorySize, addressSize )
-
-  const programSize = countProgramSize( main, instructionSize )
-
-  if ( programSize > maxProgramSize )
-    throw Error( `Program size exceeded: ${ programSize }/${ maxProgramSize }` )
-
-  main.body = [
-    ...libAst,
-    ...lib.body,
-    ...main.body
-  ]
-
-  return { main, programSize }
-}
-
-export const defaultCompileOptions: CompileOptions = {
-  memorySize: 1024,
-  maxProgramSize: 1024,
-  instructionSize: 1,
-  lib: {
-    type: 'Program',
-    body: [],
-    sourceType: 'script'
-  },
-  requiredSubroutines: []
-}

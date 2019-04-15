@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "es2015",
+    "declaration": false,
+    "outDir": "./lib/types",
+    "rootDir": "./lib-src",
+    "listFiles": false,
+    "listEmittedFiles": false,
+    "newLine": "LF",
+    "pretty": true,
+
+    "sourceMap": false,
+    "strict": true,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "noImplicitThis": false,
+    "alwaysStrict": true,
+
+    "moduleResolution": "node"
+  },
+  "exclude": [ "src", "dist", "lib" ]
+}

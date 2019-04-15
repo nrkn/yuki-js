@@ -1,0 +1,10 @@
+import { VariableDeclaration, VariableDeclarator, ArrayExpression, Expression } from 'estree';
+import { YukiNode, YukiCallExpressionDeclarator, FreezeCallExpression } from '../node-types';
+import { TransformOptions } from '../types';
+export declare const variableDeclarationNode: (node: VariableDeclaration, parent: YukiNode, options: TransformOptions) => void;
+export declare const letDeclaratorNode: (node: VariableDeclarator, parent: VariableDeclaration, options: TransformOptions) => VariableDeclarator | undefined;
+export declare const arrayExpressionNode: (node: ArrayExpression, parent: YukiNode) => FreezeCallExpression | undefined;
+export declare const freezeNode: (node: Expression) => FreezeCallExpression;
+export declare const declaratorToAllocate: (init: YukiCallExpressionDeclarator) => import("estree").SimpleCallExpression;
+export declare const constNode: (node: VariableDeclaration, _parent: YukiNode, options: TransformOptions) => void;
+export declare const letNode: (node: VariableDeclaration, _parent: YukiNode, options: TransformOptions) => void;

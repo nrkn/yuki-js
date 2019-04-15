@@ -1,46 +1,49 @@
 {
   "name": "yuki-js",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "description": "A tiny subset of JavaScript with configurable constraints for creating fantasy consoles",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc && node ./dist/build/build-lib-script",
-    "build-examples": "npm run build && node ./dist/build/build-examples",
-    "test": "npm run build && mocha ./dist/test",
-    "coverage": "npm run build && nyc --reporter=html --reporter=text mocha ./dist/test"
+    "copy-lib-src": "node ./dist/build/copy-lib-src",
+    "build": "tsc && npm run copy-lib-src && tsc -p lib-src.tsconfig.json",
+    "build-lib": "npm run build && node ./dist/build/build-lib",
+    "build-examples": "npm run build-lib && node ./dist/build/build-examples",
+    "mocha": "mocha ./dist/test",
+    "nyc": "nyc --reporter=html --reporter=text mocha ./dist/test",
+    "test": "npm run build-lib && npm run mocha",
+    "coverage": "npm run build-lib && npm run nyc"
   },
   "nyc": {
     "exclude": [
       "./dist/test"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nrkn/yuki-js.git"
-  },
   "keywords": [
-    "compile", "fantasy", "console", "fantasy console", "subset", "memory",
-    "constraints", "yuki"
+    "compile",
+    "fantasy",
+    "console",
+    "fantasy console",
+    "subset",
+    "memory",
+    "constraints",
+    "yuki"
   ],
   "author": "Nik Coughlin <nrkn.com@gmail.com>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nrkn/yuki-js/issues"
-  },
-  "homepage": "https://github.com/nrkn/yuki-js#readme",
   "devDependencies": {
-    "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.12",
-    "mocha": "^5.2.0"
-  },
-  "dependencies": {
     "@types/escodegen": "0.0.6",
     "@types/esprima": "^4.0.2",
     "@types/estraverse": "0.0.6",
-    "bits-bytes": "^0.2.0",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.12",
     "escodegen": "^1.11.1",
     "esprima": "^4.0.1",
+    "mocha": "^5.2.0",
+    "nyc": "^13.3.0"
+  },
+  "dependencies": {
+    "bits-bytes": "^0.2.0",
     "estraverse": "^4.2.0"
   }
 }

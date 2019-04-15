@@ -94,7 +94,9 @@ document.addEventListener( 'keyup', e => {
         $isRight2 = false
 } )
 
-$draw()
+const $init = () => {
+    $draw()
+}
 
 function up1() { return $isUp1 }
 function down1() { return $isDown1 }
@@ -110,19 +112,19 @@ function rnd( value ){
 }
 
 function setBackground( row, backgroundColor ){
-    row = $toUnsigned( row, 6 )
-    backgroundColor = $toUnsigned( backgroundColor, 2 )
+    row = ensureUnsigned( row, 6 )
+    backgroundColor = ensureUnsigned( backgroundColor, 2 )
 
     $backgrounds[ row ] = backgroundColor
 }
 
 function setPixel( x, y, color ) {
-    x = $toUnsigned( x, 7 )
-    y = $toUnsigned( y, 6 )
+    x = ensureUnsigned( x, 7 )
+    y = ensureUnsigned( y, 6 )
 
     const i = y * width + x
 
-    color = $toUnsigned( color, 2 )
+    color = ensureUnsigned( color, 2 )
 
     if( color === 3 ){
         color = $palette[ $background[ $backgrounds[ y ] ] ]

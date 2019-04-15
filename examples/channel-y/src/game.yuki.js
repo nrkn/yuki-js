@@ -85,44 +85,42 @@ const textSprites = [
   1, 1, 1, 1, 1
 ]
 
-let x = Uint7
-let y = Uint6
-let x1 = Uint7
-let y1 = Uint6
-let x2 = Uint7
-let y2 = Uint6
+// let x = Uint7()
+// let y = Uint6()
+let x1 = Uint7()
+let y1 = Uint6()
+let x2 = Uint7()
+let y2 = Uint6()
 
-let color = Uint2
+let spriteIndex = Uint4()
+let spriteWidth = Uint4()
+let spriteHeight = Uint4()
 
-let spriteIndex = Uint4
-let spriteWidth = Uint4
-let spriteHeight = Uint4
+let p1Y = Int9()
+let p2Y = Int9()
+let p1Speed = Uint4()
+let p2Speed = Uint4()
 
-let p1Y = Int9
-let p2Y = Int9
-let p1Speed = Uint4
-let p2Speed = Uint4
+let ballX = Int9()
+let ballY = Int9()
+let ballSpeedX = Int4()
+let ballSpeedY = Int4()
+let ballPlayer = Bool()
 
-let ballX = Int9
-let ballY = Int9
-let ballSpeedX = Int4
-let ballSpeedY = Int4
-let ballPlayer = Bool
+let yOffset = Int9()
 
-let yOffset = Int9
+let volleyCount = Int3()
 
-let volleyCount = Int3
+let score1 = Uint4()
+let score2 = Uint4()
 
-let score1 = Uint4
-let score2 = Uint4
+let winScreen = Bool()
 
-let winScreen = Bool
-
-function clearScreen() {
-  for ( y = 0; ; y++ ) {
+function clearScreen( color = Uint2() ) {
+  for ( let y = Uint6( 0 ); ; y++ ) {
     setBackground( y, y < scoreTop ? 1 : 3 )
 
-    for ( x = 0; ; x++ ) {
+    for ( let x = Uint7( 0 ); ; x++ ) {
       setPixel( x, y, y < scoreTop ? color : 3 )
 
       if ( x === xMax ) break
@@ -132,9 +130,9 @@ function clearScreen() {
   }
 }
 
-function drawSprite() {
-  for ( y = 0; y < spriteHeight; y++ ) {
-    for ( x = 0; x < spriteWidth; x++ ) {
+function drawSprite( color = Uint2() ) {
+  for ( let y = Uint6( 0 ); y < spriteHeight; y++ ) {
+    for ( let x = Uint7( 0 ); x < spriteWidth; x++ ) {
       if (
         textSprites[
           ( spriteIndex * spriteWidth * spriteHeight ) + ( y * spriteWidth ) + x
@@ -146,14 +144,14 @@ function drawSprite() {
   }
 }
 
-function drawLineHorizontal() {
-  for ( x = x1; x <= x2; x++ ) {
+function drawLineHorizontal( color = Uint2() ) {
+  for ( let x = Uint7( x1 ); x <= x2; x++ ) {
     setPixel( x, y1, color )
   }
 }
 
-function drawLineVertical() {
-  for ( y = y1; y <= y2; y++ ) {
+function drawLineVertical( color = Uint2() ) {
+  for ( let y = Uint6( y1 ); y <= y2; y++ ) {
     setPixel( x1, y, color )
   }
 }
@@ -163,22 +161,22 @@ function drawPlayfield() {
   y1 = playfieldTop
   x1 = playfieldLeft
   x2 = playfieldRight
-  drawLineHorizontal()
+  drawLineHorizontal( 1 )
 
   // bottom line
   y1 = playfieldBottom
-  drawLineHorizontal()
+  drawLineHorizontal( 1 )
 
   // center line
-  for ( x = 0; x < 5; x++ ) {
+  for ( let x = Uint7( 0 ); x < 5; x++ ) {
     x1 = centerX
     y1 = ( x * 9 ) + playfieldTop + 2
     y2 = y1 + 5
-    drawLineVertical()
+    drawLineVertical( 1 )
   }
 }
 
-function drawScore() {
+function drawScore( color = Uint2() ) {
   spriteWidth = 5
   spriteHeight = 5
 
@@ -188,45 +186,45 @@ function drawScore() {
   // score 1 digit 1
   spriteIndex = score1 < 10 ? 0 : 1
   x1 = 35
-  drawSprite()
+  drawSprite( color )
 
   // score 1 digit 2
   spriteIndex = score1 < 10 ? score1 : score1 - 10
   x1 = 41
-  drawSprite()
+  drawSprite( color )
 
   // score 2 digit 1
   spriteIndex = score2 < 10 ? 0 : 1
   x1 = 81
-  drawSprite()
+  drawSprite( color )
 
   // score 2 digit 2
   spriteIndex = score2 < 10 ? score2 : score2 - 10
   x1 = 87
-  drawSprite()
+  drawSprite( color )
 }
 
-function drawPlayer1() {
+function drawPlayer1( color = Uint2() ) {
   x1 = playfieldLeft
   y1 = p1Y / 3 + playfieldTop + 1
   y2 = y1 + 5
-  drawLineVertical()
+  drawLineVertical( color )
 }
 
-function drawPlayer2() {
+function drawPlayer2( color = Uint2() ) {
   x1 = playfieldRight
   y1 = p2Y / 3 + playfieldTop + 1
   y2 = y1 + 5
-  drawLineVertical()
+  drawLineVertical( color )
 }
 
-function drawBall() {
+function drawBall( color = Uint2() ) {
   x1 = ballX / 3 + playfieldLeft
   y1 = ballY / 3 + playfieldTop + 1
   y2 = y1 + 1
-  drawLineVertical()
+  drawLineVertical( color )
   x1++
-  drawLineVertical()
+  drawLineVertical( color )
 }
 
 function resetBall1() {
@@ -263,6 +261,21 @@ function setBallSpeedY() {
   } else {
     ballSpeedY = 3
   }
+}
+
+function win( color = Uint2() ){
+  winScreen = true
+
+  clearScreen( color )
+  drawScore( color )
+}
+
+function winP1(){
+  win( 0 )
+}
+
+function winP2(){
+  win( 2 )
 }
 
 function updateBall() {
@@ -362,6 +375,21 @@ function handleInput() {
   }
 }
 
+function start(){
+  winScreen = false
+  p1Y = 51
+  p2Y = 51
+  score1 = 0
+  score2 = 0
+
+  clearScreen( 3 )
+
+  if ( rnd( 2 ) )
+    resetBall1()
+  else
+    resetBall2()
+}
+
 function tick() {
   if( winScreen ){
     if( left1() || right1() || left2() || right2() ){
@@ -371,15 +399,13 @@ function tick() {
     }
   }
 
-  color = 1
   drawPlayfield()
 
   // clear objects
-  color = 3
-  drawPlayer1()
-  drawPlayer2()
-  drawBall()
-  drawScore()
+  drawPlayer1( 3 )
+  drawPlayer2( 3 )
+  drawBall( 3 )
+  drawScore( 3 )
 
   handleInput()
   updateBall()
@@ -387,46 +413,10 @@ function tick() {
   if( winScreen ) return
 
   // draw objects
-  color = 0
-  drawPlayer1()
-  color = 2
-  drawPlayer2()
-  color = ballPlayer ? 2 : 0
-  drawBall()
-  drawScore()
-}
-
-function win(){
-  winScreen = true
-
-  clearScreen()
-  drawScore()
-}
-
-function winP1(){
-  color = 0
-  win()
-}
-
-function winP2(){
-  color = 2
-  win()
-}
-
-function start(){
-  winScreen = false
-  p1Y = 51
-  p2Y = 51
-  score1 = 0
-  score2 = 0
-
-  color = 3
-  clearScreen()
-
-  if ( rnd( 2 ) )
-    resetBall1()
-  else
-    resetBall2()
+  drawPlayer1( 0 )
+  drawPlayer2( 2 )
+  drawBall( ballPlayer ? 2 : 0 )
+  drawScore( ballPlayer ? 2 : 0 )
 }
 
 start()

@@ -1,34 +1,40 @@
-import { YukiLet, YukiConst } from './declarations/value-types'
-import { Program } from 'estree'
-import { Visitor, traverse } from 'estraverse'
+import { Program, Literal } from 'estree'
+import { Visitor, traverse, VisitorOption } from 'estraverse'
 import { valueToBitLength } from 'bits-bytes'
-import { normalizeRangeForBitLength } from './util'
-import { declarationToYukiValue } from './declarations';
-import { YukiDeclaration } from './declarations/types';
-
-export const countConst = ( current: YukiConst ) => {
-  if ( current.type === 'number' ) {
-    const value = normalizeRangeForBitLength( current.value )
-
-    return valueToBitLength( value )
-  } else {
-    let max = 0
-
-    current.value.forEach( v => {
-      v = normalizeRangeForBitLength( v )
-      if ( v > max ) max = v
-    } )
-
-    return valueToBitLength( max ) * current.value.length
-  }
-}
 
 export const countProgramSize = ( ast: Program, instructionSize: number ) => {
-  let programSize = 0
-  let constBits = 0
+  let count = 0
 
   const visitor: Visitor = {
     enter: ( node, parent ) => {
+      if ( node.type === 'ArrayExpression' ) {
+        let max = 0
+
+        node.elements.forEach( el => {
+          let value = 0
+
+          if ( el.type === 'Literal' ) {
+            if ( typeof el.value === 'boolean' )
+              value = 1
+
+            if ( typeof el.value === 'number' )
+              value = valueToBitLength( el.value )
+          }
+
+          if ( el.type === 'UnaryExpression' && el.operator === '-' ) {
+            const argument = el.argument as Literal
+
+            value = maxForNegative( Number( argument.value ) )
+          }
+
+          if ( value > max ) max = value
+        } )
+
+        count += max * node.elements.length
+
+        return VisitorOption.Skip
+      }
+
       if ( node.type === 'Literal' && typeof node.value === 'number' ) {
         let value = node.value
 
@@ -37,23 +43,19 @@ export const countProgramSize = ( ast: Program, instructionSize: number ) => {
           parent.type === 'UnaryExpression' &&
           parent.operator === '-'
         ) {
-          value = normalizeRangeForBitLength( value )
+          value = maxForNegative( value )
         }
 
-        programSize += valueToBitLength( value )
-      } else if( node.type === 'VariableDeclaration' && node.kind === 'const' ){
-        const c = <YukiConst>declarationToYukiValue( <YukiDeclaration>node )
-
-        constBits += countConst( c )
+        count += valueToBitLength( value )
       } else {
-        programSize += instructionSize
+        count += instructionSize
       }
     }
   }
 
   traverse( ast, visitor )
 
-  programSize += Math.ceil( constBits / 8 )
-
-  return programSize
+  return count
 }
+
+export const maxForNegative = ( value: number ) => value * 2 - 1

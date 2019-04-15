@@ -1,14 +1,11 @@
 const xMax = 127
 const yMax = 127
 
-let x = Uint7
-let y = Uint7
+let x = Uint7()
+let y = Uint7()
 
-let pX = Uint7
-let pY = Uint7
-
-pX = 64
-pY = 64
+let pX = Uint7( 64 )
+let pY = Uint7( 64 )
 
 function tick() {
   for( y = 0;; y++ ){

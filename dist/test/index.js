@@ -1,20 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = require("fs");
 const assert = require("assert");
+const fs_1 = require("fs");
 const esprima_1 = require("esprima");
 const __1 = require("..");
-const bresenham_1 = require("../examples/bresenham");
 const escodegen_1 = require("escodegen");
-const split_source_1 = require("../split-source");
-const kitchenSinkJs = fs_1.readFileSync('./src/test/fixtures/kitchen-sink.yuki.js', 'utf8');
-const kitchenSinkAst = esprima_1.parseScript(kitchenSinkJs);
+const kitchenSinkYuki = fs_1.readFileSync('./src/test/fixtures/kitchen-sink.yuki.js', 'utf8');
+const kitchenSinkAst = esprima_1.parseScript(kitchenSinkYuki, { loc: true });
+const bresenhamYuki = fs_1.readFileSync('./src/test/fixtures/bresenham.yuki.js', 'utf8');
+const bresenhamAst = esprima_1.parseScript(bresenhamYuki, { loc: true });
 describe('yuki-js', () => {
     it('compiles', () => {
-        const { main } = __1.compile(kitchenSinkAst);
-        const source = escodegen_1.generate(main);
-        assert(main);
-        assert(source);
+        assert.doesNotThrow(() => __1.compile(kitchenSinkAst));
     });
     it('executes', () => {
         const expect = [
@@ -22,33 +19,16 @@ describe('yuki-js', () => {
             10, 21, 11, 22, 11, 23, 12, 24, 12, 25, 13, 26, 13, 27, 14, 28, 14, 29,
             15, 30, 15, 31, 16, 32, 16, 33, 17, 34, 17, 35, 18, 36, 18, 37, 19
         ];
-        const lib = esprima_1.parseScript(`
-      function log(){}
-    `);
-        const options = {
-            lib
-        };
-        const { main } = __1.compile(bresenham_1.bresenhamYuki, options);
-        const bresenhamOut = escodegen_1.generate(main);
-        const exec = Function(bresenhamOut + '; return $');
-        const $ = exec();
-        const values = [];
-        for (let i = 0; i < $.lineIndex; i++) {
-            values.push($.line[i]);
+        const { program } = __1.compile(bresenhamAst);
+        const source = escodegen_1.generate(program);
+        const exec = Function(source + '; return line');
+        const result = exec();
+        const line = [];
+        for (let i = 0; i < expect.length; i++) {
+            line[i] = result[i];
         }
-        assert.deepEqual(values, expect);
-    });
-    describe('splitSource', () => {
-        it('Unexpected VariableDeclaration', () => {
-            const ast = esprima_1.parseScript(`
-let x = Uint8
-x = 0
-let y = Uint8
-      `.trim(), { loc: true });
-            assert.throws(() => split_source_1.splitSource(ast), {
-                message: 'Unexpected VariableDeclaration at line 3, column 0'
-            });
-        });
+        assert.deepEqual(line, expect);
+        assert.strictEqual(result[expect.length], 0);
     });
 });
 //# sourceMappingURL=index.js.map

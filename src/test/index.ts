@@ -1,25 +1,18 @@
-import { readFileSync } from 'fs'
 import * as assert from 'assert'
+import { readFileSync } from 'fs'
 import { parseScript } from 'esprima'
 import { compile } from '..'
-import { CompileOptions } from '../types'
-import { bresenhamYuki } from '../examples/bresenham'
 import { generate } from 'escodegen'
-import { splitSource } from '../split-source'
 
-const kitchenSinkJs = readFileSync(
-  './src/test/fixtures/kitchen-sink.yuki.js', 'utf8'
-)
+const kitchenSinkYuki = readFileSync( './src/test/fixtures/kitchen-sink.yuki.js', 'utf8' )
+const kitchenSinkAst = parseScript( kitchenSinkYuki, { loc: true } )
 
-const kitchenSinkAst = parseScript( kitchenSinkJs )
+const bresenhamYuki = readFileSync( './src/test/fixtures/bresenham.yuki.js', 'utf8' )
+const bresenhamAst = parseScript( bresenhamYuki, { loc: true } )
 
 describe( 'yuki-js', () => {
   it( 'compiles', () => {
-    const { main } = compile( kitchenSinkAst )
-    const source = generate( main )
-
-    assert( main )
-    assert( source )
+    assert.doesNotThrow( () => compile( kitchenSinkAst ) )
   } )
 
   it( 'executes', () => {
@@ -29,43 +22,17 @@ describe( 'yuki-js', () => {
       15, 30, 15, 31, 16, 32, 16, 33, 17, 34, 17, 35, 18, 36, 18, 37, 19
     ]
 
-    const lib = parseScript( `
-      function log(){}
-    `)
+    const { program } = compile( bresenhamAst )
+    const source = generate( program )
+    const exec = Function( source + '; return line' )
+    const result = exec()
+    const line: number[] = []
 
-    const options: Partial<CompileOptions> = {
-      lib
+    for ( let i = 0; i < expect.length; i++ ) {
+      line[ i ] = result[ i ]
     }
 
-    const { main } = compile( bresenhamYuki, options )
-    const bresenhamOut = generate( main )
-    const exec = Function( bresenhamOut + '; return $' )
-
-    const $ = exec()
-
-    const values: number[] = []
-
-    for ( let i = 0; i < $.lineIndex; i++ ) {
-      values.push( $.line[ i ] )
-    }
-
-    assert.deepEqual( values, expect )
-  } )
-
-  describe( 'splitSource', () => {
-    it( 'Unexpected VariableDeclaration', () => {
-      const ast = parseScript( `
-let x = Uint8
-x = 0
-let y = Uint8
-      `.trim(), { loc: true } )
-
-      assert.throws(
-        () => splitSource( ast ),
-        {
-          message: 'Unexpected VariableDeclaration at line 3, column 0'
-        }
-      )
-    } )
+    assert.deepEqual( line, expect )
+    assert.strictEqual( result[ expect.length ], 0 )
   } )
 } )

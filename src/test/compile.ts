@@ -1,62 +1,48 @@
 import * as assert from 'assert'
 import { parseScript } from 'esprima'
+import { CompileOptions } from '../types'
 import { compile } from '..'
 
 describe( 'yuki-js', () => {
   describe( 'compile', () => {
-    it( 'Invalid Declarations', () => {
-      const program = parseScript( 'var x = Int8', { loc: true } )
+    it( 'maxProgramSize', () => {
+      const source = 'const x = 10'
+      const program = parseScript( source )
 
-      assert.throws(
-        () => compile( program ),
-        {
-          message: 'Unexpected var at line 1, column 0'
-        }
-      )
-    } )
+      const opts: Partial<CompileOptions> = {
+        maxProgramSize: 1
+      }
 
-    it( 'Missing required subroutines', () => {
-      const program = parseScript( '' )
+      assert.doesNotThrow( () => compile( program ) )
 
       assert.throws(
         () => {
-          compile( program, { requiredSubroutines: [ 'tick' ] } )
+          compile( program, opts )
         },
         {
-          message: 'Missing required subroutines: tick'
+          message: 'Program size exceeded: 8/1'
         }
       )
     } )
 
-    it( 'Invalid Main', () => {
-      const program = parseScript( '""', { loc: true } )
+    it( 'missing functions', () => {
+      const pass = 'function foo(){};function bar(){}'
+      const fail = 'const x = 10'
+      const passProgram = parseScript( pass )
+      const failProgram = parseScript( fail )
+
+      const opts: Partial<CompileOptions> = {
+        requiredFunctions: [ 'foo', 'bar' ]
+      }
+
+      assert.doesNotThrow( () => compile( passProgram, opts ) )
 
       assert.throws(
-        () => compile( program ),
+        () => {
+          compile( failProgram, opts )
+        },
         {
-          message: 'Unexpected type string at line 1, column 0'
-        }
-      )
-    } )
-
-    it( 'Memory allocation exceeded', () => {
-      const program = parseScript( 'let x = Uint16' )
-
-      assert.throws(
-        () => compile( program, { memorySize: 1 } ),
-        {
-          message: 'Memory allocation exceeded: 2/1'
-        }
-      )
-    } )
-
-    it( 'Program size exceeded', () => {
-      const program = parseScript( 'let x = Uint16; x = 0' )
-
-      assert.throws(
-        () => compile( program, { maxProgramSize: 1 } ),
-        {
-          message: 'Program size exceeded: 7/1'
+          message: 'Missing required functions: foo, bar'
         }
       )
     } )

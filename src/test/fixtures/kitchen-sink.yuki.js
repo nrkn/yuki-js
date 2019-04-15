@@ -9,20 +9,20 @@ const ARR_1 = [ 1, 2, -3 ]
 const FLAGS_1 = [ true, false, true ]
 
 // mutable flag
-let flag3 = Bool
-let flag4 = Bool
+let flag3 = Bool()
+let flag4 = Bool()
 // mutable numbers
-let length = Uint8
-let i = Uint8
-let a = Uint8
-let b = Uint8
-let c = Uint8
-let d = Int8
-let e = Uint8
+let length = Uint8()
+let i = Uint8()
+let a = Uint8()
+let b = Uint8()
+let c = Uint8()
+let d = Int8()
+let e = Uint8()
 
 // fixed size arrays
-let flags = Bool( 10 )
-let arr2 = Uint8( 20 )
+let flags = BoolArr( 10 )
+let arr2 = Uint8Arr( 20 )
 
 // assignment
 i = VAL_1
@@ -144,7 +144,42 @@ function addIfFlag() {
   add()
 }
 
-// tick
-function tick() {
-  addIfFlag()
+// function with args
+function add2( a = Uint8(), b = Uint8Arr( 1 ) ){
+  return a + b[ 0 ]
 }
+
+// some nesting
+function nest(){
+  if( a < b ){
+    while( a < b ){
+      a++
+
+      if( a === b ) break
+
+      if( a > b ){
+        while ( a > b ){
+          a--
+        }
+
+        return a
+      }
+    }
+  }
+}
+
+// expand statements to blocks
+if( a )
+  b++
+else if( b )
+  a++
+else
+  b++
+
+for( let i = Uint8(); i < 10; i++ ) b++
+
+while( i < 10 ) i++
+
+do
+  i++
+while( i < 10 )
