@@ -85,8 +85,8 @@ const textSprites = [
   1, 1, 1, 1, 1
 ]
 
-// let x = Uint7()
-// let y = Uint6()
+let x = Uint7()
+let y = Uint6()
 let x1 = Uint7()
 let y1 = Uint6()
 let x2 = Uint7()
@@ -117,10 +117,10 @@ let score2 = Uint4()
 let winScreen = Bool()
 
 function clearScreen( color = Uint2() ) {
-  for ( let y = Uint6( 0 ); ; y++ ) {
+  for ( y = 0; ; y++ ) {
     setBackground( y, y < scoreTop ? 1 : 3 )
 
-    for ( let x = Uint7( 0 ); ; x++ ) {
+    for ( x = 0; ; x++ ) {
       setPixel( x, y, y < scoreTop ? color : 3 )
 
       if ( x === xMax ) break
@@ -131,8 +131,8 @@ function clearScreen( color = Uint2() ) {
 }
 
 function drawSprite( color = Uint2() ) {
-  for ( let y = Uint6( 0 ); y < spriteHeight; y++ ) {
-    for ( let x = Uint7( 0 ); x < spriteWidth; x++ ) {
+  for ( y = 0; y < spriteHeight; y++ ) {
+    for ( x = 0; x < spriteWidth; x++ ) {
       if (
         textSprites[
           ( spriteIndex * spriteWidth * spriteHeight ) + ( y * spriteWidth ) + x
@@ -145,13 +145,13 @@ function drawSprite( color = Uint2() ) {
 }
 
 function drawLineHorizontal( color = Uint2() ) {
-  for ( let x = Uint7( x1 ); x <= x2; x++ ) {
+  for ( x = x1; x <= x2; x++ ) {
     setPixel( x, y1, color )
   }
 }
 
 function drawLineVertical( color = Uint2() ) {
-  for ( let y = Uint6( y1 ); y <= y2; y++ ) {
+  for ( y = y1; y <= y2; y++ ) {
     setPixel( x1, y, color )
   }
 }
@@ -168,7 +168,7 @@ function drawPlayfield() {
   drawLineHorizontal( 1 )
 
   // center line
-  for ( let x = Uint7( 0 ); x < 5; x++ ) {
+  for ( x = 0; x < 5; x++ ) {
     x1 = centerX
     y1 = ( x * 9 ) + playfieldTop + 2
     y2 = y1 + 5

@@ -9,15 +9,17 @@ exports.functionDeclarationNode = (node, _parent, options) => {
         throw utils_1.LocError('Unexpected params', node);
     const { scope } = options;
     scope.functions.push(node.id.name);
-    node.params = [
-        {
-            type: 'RestElement',
-            argument: {
-                type: 'Identifier',
-                name: '$args'
+    node.params = (params.length ?
+        [
+            {
+                type: 'RestElement',
+                argument: {
+                    type: 'Identifier',
+                    name: '$args'
+                }
             }
-        }
-    ];
+        ] :
+        []);
     const lets = params.map((param, i) => {
         if (param.right.callee.name.includes('Arr')) {
             return yukiArrayParamToLet(param, options, i);

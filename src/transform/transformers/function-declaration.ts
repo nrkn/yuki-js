@@ -8,7 +8,7 @@ import { YukiNode, YukiParam } from '../node-types'
 import { TransformOptions } from '../types'
 import { isYukiParamList } from '../node-predicates'
 import { LocError } from '../utils'
-import { declaratorToAllocate } from './variable-declaration';
+import { declaratorToAllocate } from './variable-declaration'
 
 export const functionDeclarationNode =
   ( node: FunctionDeclaration, _parent: YukiNode, options: TransformOptions ) => {
@@ -21,15 +21,19 @@ export const functionDeclarationNode =
 
     scope.functions.push( node.id!.name )
 
-    node.params = [
-      {
-        type: 'RestElement',
-        argument: {
-          type: 'Identifier',
-          name: '$args'
+    node.params = (
+      params.length ?
+      [
+        {
+          type: 'RestElement',
+          argument: {
+            type: 'Identifier',
+            name: '$args'
+          }
         }
-      }
-    ]
+      ] :
+      []
+    )
 
     const lets = params.map( ( param, i ) => {
       if( param.right.callee.name.includes( 'Arr' ) ){

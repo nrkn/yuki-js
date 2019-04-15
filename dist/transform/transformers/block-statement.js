@@ -29,7 +29,8 @@ exports.blockStatementNode = (node, parent) => {
     node.body.push(...body);
     const tail = node.body[node.body.length - 1];
     if (tail.type !== 'ReturnStatement' &&
-        tail.type !== 'ContinueStatement') {
+        tail.type !== 'ContinueStatement' &&
+        tail.type !== 'BreakStatement') {
         node.body.push({
             type: 'ExpressionStatement',
             expression: exports.ExitCall()

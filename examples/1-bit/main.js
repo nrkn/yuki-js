@@ -379,7 +379,7 @@ let x = $allocate(Uint7());
 let y = $allocate(Uint7());
 let pX = $allocate(Uint7(64));
 let pY = $allocate(Uint7(64));
-function tick(...$args) {
+function tick() {
     $enter();
     $allocate($addressSize);
     {
@@ -403,7 +403,6 @@ function tick(...$args) {
                         $enter();
                         $exit(2);
                         break;
-                        $exit(1);
                     }
                     $exit(1);
                 }
@@ -413,7 +412,6 @@ function tick(...$args) {
                 $enter();
                 $exit(2);
                 break;
-                $exit(1);
             }
             $exit(1);
         }

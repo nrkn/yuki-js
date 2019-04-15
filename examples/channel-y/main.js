@@ -791,7 +791,6 @@ function clearScreen(...$args) {
                         $enter();
                         $exit(2);
                         break;
-                        $exit(1);
                     }
                     $exit(1);
                 }
@@ -801,7 +800,6 @@ function clearScreen(...$args) {
                 $enter();
                 $exit(2);
                 break;
-                $exit(1);
             }
             $exit(1);
         }
@@ -866,7 +864,7 @@ function drawLineVertical(...$args) {
     }
     $exit(1);
 }
-function drawPlayfield(...$args) {
+function drawPlayfield() {
     $enter();
     $allocate($addressSize);
     y1.$ = playfieldTop;
@@ -942,7 +940,7 @@ function drawBall(...$args) {
     drawLineVertical(color.$);
     $exit(1);
 }
-function resetBall1(...$args) {
+function resetBall1() {
     $enter();
     $allocate($addressSize);
     ballX.$ = 3;
@@ -953,7 +951,7 @@ function resetBall1(...$args) {
     ballPlayer.$ = 0;
     $exit(1);
 }
-function resetBall2(...$args) {
+function resetBall2() {
     $enter();
     $allocate($addressSize);
     ballX.$ = subgridWidth - 3;
@@ -964,7 +962,7 @@ function resetBall2(...$args) {
     ballPlayer.$ = 1;
     $exit(1);
 }
-function setBallSpeedY(...$args) {
+function setBallSpeedY() {
     $enter();
     $allocate($addressSize);
     if (yOffset.$ < 3) {
@@ -1007,19 +1005,19 @@ function win(...$args) {
     drawScore(color.$);
     $exit(1);
 }
-function winP1(...$args) {
+function winP1() {
     $enter();
     $allocate($addressSize);
     win(0);
     $exit(1);
 }
-function winP2(...$args) {
+function winP2() {
     $enter();
     $allocate($addressSize);
     win(2);
     $exit(1);
 }
-function updateBall(...$args) {
+function updateBall() {
     $enter();
     $allocate($addressSize);
     ballX.$ += ballSpeedX.$;
@@ -1112,7 +1110,7 @@ function updateBall(...$args) {
     }
     $exit(1);
 }
-function handleInput(...$args) {
+function handleInput() {
     $enter();
     $allocate($addressSize);
     if (up1() || down1()) {
@@ -1183,7 +1181,7 @@ function handleInput(...$args) {
     }
     $exit(1);
 }
-function start(...$args) {
+function start() {
     $enter();
     $allocate($addressSize);
     winScreen.$ = 0;
@@ -1203,7 +1201,7 @@ function start(...$args) {
     }
     $exit(1);
 }
-function tick(...$args) {
+function tick() {
     $enter();
     $allocate($addressSize);
     if (winScreen.$) {

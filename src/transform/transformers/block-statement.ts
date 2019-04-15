@@ -39,7 +39,8 @@ export const blockStatementNode =
 
     if(
       tail.type !== 'ReturnStatement' &&
-      tail.type !== 'ContinueStatement'
+      tail.type !== 'ContinueStatement' &&
+      tail.type !== 'BreakStatement'
     ){
       node.body.push( {
         type: 'ExpressionStatement',
