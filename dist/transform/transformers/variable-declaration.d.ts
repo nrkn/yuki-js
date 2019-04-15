@@ -6,5 +6,5 @@ export declare const letDeclaratorNode: (node: VariableDeclarator, parent: Varia
 export declare const arrayExpressionNode: (node: ArrayExpression, parent: YukiNode) => FreezeCallExpression | undefined;
 export declare const freezeNode: (node: Expression) => FreezeCallExpression;
 export declare const declaratorToAllocate: (init: YukiCallExpressionDeclarator) => import("estree").SimpleCallExpression;
-export declare const constNode: (node: VariableDeclaration, _parent: YukiNode, options: TransformOptions) => void;
-export declare const letNode: (node: VariableDeclaration, _parent: YukiNode, options: TransformOptions) => void;
+export declare const constDeclarationNode: (node: VariableDeclaration, _parent: YukiNode, options: TransformOptions) => void;
+export declare const letDeclarationNode: (node: VariableDeclaration, _parent: YukiNode, options: TransformOptions) => void;

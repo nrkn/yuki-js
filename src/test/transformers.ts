@@ -12,13 +12,13 @@ import {
 
 import {
   freezeNode, variableDeclarationNode, letDeclaratorNode, arrayExpressionNode,
-  constNode,
-  letNode
+  constDeclarationNode,
+  letDeclarationNode
 } from '../transform/transformers/variable-declaration'
 
 import { callExpressionNode } from '../transform/transformers/call-expression'
 import { DefaultTransformOptions } from '../transform/default-options'
-import { YukiNode } from '../transform/node-types'
+import { YukiNode, YukiLetDeclaration, YukiConstDeclaration } from '../transform/node-types'
 import { parseScript } from 'esprima'
 import { transform } from '../transform'
 import { identifierNode } from '../transform/transformers/identifier'
@@ -481,6 +481,35 @@ describe( 'yuki-js', () => {
         } )
 
         describe( 'constNode', () => {
+          it( 'Invalid identifier name', () => {
+            const declaration: YukiConstDeclaration = {
+              type: 'VariableDeclaration',
+              declarations: [
+                {
+                  type: 'VariableDeclarator',
+                  id: {
+                    type: 'Identifier',
+                    name: '$foo'
+                  },
+                  init: {
+                    type: 'Literal',
+                    value: 0
+                  }
+                }
+              ],
+              kind: 'const'
+            }
+
+            assert.throws(
+              () => {
+                constDeclarationNode( declaration, dummyParent, options )
+              },
+              {
+                message: 'Invalid identifier name'
+              }
+            )
+          } )
+
           it( 'Invalid const', () => {
             const constDeclaration: VariableDeclaration = {
               type: 'VariableDeclaration',
@@ -490,7 +519,7 @@ describe( 'yuki-js', () => {
 
             assert.throws(
               () => {
-                constNode( constDeclaration, dummyParent, options )
+                constDeclarationNode( constDeclaration, dummyParent, options )
               },
               {
                 message: 'Invalid const'
@@ -534,7 +563,7 @@ describe( 'yuki-js', () => {
 
             assert.throws(
               () => {
-                constNode( declaration, dummyParent, opts )
+                constDeclarationNode( declaration, dummyParent, opts )
               },
               {
                 message: 'Cannot redefine foo'
@@ -544,6 +573,39 @@ describe( 'yuki-js', () => {
         } )
 
         describe( 'letNode', () => {
+          it( 'Invalid identifier name', () => {
+            const declaration: YukiLetDeclaration = {
+              type: 'VariableDeclaration',
+              declarations: [
+                {
+                  type: 'VariableDeclarator',
+                  id: {
+                    type: 'Identifier',
+                    name: '$foo'
+                  },
+                  init: {
+                    type: 'CallExpression',
+                    callee: {
+                      type: 'Identifier',
+                      name: 'Uint8'
+                    },
+                    arguments: []
+                  }
+                }
+              ],
+              kind: 'let'
+            }
+
+            assert.throws(
+              () => {
+                letDeclarationNode( declaration, dummyParent, options )
+              },
+              {
+                message: 'Invalid identifier name'
+              }
+            )
+          } )
+
           it( 'Invalid let', () => {
             const declaration: VariableDeclaration = {
               type: 'VariableDeclaration',
@@ -553,7 +615,7 @@ describe( 'yuki-js', () => {
 
             assert.throws(
               () => {
-                letNode( declaration, dummyParent, options )
+                letDeclarationNode( declaration, dummyParent, options )
               },
               {
                 message: 'Invalid let'
@@ -617,7 +679,7 @@ describe( 'yuki-js', () => {
 
             assert.throws(
               () => {
-                letNode( node, dummyParent, opts )
+                letDeclarationNode( node, dummyParent, opts )
               },
               {
                 message: 'Invalid let'

@@ -5,9 +5,9 @@ const node_predicates_1 = require("../node-predicates");
 const scope_1 = require("../scope");
 exports.variableDeclarationNode = (node, parent, options) => {
     if (node.kind === 'const')
-        return exports.constNode(node, parent, options);
+        return exports.constDeclarationNode(node, parent, options);
     if (node.kind === 'let')
-        return exports.letNode(node, parent, options);
+        return exports.letDeclarationNode(node, parent, options);
     throw utils_1.LocError('Expected const or let', node);
 };
 exports.letDeclaratorNode = (node, parent, options) => {
@@ -71,18 +71,20 @@ exports.declaratorToAllocate = (init) => {
     };
     return allocateCall;
 };
-exports.constNode = (node, _parent, options) => {
+exports.constDeclarationNode = (node, _parent, options) => {
     if (!node_predicates_1.isYukiConstDeclaration(node))
         throw utils_1.LocError('Invalid const', node);
     const { external, scope } = options;
     const [declarator] = node.declarations;
     const { name } = declarator.id;
+    if (name.startsWith('$'))
+        throw utils_1.LocError('Invalid identifier name', node);
     if (scope_1.existsExternal(external, name) ||
         scope_1.existsLocal(scope, name))
         throw utils_1.LocError(`Cannot redefine ${name}`, node);
     scope.consts.push(name);
 };
-exports.letNode = (node, _parent, options) => {
+exports.letDeclarationNode = (node, _parent, options) => {
     if (!node_predicates_1.isYukiLetDeclaration(node)) {
         const fnDepth = scope_1.countScopeDepthTo(options.scope, 'function');
         if (fnDepth === 0) {
@@ -99,5 +101,9 @@ exports.letNode = (node, _parent, options) => {
         }
         throw utils_1.LocError('Invalid let', node);
     }
+    const [declarator] = node.declarations;
+    const { name } = declarator.id;
+    if (name.startsWith('$'))
+        throw utils_1.LocError('Invalid identifier name', node);
 };
 //# sourceMappingURL=variable-declaration.js.map

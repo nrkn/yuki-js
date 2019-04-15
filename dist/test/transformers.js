@@ -336,6 +336,30 @@ describe('yuki-js', () => {
                     });
                 });
                 describe('constNode', () => {
+                    it('Invalid identifier name', () => {
+                        const declaration = {
+                            type: 'VariableDeclaration',
+                            declarations: [
+                                {
+                                    type: 'VariableDeclarator',
+                                    id: {
+                                        type: 'Identifier',
+                                        name: '$foo'
+                                    },
+                                    init: {
+                                        type: 'Literal',
+                                        value: 0
+                                    }
+                                }
+                            ],
+                            kind: 'const'
+                        };
+                        assert.throws(() => {
+                            variable_declaration_1.constDeclarationNode(declaration, dummyParent, options);
+                        }, {
+                            message: 'Invalid identifier name'
+                        });
+                    });
                     it('Invalid const', () => {
                         const constDeclaration = {
                             type: 'VariableDeclaration',
@@ -343,7 +367,7 @@ describe('yuki-js', () => {
                             kind: 'const'
                         };
                         assert.throws(() => {
-                            variable_declaration_1.constNode(constDeclaration, dummyParent, options);
+                            variable_declaration_1.constDeclarationNode(constDeclaration, dummyParent, options);
                         }, {
                             message: 'Invalid const'
                         });
@@ -379,13 +403,41 @@ describe('yuki-js', () => {
                             kind: 'const'
                         };
                         assert.throws(() => {
-                            variable_declaration_1.constNode(declaration, dummyParent, opts);
+                            variable_declaration_1.constDeclarationNode(declaration, dummyParent, opts);
                         }, {
                             message: 'Cannot redefine foo'
                         });
                     });
                 });
                 describe('letNode', () => {
+                    it('Invalid identifier name', () => {
+                        const declaration = {
+                            type: 'VariableDeclaration',
+                            declarations: [
+                                {
+                                    type: 'VariableDeclarator',
+                                    id: {
+                                        type: 'Identifier',
+                                        name: '$foo'
+                                    },
+                                    init: {
+                                        type: 'CallExpression',
+                                        callee: {
+                                            type: 'Identifier',
+                                            name: 'Uint8'
+                                        },
+                                        arguments: []
+                                    }
+                                }
+                            ],
+                            kind: 'let'
+                        };
+                        assert.throws(() => {
+                            variable_declaration_1.letDeclarationNode(declaration, dummyParent, options);
+                        }, {
+                            message: 'Invalid identifier name'
+                        });
+                    });
                     it('Invalid let', () => {
                         const declaration = {
                             type: 'VariableDeclaration',
@@ -393,7 +445,7 @@ describe('yuki-js', () => {
                             kind: 'let'
                         };
                         assert.throws(() => {
-                            variable_declaration_1.letNode(declaration, dummyParent, options);
+                            variable_declaration_1.letDeclarationNode(declaration, dummyParent, options);
                         }, {
                             message: 'Invalid let'
                         });
@@ -450,7 +502,7 @@ describe('yuki-js', () => {
                             kind: 'let'
                         };
                         assert.throws(() => {
-                            variable_declaration_1.letNode(node, dummyParent, opts);
+                            variable_declaration_1.letDeclarationNode(node, dummyParent, opts);
                         }, {
                             message: 'Invalid let'
                         });

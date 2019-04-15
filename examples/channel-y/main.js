@@ -776,22 +776,16 @@ let winScreen = $allocate(Bool());
 function clearScreen(...$args) {
     $enter();
     $allocate($addressSize);
-    let color = $allocate(Uint2($args[0]));
+    let e = $allocate(Uint2($args[0]));
     {
         $enter();
         for (y.$ = 0;; y.$++) {
             $enter();
-            setBackground(y.$, y.$ < scoreTop ? 1 : 3);
             {
                 $enter();
-                for (x.$ = 0;; x.$++) {
+                for (setBackground(y.$, y.$ < scoreTop ? 1 : 3), x.$ = 0; setPixel(x.$, y.$, y.$ < scoreTop ? e.$ : 3), x.$ !== xMax; x.$++) {
                     $enter();
-                    setPixel(x.$, y.$, y.$ < scoreTop ? color.$ : 3);
-                    if (x.$ === xMax) {
-                        $enter();
-                        $exit(2);
-                        break;
-                    }
+                    ;
                     $exit(1);
                 }
                 $exit(1);
@@ -810,7 +804,7 @@ function clearScreen(...$args) {
 function drawSprite(...$args) {
     $enter();
     $allocate($addressSize);
-    let color = $allocate(Uint2($args[0]));
+    let e = $allocate(Uint2($args[0]));
     {
         $enter();
         for (y.$ = 0; y.$ < spriteHeight.$; y.$++) {
@@ -819,11 +813,7 @@ function drawSprite(...$args) {
                 $enter();
                 for (x.$ = 0; x.$ < spriteWidth.$; x.$++) {
                     $enter();
-                    if (textSprites[spriteIndex.$ * spriteWidth.$ * spriteHeight.$ + y.$ * spriteWidth.$ + x.$]) {
-                        $enter();
-                        setPixel(x.$ + x1.$, y.$ + y1.$, color.$);
-                        $exit(1);
-                    }
+                    textSprites[spriteIndex.$ * spriteWidth.$ * spriteHeight.$ + y.$ * spriteWidth.$ + x.$] && setPixel(x.$ + x1.$, y.$ + y1.$, e.$);
                     $exit(1);
                 }
                 $exit(1);
@@ -837,12 +827,12 @@ function drawSprite(...$args) {
 function drawLineHorizontal(...$args) {
     $enter();
     $allocate($addressSize);
-    let color = $allocate(Uint2($args[0]));
+    let e = $allocate(Uint2($args[0]));
     {
         $enter();
         for (x.$ = x1.$; x.$ <= x2.$; x.$++) {
             $enter();
-            setPixel(x.$, y1.$, color.$);
+            setPixel(x.$, y1.$, e.$);
             $exit(1);
         }
         $exit(1);
@@ -852,12 +842,12 @@ function drawLineHorizontal(...$args) {
 function drawLineVertical(...$args) {
     $enter();
     $allocate($addressSize);
-    let color = $allocate(Uint2($args[0]));
+    let e = $allocate(Uint2($args[0]));
     {
         $enter();
         for (y.$ = y1.$; y.$ <= y2.$; y.$++) {
             $enter();
-            setPixel(x1.$, y.$, color.$);
+            setPixel(x1.$, y.$, e.$);
             $exit(1);
         }
         $exit(1);
@@ -867,20 +857,11 @@ function drawLineVertical(...$args) {
 function drawPlayfield() {
     $enter();
     $allocate($addressSize);
-    y1.$ = playfieldTop;
-    x1.$ = playfieldLeft;
-    x2.$ = playfieldRight;
-    drawLineHorizontal(1);
-    y1.$ = playfieldBottom;
-    drawLineHorizontal(1);
     {
         $enter();
-        for (x.$ = 0; x.$ < 5; x.$++) {
+        for (y1.$ = playfieldTop, x1.$ = playfieldLeft, x2.$ = playfieldRight, drawLineHorizontal(1), y1.$ = playfieldBottom, drawLineHorizontal(1), x.$ = 0; x.$ < 5; x.$++) {
             $enter();
-            x1.$ = centerX;
-            y1.$ = x.$ * 9 + playfieldTop + 2;
-            y2.$ = y1.$ + 5;
-            drawLineVertical(1);
+            x1.$ = centerX, y2.$ = (y1.$ = 9 * x.$ + playfieldTop + 2) + 5, drawLineVertical(1);
             $exit(1);
         }
         $exit(1);
@@ -890,119 +871,54 @@ function drawPlayfield() {
 function drawScore(...$args) {
     $enter();
     $allocate($addressSize);
-    let color = $allocate(Uint2($args[0]));
-    spriteWidth.$ = 5;
-    spriteHeight.$ = 5;
-    y1.$ = scoreTop + 1;
-    spriteIndex.$ = score1.$ < 10 ? 0 : 1;
-    x1.$ = 35;
-    drawSprite(color.$);
-    spriteIndex.$ = score1.$ < 10 ? score1.$ : score1.$ - 10;
-    x1.$ = 41;
-    drawSprite(color.$);
-    spriteIndex.$ = score2.$ < 10 ? 0 : 1;
-    x1.$ = 81;
-    drawSprite(color.$);
-    spriteIndex.$ = score2.$ < 10 ? score2.$ : score2.$ - 10;
-    x1.$ = 87;
-    drawSprite(color.$);
+    let e = $allocate(Uint2($args[0]));
+    spriteWidth.$ = 5, spriteHeight.$ = 5, y1.$ = scoreTop + 1, spriteIndex.$ = score1.$ < 10 ? 0 : 1, x1.$ = 35, drawSprite(e.$), spriteIndex.$ = score1.$ < 10 ? score1.$ : score1.$ - 10, x1.$ = 41, drawSprite(e.$), spriteIndex.$ = score2.$ < 10 ? 0 : 1, x1.$ = 81, drawSprite(e.$), spriteIndex.$ = score2.$ < 10 ? score2.$ : score2.$ - 10, x1.$ = 87, drawSprite(e.$);
     $exit(1);
 }
 function drawPlayer1(...$args) {
     $enter();
     $allocate($addressSize);
-    let color = $allocate(Uint2($args[0]));
-    x1.$ = playfieldLeft;
-    y1.$ = p1Y.$ / 3 + playfieldTop + 1;
-    y2.$ = y1.$ + 5;
-    drawLineVertical(color.$);
+    let e = $allocate(Uint2($args[0]));
+    x1.$ = playfieldLeft, y2.$ = (y1.$ = p1Y.$ / 3 + playfieldTop + 1) + 5, drawLineVertical(e.$);
     $exit(1);
 }
 function drawPlayer2(...$args) {
     $enter();
     $allocate($addressSize);
-    let color = $allocate(Uint2($args[0]));
-    x1.$ = playfieldRight;
-    y1.$ = p2Y.$ / 3 + playfieldTop + 1;
-    y2.$ = y1.$ + 5;
-    drawLineVertical(color.$);
+    let e = $allocate(Uint2($args[0]));
+    x1.$ = playfieldRight, y2.$ = (y1.$ = p2Y.$ / 3 + playfieldTop + 1) + 5, drawLineVertical(e.$);
     $exit(1);
 }
 function drawBall(...$args) {
     $enter();
     $allocate($addressSize);
-    let color = $allocate(Uint2($args[0]));
-    x1.$ = ballX.$ / 3 + playfieldLeft;
-    y1.$ = ballY.$ / 3 + playfieldTop + 1;
-    y2.$ = y1.$ + 1;
-    drawLineVertical(color.$);
-    x1.$++;
-    drawLineVertical(color.$);
+    let e = $allocate(Uint2($args[0]));
+    x1.$ = ballX.$ / 3 + playfieldLeft, y2.$ = (y1.$ = ballY.$ / 3 + playfieldTop + 1) + 1, drawLineVertical(e.$), x1.$++, drawLineVertical(e.$);
     $exit(1);
 }
 function resetBall1() {
     $enter();
     $allocate($addressSize);
-    ballX.$ = 3;
-    ballY.$ = p1Y.$ + 6;
-    ballSpeedX.$ = 1;
-    ballSpeedY.$ = 0;
-    volleyCount.$ = 0;
-    ballPlayer.$ = 0;
+    ballX.$ = 3, ballY.$ = p1Y.$ + 6, ballSpeedX.$ = 1, ballSpeedY.$ = 0, volleyCount.$ = 0, ballPlayer.$ = 0;
     $exit(1);
 }
 function resetBall2() {
     $enter();
     $allocate($addressSize);
-    ballX.$ = subgridWidth - 3;
-    ballY.$ = p2Y.$ + 6;
-    ballSpeedX.$ = -1;
-    ballSpeedY.$ = 0;
-    volleyCount.$ = 0;
-    ballPlayer.$ = 1;
+    ballX.$ = subgridWidth - 3, ballY.$ = p2Y.$ + 6, ballSpeedX.$ = -1, ballSpeedY.$ = 0, volleyCount.$ = 0, ballPlayer.$ = 1;
     $exit(1);
 }
 function setBallSpeedY() {
     $enter();
     $allocate($addressSize);
-    if (yOffset.$ < 3) {
-        $enter();
-        ballSpeedY.$ = -3;
-        $exit(1);
-    } else if (yOffset.$ < 6) {
-        $enter();
-        ballSpeedY.$ = -2;
-        $exit(1);
-    } else if (yOffset.$ < 9) {
-        $enter();
-        ballSpeedY.$ = -1;
-        $exit(1);
-    } else if (yOffset.$ < 14) {
-        $enter();
-        ballSpeedY.$ = 0;
-        $exit(1);
-    } else if (yOffset.$ < 17) {
-        $enter();
-        ballSpeedY.$ = 1;
-        $exit(1);
-    } else if (yOffset.$ < 20) {
-        $enter();
-        ballSpeedY.$ = 2;
-        $exit(1);
-    } else {
-        $enter();
-        ballSpeedY.$ = 3;
-        $exit(1);
-    }
+    ballSpeedY.$ = yOffset.$ < 3 ? -3 : yOffset.$ < 6 ? -2 : yOffset.$ < 9 ? -1 : yOffset.$ < 14 ? 0 : yOffset.$ < 17 ? 1 : yOffset.$ < 20 ? 2 : 3;
     $exit(1);
 }
 function win(...$args) {
     $enter();
     $allocate($addressSize);
-    let color = $allocate(Uint2($args[0]));
-    winScreen.$ = 1;
-    clearScreen(color.$);
-    drawScore(color.$);
+    let e = $allocate(Uint2($args[0]));
+    winScreen.$ = !0, clearScreen(e.$), drawScore(e.$);
     $exit(1);
 }
 function winP1() {
@@ -1020,185 +936,19 @@ function winP2() {
 function updateBall() {
     $enter();
     $allocate($addressSize);
-    ballX.$ += ballSpeedX.$;
-    ballY.$ += ballSpeedY.$;
-    if (ballY.$ < 0) {
-        $enter();
-        ballY.$ = 0;
-        ballSpeedY.$ *= -1;
-        $exit(1);
-    } else if (ballY.$ > subgridHeight - 6) {
-        $enter();
-        ballY.$ = subgridHeight - 6;
-        ballSpeedY.$ *= -1;
-        $exit(1);
-    }
-    if (ballSpeedX.$ > 0) {
-        $enter();
-        if (ballX.$ > subgridWidth - 9) {
-            $enter();
-            yOffset.$ = ballY.$ - p2Y.$ + 5;
-            if (yOffset.$ >= 0 && yOffset.$ < 23) {
-                $enter();
-                ballX.$ = subgridWidth - 9;
-                setBallSpeedY();
-                if (ballSpeedX.$ < 3) {
-                    $enter();
-                    volleyCount.$++;
-                    if (volleyCount.$ === 3) {
-                        $enter();
-                        ballSpeedX.$++;
-                        volleyCount.$ = 0;
-                        $exit(1);
-                    }
-                    $exit(1);
-                }
-                ballSpeedX.$ *= -1;
-                ballPlayer.$ = 1;
-                $exit(1);
-            } else {
-                $enter();
-                score1.$++;
-                resetBall1();
-                if (score1.$ === 11) {
-                    $enter();
-                    winP1();
-                    $exit(1);
-                }
-                $exit(1);
-            }
-            $exit(1);
-        }
-        $exit(1);
-    } else {
-        $enter();
-        if (ballX.$ < 3) {
-            $enter();
-            yOffset.$ = ballY.$ - p1Y.$ + 5;
-            if (yOffset.$ >= 0 && yOffset.$ < 23) {
-                $enter();
-                ballX.$ = 3;
-                setBallSpeedY();
-                if (ballSpeedX.$ > -3) {
-                    $enter();
-                    volleyCount.$++;
-                    if (volleyCount.$ === 3) {
-                        $enter();
-                        ballSpeedX.$--;
-                        volleyCount.$ = 0;
-                        $exit(1);
-                    }
-                    $exit(1);
-                }
-                ballSpeedX.$ *= -1;
-                ballPlayer.$ = 0;
-                $exit(1);
-            } else {
-                $enter();
-                score2.$++;
-                resetBall2();
-                if (score2.$ === 11) {
-                    $enter();
-                    winP2();
-                    $exit(1);
-                }
-                $exit(1);
-            }
-            $exit(1);
-        }
-        $exit(1);
-    }
+    ballX.$ += ballSpeedX.$, (ballY.$ += ballSpeedY.$) < 0 ? (ballY.$ = 0, ballSpeedY.$ *= -1) : ballY.$ > subgridHeight - 6 && (ballY.$ = subgridHeight - 6, ballSpeedY.$ *= -1), ballSpeedX.$ > 0 ? ballX.$ > subgridWidth - 9 && ((yOffset.$ = ballY.$ - p2Y.$ + 5) >= 0 && yOffset.$ < 23 ? (ballX.$ = subgridWidth - 9, setBallSpeedY(), ballSpeedX.$ < 3 && 3 === ++volleyCount.$ && (ballSpeedX.$++, volleyCount.$ = 0), ballSpeedX.$ *= -1, ballPlayer.$ = 1) : (score1.$++, resetBall1(), 11 === score1.$ && winP1())) : ballX.$ < 3 && ((yOffset.$ = ballY.$ - p1Y.$ + 5) >= 0 && yOffset.$ < 23 ? (ballX.$ = 3, setBallSpeedY(), ballSpeedX.$ > -3 && 3 === ++volleyCount.$ && (ballSpeedX.$--, volleyCount.$ = 0), ballSpeedX.$ *= -1, ballPlayer.$ = 0) : (score2.$++, resetBall2(), 11 === score2.$ && winP2()));
     $exit(1);
 }
 function handleInput() {
     $enter();
     $allocate($addressSize);
-    if (up1() || down1()) {
-        $enter();
-        if (up1()) {
-            $enter();
-            p1Y.$ -= p1Speed.$ / 3;
-            $exit(1);
-        }
-        if (down1()) {
-            $enter();
-            p1Y.$ += p1Speed.$ / 3;
-            $exit(1);
-        }
-        if (p1Y.$ < 3) {
-            $enter();
-            p1Y.$ = 3;
-            $exit(1);
-        }
-        if (p1Y.$ > subgridHeight - 18) {
-            $enter();
-            p1Y.$ = subgridHeight - 18;
-            $exit(1);
-        }
-        if (p1Speed.$ < 15) {
-            $enter();
-            p1Speed.$++;
-            $exit(1);
-        }
-        $exit(1);
-    } else {
-        $enter();
-        p1Speed.$ = 0;
-        $exit(1);
-    }
-    if (up2() || down2()) {
-        $enter();
-        if (up2()) {
-            $enter();
-            p2Y.$ -= p2Speed.$ / 3;
-            $exit(1);
-        }
-        if (down2()) {
-            $enter();
-            p2Y.$ += p2Speed.$ / 3;
-            $exit(1);
-        }
-        if (p2Y.$ < 3) {
-            $enter();
-            p2Y.$ = 3;
-            $exit(1);
-        }
-        if (p2Y.$ > subgridHeight - 18) {
-            $enter();
-            p2Y.$ = subgridHeight - 18;
-            $exit(1);
-        }
-        if (p2Speed.$ < 15) {
-            $enter();
-            p2Speed.$++;
-            $exit(1);
-        }
-        $exit(1);
-    } else {
-        $enter();
-        p2Speed.$ = 0;
-        $exit(1);
-    }
+    up1() || down1() ? (up1() && (p1Y.$ -= p1Speed.$ / 3), down1() && (p1Y.$ += p1Speed.$ / 3), p1Y.$ < 3 && (p1Y.$ = 3), p1Y.$ > subgridHeight - 18 && (p1Y.$ = subgridHeight - 18), p1Speed.$ < 15 && p1Speed.$++) : p1Speed.$ = 0, up2() || down2() ? (up2() && (p2Y.$ -= p2Speed.$ / 3), down2() && (p2Y.$ += p2Speed.$ / 3), p2Y.$ < 3 && (p2Y.$ = 3), p2Y.$ > subgridHeight - 18 && (p2Y.$ = subgridHeight - 18), p2Speed.$ < 15 && p2Speed.$++) : p2Speed.$ = 0;
     $exit(1);
 }
 function start() {
     $enter();
     $allocate($addressSize);
-    winScreen.$ = 0;
-    p1Y.$ = 51;
-    p2Y.$ = 51;
-    score1.$ = 0;
-    score2.$ = 0;
-    clearScreen(3);
-    if (rnd(2)) {
-        $enter();
-        resetBall1();
-        $exit(1);
-    } else {
-        $enter();
-        resetBall2();
-        $exit(1);
-    }
+    winScreen.$ = !1, p1Y.$ = 51, p2Y.$ = 51, score1.$ = 0, score2.$ = 0, clearScreen(3), rnd(2) ? resetBall1() : resetBall2();
     $exit(1);
 }
 function tick() {
@@ -1206,31 +956,14 @@ function tick() {
     $allocate($addressSize);
     if (winScreen.$) {
         $enter();
-        if (left1() || right1() || left2() || right2()) {
-            $enter();
-            start();
-            $exit(1);
-        } else {
+        if (!(left1() || right1() || left2() || right2())) {
             $enter();
             return $exit(3);
         }
+        start();
         $exit(1);
     }
-    drawPlayfield();
-    drawPlayer1(3);
-    drawPlayer2(3);
-    drawBall(3);
-    drawScore(3);
-    handleInput();
-    updateBall();
-    if (winScreen.$) {
-        $enter();
-        return $exit(2);
-    }
-    drawPlayer1(0);
-    drawPlayer2(2);
-    drawBall(ballPlayer.$ ? 2 : 0);
-    drawScore(ballPlayer.$ ? 2 : 0);
+    drawPlayfield(), drawPlayer1(3), drawPlayer2(3), drawBall(3), drawScore(3), handleInput(), updateBall(), winScreen.$ || (drawPlayer1(0), drawPlayer2(2), drawBall(ballPlayer.$ ? 2 : 0), drawScore(ballPlayer.$ ? 2 : 0));
     $exit(1);
 }
 start();

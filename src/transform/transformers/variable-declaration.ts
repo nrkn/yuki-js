@@ -21,10 +21,10 @@ import { existsExternal, existsLocal, countScopeDepthTo } from '../scope'
 export const variableDeclarationNode =
   ( node: VariableDeclaration, parent: YukiNode, options: TransformOptions ) => {
     if ( node.kind === 'const' )
-      return constNode( node, parent, options )
+      return constDeclarationNode( node, parent, options )
 
     if ( node.kind === 'let' )
-      return letNode( node, parent, options )
+      return letDeclarationNode( node, parent, options )
 
     throw LocError( 'Expected const or let', node )
   }
@@ -110,7 +110,7 @@ export const declaratorToAllocate =
     return allocateCall
   }
 
-export const constNode =
+export const constDeclarationNode =
   ( node: VariableDeclaration, _parent: YukiNode, options: TransformOptions ) => {
     if ( !isYukiConstDeclaration( node ) )
       throw LocError( 'Invalid const', node )
@@ -118,6 +118,9 @@ export const constNode =
     const { external, scope } = options
     const [ declarator ] = node.declarations
     const { name } = declarator.id
+
+    if( name.startsWith( '$' ) )
+      throw LocError( 'Invalid identifier name', node )
 
     if (
       existsExternal( external, name ) ||
@@ -127,7 +130,7 @@ export const constNode =
     scope.consts.push( name )
   }
 
-export const letNode =
+export const letDeclarationNode =
   ( node: VariableDeclaration, _parent: YukiNode, options: TransformOptions ) => {
     if ( !isYukiLetDeclaration( node ) ){
       const fnDepth = countScopeDepthTo( options.scope, 'function' )
@@ -151,4 +154,10 @@ export const letNode =
 
       throw LocError( 'Invalid let', node )
     }
+
+    const [ declarator ] = node.declarations
+    const { name } = declarator.id
+
+    if ( name.startsWith( '$' ) )
+      throw LocError( 'Invalid identifier name', node )
   }
