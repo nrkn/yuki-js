@@ -1,0 +1,22 @@
+const a = 0
+const b = [ 1, 2, -3 ]
+const c = b[ 0 ]
+const [ d, ...e ] = b
+const f = 4, g = -5
+const h = true
+const i = 'abc'
+const j = 6.6
+const k = [ 7.7, 8, 9 ]
+const l = Bool( true )
+const m = Uint8( 10 )
+const n = Uint8Arr( 10 )
+const o = Bool( b[ 0 ] )
+const p = Int8( b[ 2 ] )
+const q = Int8Arr( [ 1, 2, 3 ] )
+const r = Int8Arr( b )
+const s = BoolArr( [ 1, 0, 1 ] )
+const t = [ -2, -1, 0, ...b ]
+const u = Float32( 11.1 )
+const v = Float64( 22.2 )
+const x = Float32Arr( k )
+const y = Float64Arr( k )

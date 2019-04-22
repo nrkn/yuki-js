@@ -1,0 +1,78 @@
+{
+  "a": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "_signed": false,
+    "$": 0
+  },
+  "b": {
+    "_bitLength": 3,
+    "_kind": "const",
+    "_signed": true,
+    "length": 3,
+    "0": 1,
+    "1": 2,
+    "2": -3
+  },
+  "c": {
+    "_bitLength": 3,
+    "_kind": "const",
+    "_signed": true,
+    "$": 1
+  },
+  "d": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "e": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "f": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "g": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "h": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "i": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "j": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "k": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "l": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "m": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  },
+  "n": {
+    "_bitLength": 1,
+    "_kind": "const",
+    "$": 0
+  }
+}
