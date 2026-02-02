@@ -23,7 +23,7 @@ yuki-js, with constraints set up to mirror the
 
 ![pong](./examples/channel-y/screenshot.png)
 
-The fantasy console is set up to only allow for 64 bytes worth of memory for variables to be declared, the program must find into 2048 bytes, 4 colors from a fixed palette of 8 per scanline, etc.
+The fantasy console is set up to only allow for 64 bytes worth of memory for variables to be declared, the program must fit into 2048 bytes, 4 colors from a fixed palette of 8 per scanline, etc.
 
 Player 1 uses WASD, Player 2 uses arrow keys
 
